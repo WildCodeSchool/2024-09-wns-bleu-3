@@ -3,14 +3,9 @@ import { Scan } from '../entities/Scan'
 
 @Resolver(Scan)
 class ScanResolver {
-    @Query(() => [Scan])
+    @Query(() => String)
     async getAllScans() {
-        const scans = await Scan.find({
-            order: {
-                id: 'DESC',
-            },
-        })
-        return scans
+        return 'ok'
     }
 }
 

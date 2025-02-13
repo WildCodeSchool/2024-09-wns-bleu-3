@@ -2,21 +2,18 @@ services:
   db:
     image: postgres:latest
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: postgres
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      timeout: 10s
+      test: [ "CMD-SHELL", "pg_isready -d dataHealthCheck -U postgres" ]
+      interval: 1s
+      timeout: 2s
       retries: 100
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
   adminer:
     image: adminer
     depends_on:
       db:
         condition: service_healthy
-    restart: always
 
   backend:
     build: ./backend
@@ -25,10 +22,12 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
     healthcheck:
-      test: 'curl --fail --request GET --url "http://localhost:4000" || exit 1'
+      test: 'curl --fail --request POST --header ''content-type: application/json'' --url ''http://localhost:4000'' --data ''{"query":"query { __typename }"}'' || exit 1'
       interval: 1s
       timeout: 2s
       retries: 100
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_healthy
@@ -42,6 +41,3 @@ services:
         condition: service_healthy
     ports:
       - 7000:80
-
-volumes:
-  postgres_data:

@@ -3,9 +3,9 @@ RUN apk --no-cache add curl
 WORKDIR /app
 # Copie des fichiers nécessaires
 # COPY package.json package.json
-COPY package.json package-lock.json ./
+COPY package.json package.json 
 # Utilisation de CI pour plus de performance
-RUN npm ci
+RUN npm install
 COPY src src
 COPY tsconfig.json tsconfig.json
 COPY eslint.config.mjs eslint.config.mjs
