@@ -6,7 +6,7 @@ export const dataHealthCheck = new DataSource({
     type: 'postgres',
     host: 'db',
     username: 'postgres',
-    database: 'dataHealthCheck',
+    database: 'postgres',
     password: 'postgres',
     entities: [Scan],
     synchronize: true,
