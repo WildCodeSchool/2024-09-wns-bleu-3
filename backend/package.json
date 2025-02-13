@@ -1,35 +1,36 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "author": "",
-  "license": "ISC",
-  "keywords": [],
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node-dev ./src/index.ts",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
-  },
-  "dependencies": {
-    "@apollo/server": "^4.11.3",
-    "@types/cors": "^2.8.17",
-    "@types/node": "^22.13.2",
-    "@types/pg": "^8.11.11",
-    "class-validator": "^0.14.1",
-    "dotenv": "^16.4.7",
-    "graphql": "^16.10.0",
-    "pg": "^8.13.3",
-    "reflect-metadata": "^0.2.2",
-    "ts-node-dev": "^2.0.0",
-    "type-graphql": "^2.0.0-rc.2",
-    "typeorm": "^0.3.20",
-    "typescript": "^5.7.3",
-    "uuid": "^11.0.5"
-  },
-  "devDependencies": {
-    "@antfu/eslint-config": "^4.2.0",
-    "eslint": "^9.20.1"
-  }
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "",
+    "author": "",
+    "license": "ISC",
+    "keywords": [],
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "ts-node-dev ./src/index.ts",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
+    },
+    "dependencies": {
+        "@apollo/server": "^4.11.3",
+        "@types/cors": "^2.8.17",
+        "@types/node": "^22.13.2",
+        "@types/pg": "^8.11.11",
+        "class-validator": "^0.14.1",
+        "dotenv": "^16.4.7",
+        "graphql": "^16.10.0",
+        "pg": "^8.13.3",
+        "reflect-metadata": "^0.2.2",
+        "ts-node-dev": "^2.0.0",
+        "type-graphql": "^2.0.0-rc.2",
+        "typeorm": "^0.3.20",
+        "typeorm-naming-strategies": "^4.1.0",
+        "typescript": "^5.7.3",
+        "uuid": "^11.0.5"
+    },
+    "devDependencies": {
+        "@antfu/eslint-config": "^4.2.0",
+        "eslint": "^9.20.1"
+    }
 }

@@ -1,0 +1,13 @@
+FROM node:lts-alpine
+RUN apk --no-cache add curl
+WORKDIR /app
+# Copie des fichiers nécessaires
+# COPY package.json package.json
+COPY package.json package-lock.json ./
+# Utilisation de CI pour plus de performance
+RUN npm ci
+COPY src src
+COPY tsconfig.json tsconfig.json
+COPY eslint.config.mjs eslint.config.mjs
+# Commande à exécuter pour démarrer le backend
+CMD npm start

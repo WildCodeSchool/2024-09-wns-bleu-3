@@ -1,49 +1,26 @@
+import 'dotenv/config'
 import { ApolloServer } from '@apollo/server'
 import { startStandaloneServer } from '@apollo/server/standalone'
-import 'dotenv/config'
-
-const typeDefs = `#graphql
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-  # This "Book" type defines the queryable fields for every book in our data source.
-  type Book {
-    title: String
-    author: String
-  }
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
-  type Query {
-    books: [Book]
-  }
-`
-
-const books = [
-  {
-    title: 'The Awakening',
-    author: 'Kate Chopin',
-  },
-  {
-    title: 'City of Glass',
-    author: 'Paul Auster',
-  },
-]
-
-const resolvers = {
-  Query: {
-    books: () => books,
-  },
-}
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-})
+import { buildSchema } from 'type-graphql'
+import { dataHealthCheck } from './config/db'
+import ScanResolver from './resolver/ScanResolver'
 
 async function start() {
-  const { url } = await startStandaloneServer(server, {
-    listen: { port: 4000 },
-  })
-  console.log(`🚀 Server ready at ${url}`)
+    await dataHealthCheck.initialize()
+
+    const schema = await buildSchema({
+        resolvers: [ScanResolver],
+    })
+
+    const server = new ApolloServer({
+        schema,
+    })
+
+    const { url } = await startStandaloneServer(server, {
+        listen: { port: 4000 },
+    })
+
+    console.log(`🚀 Server ready at ${url}`)
 }
 
 start()
