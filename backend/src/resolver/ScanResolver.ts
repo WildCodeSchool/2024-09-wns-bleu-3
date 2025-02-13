@@ -1,4 +1,4 @@
-import { Query, Resolver } from 'type-graphql'
+import { Arg, Query, Resolver } from 'type-graphql'
 import { Scan } from '../entities/Scan'
 
 @Resolver(Scan)
@@ -11,6 +11,18 @@ class ScanResolver {
             },
         })
         return scans
+    }
+
+    @Query(() => Scan)
+    async getScanById(@Arg("id") id: number) {
+        const scan = await Scan.findOne({
+            where: { id: id },
+            order: { id: "DESC" },
+        })
+        if (scan === null) {
+            throw new Error("Cannot find scan with id " + id);
+        }
+        return scan
     }
 }
 
