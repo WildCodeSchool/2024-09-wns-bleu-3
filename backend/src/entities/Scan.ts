@@ -1,5 +1,5 @@
 import { Field, ObjectType } from 'type-graphql'
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 @ObjectType()
 @Entity()
@@ -8,30 +8,39 @@ export class Scan extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
+    @Field()
     @Column()
     url: string
 
+    @Field()
     @Column()
     title: string
 
+    @Field()
     @Column()
     statusCode: number
 
+    @Field()
     @Column()
     statusMessage: string
 
+    @Field()
     @Column()
     responseTime: number
 
+    @Field()
     @Column()
-    sslCertificate: boolean
+    sslCertificate: string
 
+    @Field()
     @Column()
     isOnline: boolean
 
-    @Column()
+    @Field()
+    @CreateDateColumn()
     createdAt: Date
 
-    @Column()
+    @Field()
+    @UpdateDateColumn()
     updatedAt: Date
 }
