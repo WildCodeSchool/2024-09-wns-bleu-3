@@ -40,7 +40,7 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - 7000:80
+      - 3030:80
 
 volumes:
   postgres_data:
