@@ -73,6 +73,7 @@ export type Scan = {
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTimeISO']['output'];
   url: Scalars['String']['output'];
+  user: User;
 };
 
 export type ScanInput = {
@@ -102,6 +103,17 @@ export type UpdateScanInput = {
   statusMessage?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type User = {
+  __typename?: 'User';
+  createdAt: Scalars['DateTimeISO']['output'];
+  email: Scalars['String']['output'];
+  id: Scalars['Float']['output'];
+  password: Scalars['String']['output'];
+  scans: Array<Scan>;
+  updatedAt: Scalars['DateTimeISO']['output'];
+  username: Scalars['String']['output'];
 };
 
 export type CreateNewScanMutationVariables = Exact<{

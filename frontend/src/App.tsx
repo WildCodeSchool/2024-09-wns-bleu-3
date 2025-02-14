@@ -10,6 +10,7 @@ function App() {
 
   const { loading, error, data } = useQuery(GET_ALL_SCANS);
   console.log(data)
+  
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
