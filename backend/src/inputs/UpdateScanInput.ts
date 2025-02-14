@@ -6,7 +6,7 @@ export class UpdateScanInput implements Partial<Scan> {
     @Field()
     id: number
 
-    @Field()
+    @Field({ nullable: true })
     url: string
 
     @Field({ nullable: true })
