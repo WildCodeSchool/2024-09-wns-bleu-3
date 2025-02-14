@@ -3,6 +3,7 @@ import { Scan } from '../entities/Scan'
 import { ScanInput } from '../inputs/ScanInput'
 import { UpdateScanInput } from '../inputs/UpdateScanInput'
 import { Tag } from '../entities/Tag'
+import { scanUrl } from '../utils/scanUrl'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -25,8 +26,22 @@ class ScanResolver {
     @Mutation(() => Scan)
     async createNewScan(@Arg('data') newScanData: ScanInput) {
         try {
+            const urlData = await scanUrl(newScanData.url)
+
+            if ('error' in urlData) {
+                throw new Error(urlData.error)
+            }
+
+            const { url, statusCode, statusMessage, responseTime, sslCertificate, isOnline } = urlData
+
             const newScanToSave = Scan.create({
                 ...newScanData,
+                url,
+                statusCode,
+                statusMessage,
+                responseTime,
+                sslCertificate,
+                isOnline,
             })
 
             const result = await newScanToSave.save()

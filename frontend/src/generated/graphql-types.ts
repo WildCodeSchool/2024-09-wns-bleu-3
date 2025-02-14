@@ -108,11 +108,6 @@ export type Scan = {
 };
 
 export type ScanInput = {
-  isOnline: Scalars['Boolean']['input'];
-  responseTime: Scalars['Float']['input'];
-  sslCertificate: Scalars['String']['input'];
-  statusCode: Scalars['Float']['input'];
-  statusMessage: Scalars['String']['input'];
   title: Scalars['String']['input'];
   url: Scalars['String']['input'];
 };

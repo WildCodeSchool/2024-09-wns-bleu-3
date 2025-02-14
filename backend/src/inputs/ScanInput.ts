@@ -8,19 +8,4 @@ export class ScanInput implements Partial<Scan> {
 
     @Field()
     title: string
-
-    @Field()
-    statusCode: number
-
-    @Field()
-    statusMessage: string
-
-    @Field()
-    responseTime: number
-
-    @Field()
-    sslCertificate: string
-
-    @Field()
-    isOnline: boolean
 }
