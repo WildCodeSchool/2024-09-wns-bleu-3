@@ -96,13 +96,7 @@ export type Tag = {
 
 export type UpdateScanInput = {
   id: Scalars['Float']['input'];
-  isOnline?: InputMaybe<Scalars['Boolean']['input']>;
-  responseTime?: InputMaybe<Scalars['Float']['input']>;
-  sslCertificate?: InputMaybe<Scalars['String']['input']>;
-  statusCode?: InputMaybe<Scalars['Float']['input']>;
-  statusMessage?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
-  url?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
