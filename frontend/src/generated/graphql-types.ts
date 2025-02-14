@@ -18,11 +18,18 @@ export type Scalars = {
   DateTimeISO: { input: any; output: any; }
 };
 
+export type Frequency = {
+  __typename?: 'Frequency';
+  id: Scalars['Float']['output'];
+  intervalMinutes: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  scans: Array<Scan>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createNewScan: Scan;
   deleteScan: Scalars['String']['output'];
-  updateAd: Scalars['String']['output'];
 };
 
 
@@ -33,11 +40,6 @@ export type MutationCreateNewScanArgs = {
 
 export type MutationDeleteScanArgs = {
   id: Scalars['Float']['input'];
-};
-
-
-export type MutationUpdateAdArgs = {
-  data: UpdateScanInput;
 };
 
 export type Query = {
@@ -54,12 +56,14 @@ export type QueryGetScanByIdArgs = {
 export type Scan = {
   __typename?: 'Scan';
   createdAt: Scalars['DateTimeISO']['output'];
+  frequency: Frequency;
   id: Scalars['Float']['output'];
   isOnline: Scalars['Boolean']['output'];
   responseTime: Scalars['Float']['output'];
   sslCertificate: Scalars['String']['output'];
   statusCode: Scalars['Float']['output'];
   statusMessage: Scalars['String']['output'];
+  tags: Array<Tag>;
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTimeISO']['output'];
   url: Scalars['String']['output'];
@@ -75,15 +79,12 @@ export type ScanInput = {
   url: Scalars['String']['input'];
 };
 
-export type UpdateScanInput = {
-  id: Scalars['Float']['input'];
-  isOnline?: InputMaybe<Scalars['Boolean']['input']>;
-  responseTime?: InputMaybe<Scalars['Float']['input']>;
-  sslCertificate?: InputMaybe<Scalars['String']['input']>;
-  statusCode?: InputMaybe<Scalars['Float']['input']>;
-  statusMessage?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
-  url: Scalars['String']['input'];
+export type Tag = {
+  __typename?: 'Tag';
+  color: Scalars['String']['output'];
+  id: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  scans: Array<Scan>;
 };
 
 export type CreateNewScanMutationVariables = Exact<{
@@ -149,9 +150,9 @@ export type CreateNewScanMutationFn = Apollo.MutationFunction<CreateNewScanMutat
  * });
  */
 export function useCreateNewScanMutation(baseOptions?: Apollo.MutationHookOptions<CreateNewScanMutation, CreateNewScanMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateNewScanMutation, CreateNewScanMutationVariables>(CreateNewScanDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<CreateNewScanMutation, CreateNewScanMutationVariables>(CreateNewScanDocument, options);
+}
 export type CreateNewScanMutationHookResult = ReturnType<typeof useCreateNewScanMutation>;
 export type CreateNewScanMutationResult = Apollo.MutationResult<CreateNewScanMutation>;
 export type CreateNewScanMutationOptions = Apollo.BaseMutationOptions<CreateNewScanMutation, CreateNewScanMutationVariables>;
@@ -180,9 +181,9 @@ export type DeleteScanMutationFn = Apollo.MutationFunction<DeleteScanMutation, D
  * });
  */
 export function useDeleteScanMutation(baseOptions?: Apollo.MutationHookOptions<DeleteScanMutation, DeleteScanMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteScanMutation, DeleteScanMutationVariables>(DeleteScanDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useMutation<DeleteScanMutation, DeleteScanMutationVariables>(DeleteScanDocument, options);
+}
 export type DeleteScanMutationHookResult = ReturnType<typeof useDeleteScanMutation>;
 export type DeleteScanMutationResult = Apollo.MutationResult<DeleteScanMutation>;
 export type DeleteScanMutationOptions = Apollo.BaseMutationOptions<DeleteScanMutation, DeleteScanMutationVariables>;
@@ -219,17 +220,17 @@ export const GetAllScansDocument = gql`
  * });
  */
 export function useGetAllScansQuery(baseOptions?: Apollo.QueryHookOptions<GetAllScansQuery, GetAllScansQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetAllScansQuery, GetAllScansQueryVariables>(GetAllScansDocument, options);
-      }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<GetAllScansQuery, GetAllScansQueryVariables>(GetAllScansDocument, options);
+}
 export function useGetAllScansLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllScansQuery, GetAllScansQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetAllScansQuery, GetAllScansQueryVariables>(GetAllScansDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<GetAllScansQuery, GetAllScansQueryVariables>(GetAllScansDocument, options);
+}
 export function useGetAllScansSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllScansQuery, GetAllScansQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetAllScansQuery, GetAllScansQueryVariables>(GetAllScansDocument, options);
-        }
+  const options = baseOptions === Apollo.skipToken ? baseOptions : { ...defaultOptions, ...baseOptions }
+  return Apollo.useSuspenseQuery<GetAllScansQuery, GetAllScansQueryVariables>(GetAllScansDocument, options);
+}
 export type GetAllScansQueryHookResult = ReturnType<typeof useGetAllScansQuery>;
 export type GetAllScansLazyQueryHookResult = ReturnType<typeof useGetAllScansLazyQuery>;
 export type GetAllScansSuspenseQueryHookResult = ReturnType<typeof useGetAllScansSuspenseQuery>;
@@ -267,18 +268,18 @@ export const QueryDocument = gql`
  *   },
  * });
  */
-export function useQueryQuery(baseOptions: Apollo.QueryHookOptions<QueryQuery, QueryQueryVariables> & ({ variables: QueryQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
-      }
+export function useQueryQuery(baseOptions: Apollo.QueryHookOptions<QueryQuery, QueryQueryVariables> & ({ variables: QueryQueryVariables; skip?: boolean; } | { skip: boolean; })) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
+}
 export function useQueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<QueryQuery, QueryQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
-        }
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
+}
 export function useQuerySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<QueryQuery, QueryQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
-        }
+  const options = baseOptions === Apollo.skipToken ? baseOptions : { ...defaultOptions, ...baseOptions }
+  return Apollo.useSuspenseQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
+}
 export type QueryQueryHookResult = ReturnType<typeof useQueryQuery>;
 export type QueryLazyQueryHookResult = ReturnType<typeof useQueryLazyQuery>;
 export type QuerySuspenseQueryHookResult = ReturnType<typeof useQuerySuspenseQuery>;
