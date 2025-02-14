@@ -18,6 +18,14 @@ export type Scalars = {
   DateTimeISO: { input: any; output: any; }
 };
 
+export type Frequency = {
+  __typename?: 'Frequency';
+  id: Scalars['Float']['output'];
+  intervalMinutes: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  scans: Array<Scan>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createNewScan: Scan;
@@ -48,12 +56,14 @@ export type QueryGetScanByIdArgs = {
 export type Scan = {
   __typename?: 'Scan';
   createdAt: Scalars['DateTimeISO']['output'];
+  frequency: Frequency;
   id: Scalars['Float']['output'];
   isOnline: Scalars['Boolean']['output'];
   responseTime: Scalars['Float']['output'];
   sslCertificate: Scalars['String']['output'];
   statusCode: Scalars['Float']['output'];
   statusMessage: Scalars['String']['output'];
+  tags: Array<Tag>;
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTimeISO']['output'];
   url: Scalars['String']['output'];
@@ -67,6 +77,14 @@ export type ScanInput = {
   statusMessage: Scalars['String']['input'];
   title: Scalars['String']['input'];
   url: Scalars['String']['input'];
+};
+
+export type Tag = {
+  __typename?: 'Tag';
+  color: Scalars['String']['output'];
+  id: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  scans: Array<Scan>;
 };
 
 export type CreateNewScanMutationVariables = Exact<{
