@@ -30,6 +30,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createNewScan: Scan;
   deleteScan: Scalars['String']['output'];
+  updateScan: Scalars['String']['output'];
 };
 
 
@@ -40,6 +41,11 @@ export type MutationCreateNewScanArgs = {
 
 export type MutationDeleteScanArgs = {
   id: Scalars['Float']['input'];
+};
+
+
+export type MutationUpdateScanArgs = {
+  data: UpdateScanInput;
 };
 
 export type Query = {
@@ -85,6 +91,17 @@ export type Tag = {
   id: Scalars['Float']['output'];
   name: Scalars['String']['output'];
   scans: Array<Scan>;
+};
+
+export type UpdateScanInput = {
+  id: Scalars['Float']['input'];
+  isOnline?: InputMaybe<Scalars['Boolean']['input']>;
+  responseTime?: InputMaybe<Scalars['Float']['input']>;
+  sslCertificate?: InputMaybe<Scalars['String']['input']>;
+  statusCode?: InputMaybe<Scalars['Float']['input']>;
+  statusMessage?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateNewScanMutationVariables = Exact<{

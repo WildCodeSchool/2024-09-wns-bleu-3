@@ -1,6 +1,7 @@
 import { Arg, Mutation, Query, Resolver } from 'type-graphql'
 import { Scan } from '../entities/Scan'
 import { ScanInput } from '../inputs/ScanInput'
+import { UpdateScanInput } from '../inputs/UpdateScanInput'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -65,6 +66,17 @@ class ScanResolver {
             throw new Error(`Cannot find scan with id ${id}`)
         }
         return scan
+    }
+
+    @Mutation(() => String)
+    async updateScan(@Arg('data') updateScanData: UpdateScanInput) {
+        let ScanToUpdate = await Scan.findOneByOrFail({ id: updateScanData.id })
+        console.log('scan to update', ScanToUpdate)
+        ScanToUpdate = Object.assign(ScanToUpdate, updateScanData)
+        console.log('scan to update', ScanToUpdate)
+        const result = await ScanToUpdate.save()
+        console.log(result)
+        return 'Scan has been updated'
     }
 }
 
