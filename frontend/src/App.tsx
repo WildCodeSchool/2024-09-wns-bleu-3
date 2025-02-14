@@ -4,6 +4,7 @@ import './App.css'
 import Layout from './components/Layout'
 import { GET_ALL_SCANS } from './graphql/queries';
 import { useQuery } from '@apollo/client';
+import HomePage from './pages/HomePage';
 
 function App() {
 
@@ -17,7 +18,9 @@ function App() {
   return (
     <>
       <Routes>
+
         <Route path="/" element={<Layout />} />
+        <Route index element={<HomePage />} />
 
       </Routes>
     </>
