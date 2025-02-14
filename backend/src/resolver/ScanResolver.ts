@@ -69,7 +69,7 @@ class ScanResolver {
     }
 
     @Mutation(() => String)
-    async updateAd(@Arg('data') updateScanData: UpdateScanInput) {
+    async updateScan(@Arg('data') updateScanData: UpdateScanInput) {
         let ScanToUpdate = await Scan.findOneByOrFail({ id: updateScanData.id })
         console.log('scan to update', ScanToUpdate)
         ScanToUpdate = Object.assign(ScanToUpdate, updateScanData)
