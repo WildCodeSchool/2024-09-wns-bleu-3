@@ -2,6 +2,7 @@ import { Arg, Mutation, Query, Resolver } from 'type-graphql'
 import { Scan } from '../entities/Scan'
 import { ScanInput } from '../inputs/ScanInput'
 import { UpdateScanInput } from '../inputs/UpdateScanInput'
+import { Tag } from '../entities/Tag'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -70,13 +71,34 @@ class ScanResolver {
 
     @Mutation(() => String)
     async updateScan(@Arg('data') updateScanData: UpdateScanInput) {
-        let ScanToUpdate = await Scan.findOneByOrFail({ id: updateScanData.id })
-        console.log('scan to update', ScanToUpdate)
-        ScanToUpdate = Object.assign(ScanToUpdate, updateScanData)
-        console.log('scan to update', ScanToUpdate)
-        const result = await ScanToUpdate.save()
-        console.log(result)
-        return 'Scan has been updated'
+        try {
+            let scanToUpdate = await Scan.findOne({
+                where: { id: updateScanData.id },
+                relations: ['tags'],
+            })
+
+            if (!scanToUpdate) {
+                throw new Error(`Cannot find scan with id ${updateScanData.id}`)
+            }
+
+            scanToUpdate = Object.assign(scanToUpdate, {
+                title: updateScanData.title,
+            })
+
+            if (updateScanData.tagIds && updateScanData.tagIds.length >= 0) {
+                const tags = await Tag.findByIds(updateScanData.tagIds)
+
+                scanToUpdate.tags = tags
+            }
+
+            await scanToUpdate.save()
+
+            return 'Scan has been updated'
+        }
+        catch (error) {
+            console.error('Error updating scan:', error)
+            throw new Error('Failed to update scan')
+        }
     }
 }
 

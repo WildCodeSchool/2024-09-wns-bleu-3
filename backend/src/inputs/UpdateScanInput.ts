@@ -8,4 +8,7 @@ export class UpdateScanInput implements Partial<Scan> {
 
     @Field({ nullable: true })
     title: string
+
+    @Field(() => [Number], { nullable: true })
+    tagIds?: number[]
 }

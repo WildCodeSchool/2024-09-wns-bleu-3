@@ -5,12 +5,13 @@ import { buildSchema } from 'type-graphql'
 import { dataHealthCheck } from './config/db'
 import ScanResolver from './resolver/ScanResolver'
 import FrequenceResolver from './resolver/FrequenceResolver'
+import TagResolver from './resolver/TagResolver'
 
 async function start() {
     await dataHealthCheck.initialize()
 
     const schema = await buildSchema({
-        resolvers: [ScanResolver, FrequenceResolver],
+        resolvers: [ScanResolver, FrequenceResolver, TagResolver],
     })
 
     const server = new ApolloServer({

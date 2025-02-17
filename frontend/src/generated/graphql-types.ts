@@ -35,6 +35,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createNewFrequence: Frequency;
   createNewScan: Scan;
+  deleteFrequence: Scalars['String']['output'];
   deleteScan: Scalars['String']['output'];
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
@@ -48,6 +49,11 @@ export type MutationCreateNewFrequenceArgs = {
 
 export type MutationCreateNewScanArgs = {
   data: ScanInput;
+};
+
+
+export type MutationDeleteFrequenceArgs = {
+  id: Scalars['Float']['input'];
 };
 
 
@@ -68,16 +74,10 @@ export type MutationUpdateScanArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  deleteFrequence: Scalars['String']['output'];
   getAllFrequences: Array<Frequency>;
   getAllScans: Array<Scan>;
   getFrequenceById: Frequency;
   getScanById: Scan;
-};
-
-
-export type QueryDeleteFrequenceArgs = {
-  id: Scalars['Float']['input'];
 };
 
 
