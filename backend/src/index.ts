@@ -4,12 +4,13 @@ import { startStandaloneServer } from '@apollo/server/standalone'
 import { buildSchema } from 'type-graphql'
 import { dataHealthCheck } from './config/db'
 import ScanResolver from './resolver/ScanResolver'
+import FrequenceResolver from './resolver/FrequenceResolver'
 
 async function start() {
     await dataHealthCheck.initialize()
 
     const schema = await buildSchema({
-        resolvers: [ScanResolver],
+        resolvers: [ScanResolver, FrequenceResolver],
     })
 
     const server = new ApolloServer({

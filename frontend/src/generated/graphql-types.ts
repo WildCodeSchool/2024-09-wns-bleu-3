@@ -26,11 +26,23 @@ export type Frequency = {
   scans: Array<Scan>;
 };
 
+export type FrequencyInput = {
+  intervalMinutes: Scalars['Float']['input'];
+  name: Scalars['String']['input'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  createNewFrequence: Frequency;
   createNewScan: Scan;
   deleteScan: Scalars['String']['output'];
+  updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
+};
+
+
+export type MutationCreateNewFrequenceArgs = {
+  data: FrequencyInput;
 };
 
 
@@ -44,14 +56,33 @@ export type MutationDeleteScanArgs = {
 };
 
 
+export type MutationUpdateFrequenceArgs = {
+  data: UpdateFrequencyInput;
+  id: Scalars['Float']['input'];
+};
+
+
 export type MutationUpdateScanArgs = {
   data: UpdateScanInput;
 };
 
 export type Query = {
   __typename?: 'Query';
+  deleteFrequence: Scalars['String']['output'];
+  getAllFrequences: Array<Frequency>;
   getAllScans: Array<Scan>;
+  getFrequenceById: Frequency;
   getScanById: Scan;
+};
+
+
+export type QueryDeleteFrequenceArgs = {
+  id: Scalars['Float']['input'];
+};
+
+
+export type QueryGetFrequenceByIdArgs = {
+  id: Scalars['Float']['input'];
 };
 
 
@@ -92,6 +123,11 @@ export type Tag = {
   id: Scalars['Float']['output'];
   name: Scalars['String']['output'];
   scans: Array<Scan>;
+};
+
+export type UpdateFrequencyInput = {
+  intervalMinutes?: InputMaybe<Scalars['Float']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateScanInput = {
