@@ -7,23 +7,8 @@ export class UpdateScanInput implements Partial<Scan> {
     id: number
 
     @Field({ nullable: true })
-    url: string
-
-    @Field({ nullable: true })
     title: string
 
-    @Field({ nullable: true })
-    statusCode: number
-
-    @Field({ nullable: true })
-    statusMessage: string
-
-    @Field({ nullable: true })
-    responseTime: number
-
-    @Field({ nullable: true })
-    sslCertificate: string
-
-    @Field({ nullable: true })
-    isOnline: boolean
+    @Field(() => [Number], { nullable: true })
+    tagIds?: number[]
 }

@@ -35,6 +35,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createNewFrequence: Frequency;
   createNewScan: Scan;
+  deleteFrequence: Scalars['String']['output'];
   deleteScan: Scalars['String']['output'];
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
@@ -48,6 +49,11 @@ export type MutationCreateNewFrequenceArgs = {
 
 export type MutationCreateNewScanArgs = {
   data: ScanInput;
+};
+
+
+export type MutationDeleteFrequenceArgs = {
+  id: Scalars['Float']['input'];
 };
 
 
@@ -68,16 +74,10 @@ export type MutationUpdateScanArgs = {
 
 export type Query = {
   __typename?: 'Query';
-  deleteFrequence: Scalars['String']['output'];
   getAllFrequences: Array<Frequency>;
   getAllScans: Array<Scan>;
   getFrequenceById: Frequency;
   getScanById: Scan;
-};
-
-
-export type QueryDeleteFrequenceArgs = {
-  id: Scalars['Float']['input'];
 };
 
 
@@ -132,13 +132,7 @@ export type UpdateFrequencyInput = {
 
 export type UpdateScanInput = {
   id: Scalars['Float']['input'];
-  isOnline?: InputMaybe<Scalars['Boolean']['input']>;
-  responseTime?: InputMaybe<Scalars['Float']['input']>;
-  sslCertificate?: InputMaybe<Scalars['String']['input']>;
-  statusCode?: InputMaybe<Scalars['Float']['input']>;
-  statusMessage?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
-  url?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
