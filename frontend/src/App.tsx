@@ -5,6 +5,9 @@ import Layout from './components/Layout'
 import { GET_ALL_SCANS } from './graphql/queries';
 import { useQuery } from '@apollo/client';
 import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SigninPage from './pages/SignInPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 function App() {
 
@@ -22,6 +25,13 @@ function App() {
 
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="signin" element={<SigninPage />} />
+          <Route path="reset-password" element={<ResetPasswordPage />} />
+
+          {/* <Route path="confirm/:code?" element={<ConfirmEmailPage />} />
+
+          <Route path="forgotPassword" element={<ForgotPasswordPage />} /> */}
         </Route>
 
       </Routes>
