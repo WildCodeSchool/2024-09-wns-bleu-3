@@ -9,6 +9,44 @@
 }
 
 
+/* 
+@font-face {
+    font-family: "Barlow", serif;
+    font-display: swap;
+    font-weight: 300;
+    src: url('/public/fonts/Barlow-Light.woff2') format("woff2");
+}
+
+@font-face {
+    font-family: "Barlow", serif;
+    font-display: swap;
+    font-weight: 400;
+    src: url('/public/fonts/Barlow-Regular.woff2') format("woff2");
+}
+
+@font-face {
+    font-family: "Barlow", serif;
+    font-display: swap;
+    font-weight: 500;
+    src: url('/public/fonts/Barlow-Medium.woff2') format("woff2");
+}
+
+@font-face {
+    font-family: "Barlow", serif;
+    font-display: swap;
+    font-weight: 700;
+    src: url('/public/fonts/Barlow-Bold.woff2') format("woff2");
+}
+
+@font-face {
+    font-family: "Barlow", serif;
+    font-display: swap;
+    font-weight: 300;
+    font-style: italic;
+    src: url('/public/fonts/Barlow-Italic.woff2') format("woff2");
+} */
+
+
 @theme inline {
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
@@ -41,4 +79,5 @@
     --color-secondary-900: #82270c;
     --color-secondary-950: #461004;
 
+    --font-primary: "Barlow", serif;
 }
