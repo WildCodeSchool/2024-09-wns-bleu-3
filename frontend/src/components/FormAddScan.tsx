@@ -15,7 +15,7 @@ export default function ScanForm() {
         }
     });
 
-    function onSubmit(data) {
+    function onSubmit(data: any) {
         console.log(data);
     }
 
