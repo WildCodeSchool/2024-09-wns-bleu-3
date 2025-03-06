@@ -1,6 +1,8 @@
 import { Outlet } from 'react-router';
 import { Button } from './ui/button';
 import Footer from './Footer';
+import Help from './Help';
+import Faq from './Faq';
 
 const Layout = () => {
     return (
@@ -12,7 +14,8 @@ const Layout = () => {
             <main className="flex-grow container mx-auto px-4">
                 <Outlet />
             </main>
-
+            <Faq />
+            <Help />
             <Footer />
         </div>
     );
