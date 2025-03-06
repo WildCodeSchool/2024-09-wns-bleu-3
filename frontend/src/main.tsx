@@ -1,9 +1,9 @@
-import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router';
+import './index.css'
 
 const client = new ApolloClient({
   uri: '/api',

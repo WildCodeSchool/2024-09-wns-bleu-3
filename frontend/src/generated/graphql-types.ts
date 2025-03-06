@@ -35,10 +35,13 @@ export type Mutation = {
   __typename?: 'Mutation';
   createNewFrequence: Frequency;
   createNewScan: Scan;
+  createNewTag: Tag;
   deleteFrequence: Scalars['String']['output'];
   deleteScan: Scalars['String']['output'];
+  deleteTag: Scalars['String']['output'];
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
+  updateTag: Scalars['String']['output'];
 };
 
 
@@ -52,12 +55,22 @@ export type MutationCreateNewScanArgs = {
 };
 
 
+export type MutationCreateNewTagArgs = {
+  data: TagInput;
+};
+
+
 export type MutationDeleteFrequenceArgs = {
   id: Scalars['Float']['input'];
 };
 
 
 export type MutationDeleteScanArgs = {
+  id: Scalars['Float']['input'];
+};
+
+
+export type MutationDeleteTagArgs = {
   id: Scalars['Float']['input'];
 };
 
@@ -72,12 +85,20 @@ export type MutationUpdateScanArgs = {
   data: UpdateScanInput;
 };
 
+
+export type MutationUpdateTagArgs = {
+  data: UpdateTagInput;
+  id: Scalars['Float']['input'];
+};
+
 export type Query = {
   __typename?: 'Query';
   getAllFrequences: Array<Frequency>;
   getAllScans: Array<Scan>;
+  getAllTags: Array<Tag>;
   getFrequenceById: Frequency;
   getScanById: Scan;
+  getTagById: Tag;
 };
 
 
@@ -87,6 +108,11 @@ export type QueryGetFrequenceByIdArgs = {
 
 
 export type QueryGetScanByIdArgs = {
+  id: Scalars['Float']['input'];
+};
+
+
+export type QueryGetTagByIdArgs = {
   id: Scalars['Float']['input'];
 };
 
@@ -120,6 +146,11 @@ export type Tag = {
   scans: Array<Scan>;
 };
 
+export type TagInput = {
+  color: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
 export type UpdateFrequencyInput = {
   intervalMinutes?: InputMaybe<Scalars['Float']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -127,7 +158,13 @@ export type UpdateFrequencyInput = {
 
 export type UpdateScanInput = {
   id: Scalars['Float']['input'];
+  tagIds?: InputMaybe<Array<Scalars['Float']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateTagInput = {
+  color?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
