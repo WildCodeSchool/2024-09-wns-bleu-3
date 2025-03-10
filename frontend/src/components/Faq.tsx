@@ -7,7 +7,7 @@ import {
 
 const Faq = () => {
     return (
-        <section className="container py-12 md:py-16 bg-white mt-8 mx-auto">
+        <section className="container py-12 md:py-16 bg-white mt-8 px-6">
             <h2 className="text-2xl font-bold mb-8 text-gray-800 text-left">FAQs</h2>
             <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1">

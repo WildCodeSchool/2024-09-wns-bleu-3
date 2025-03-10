@@ -20,7 +20,7 @@ export default function ScanForm() {
     }
 
     return (
-        <div className="max-w-lg bg-[#0a2540] rounded-xl shadow-lg border border-[#0c2d4d] p-6">
+        <div className="max-w-md mx-auto  bg-[#0a2540] rounded-xl shadow-lg border border-[#0c2d4d] p-6">
             <h2 className="text-xl font-semibold mb-4 text-white">Start Scanning</h2>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

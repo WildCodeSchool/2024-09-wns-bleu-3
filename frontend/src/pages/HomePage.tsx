@@ -1,21 +1,17 @@
 import FeaturesSection from "@/components/FeaturesSection"
-import FormAddScan from "@/components/FormAddScan"
-// import RadarVisualization from "@/components/RadarVisualization"
+import HeroSection from "@/components/HeroSection"
 import ScansHistory from "@/components/ScansHistory"
 
 const HomePage = () => {
     return (
-        <div className="container mx-auto px-4 py-8">
-            {/* <RadarVisualization /> */}
-            <div className="flex justify-center mb-16">
-                <div className="w-full max-w-lg">
-                    <FormAddScan />
-                </div>
+        <div className="w-full">
+            <div className="w-full">
+                <HeroSection />
             </div>
-            <div className="mb-16">
+            <div className="w-full mb-16 px-6">
                 <FeaturesSection />
             </div>
-            <div className="mb-8">
+            <div className="w-full mb-16 px-6">
                 <ScansHistory />
             </div>
         </div>

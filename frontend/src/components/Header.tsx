@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router"
 
-const  Header = () => {
+const Header = () => {
   return (
     <header className="bg-[#051525] text-white">
       <div className="container flex h-16 items-center justify-between py-4">
@@ -20,8 +20,8 @@ const  Header = () => {
           <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-[#0a2540]" asChild>
             <Link to="/scans">See all my scans</Link>
           </Button>
-       
-            <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
+
+          <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
             <Link to="/login">Se connecter</Link>
           </Button>
           <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
