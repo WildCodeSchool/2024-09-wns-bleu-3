@@ -3,14 +3,21 @@ import FormAddScan from "@/components/FormAddScan"
 // import RadarVisualization from "@/components/RadarVisualization"
 import ScansHistory from "@/components/ScansHistory"
 
-
 const HomePage = () => {
     return (
-        <div>
+        <div className="container mx-auto px-4 py-8">
             {/* <RadarVisualization /> */}
-            <FormAddScan />
-            <FeaturesSection />
-            <ScansHistory />
+            <div className="flex justify-center mb-16">
+                <div className="w-full max-w-lg">
+                    <FormAddScan />
+                </div>
+            </div>
+            <div className="mb-16">
+                <FeaturesSection />
+            </div>
+            <div className="mb-8">
+                <ScansHistory />
+            </div>
         </div>
     )
 }
