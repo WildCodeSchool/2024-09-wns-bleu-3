@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Link } from "react-router"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Menu } from "lucide-react"
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet"
 
 const Header = () => {
   return (
@@ -32,34 +33,34 @@ const Header = () => {
           </Button>
         </nav>
 
-        {/* Mobile Dropdown Menu - Visible only on mobile */}
-        <div className="md:hidden">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-[#051525] border-[#0a2540]">
-              <DropdownMenuItem asChild className="focus:bg-[#0a2540] focus:text-white cursor-pointer">
-                <Link to="/scans" className="w-full text-gray-300">
-                  See all my scans
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="focus:bg-[#0a2540] focus:text-white cursor-pointer">
-                <Link to="/login" className="w-full text-white">
-                  Se connecter
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="focus:bg-[#0a2540] focus:text-white cursor-pointer">
-                <Link to="/signin" className="w-full text-white">
-                  S'inscrire
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {/* Mobile Burger Menu - Visible only on mobile */}
+        <Sheet>
+          <SheetTrigger asChild className="md:hidden">
+            <Button variant="ghost" size="icon" className="text-white hover:bg-[#0a2540]">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="bg-[#051525] text-white border-[#0a2540] p-0">
+            <div className="flex flex-col gap-4 p-6">
+              <Link to="/scans" className="flex items-center py-3 px-4 rounded-md hover:bg-[#0a2540] transition-colors">
+                See all my scans
+              </Link>
+              <Link
+                to="/login"
+                className="flex items-center py-3 px-4 rounded-md hover:bg-[#0a2540] transition-colors"
+              >
+                Se connecter
+              </Link>
+              <Link
+                to="/signin"
+                className="flex items-center py-3 px-4 text-white hover:bg-[#0a2540] rounded-md  transition-colors"
+              >
+                S'inscrire
+              </Link>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   )
