@@ -1,6 +1,8 @@
 
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { Menu } from "lucide-react"
 
 const Header = () => {
   return (
@@ -16,7 +18,8 @@ const Header = () => {
             </span>
           </Link>
         </div>
-        <nav className="flex items-center gap-4">
+        {/* Desktop Navigation - Hidden on mobile */}
+        <nav className="hidden md:flex items-center gap-4">
           <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-[#0a2540]" asChild>
             <Link to="/scans">See all my scans</Link>
           </Button>
@@ -28,6 +31,35 @@ const Header = () => {
             <Link to="/signin">S'inscrire</Link>
           </Button>
         </nav>
+
+        {/* Mobile Dropdown Menu - Visible only on mobile */}
+        <div className="md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-white">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-[#051525] border-[#0a2540]">
+              <DropdownMenuItem asChild className="focus:bg-[#0a2540] focus:text-white cursor-pointer">
+                <Link to="/scans" className="w-full text-gray-300">
+                  See all my scans
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="focus:bg-[#0a2540] focus:text-white cursor-pointer">
+                <Link to="/login" className="w-full text-white">
+                  Se connecter
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="focus:bg-[#0a2540] focus:text-white cursor-pointer">
+                <Link to="/signin" className="w-full text-white">
+                  S'inscrire
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   )
