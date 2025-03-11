@@ -37,7 +37,7 @@ export default function ScanForm() {
         }
     });
 
-    // Récupérer les tags et fréquences disponibles
+    // Récupérer les tags disponibles
     const { data: tagsData } = useQuery(GET_ALL_TAGS);
 
     const form = useForm<ScanFormValues>({
@@ -59,7 +59,8 @@ export default function ScanForm() {
             variables: {
                 data: {
                     title: data.title,
-                    url: data.url
+                    url: data.url,
+                    tagIds: data.tagIds
                 }
             }
         });

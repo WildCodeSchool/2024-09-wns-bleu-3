@@ -7,4 +7,7 @@ export class TagInput {
 
     @Field()
     color: string
+
+    @Field(() => [Number], { nullable: true })
+    tagIds?: number[]
 }
