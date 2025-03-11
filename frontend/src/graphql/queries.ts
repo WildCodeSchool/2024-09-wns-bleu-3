@@ -32,4 +32,20 @@ query Query($getScanByIdId: Float!) {
   }
 }`
 
+export const GET_ALL_FREQUENCIES = gql`
+query GetAllFrequences {
+  getAllFrequences {
+    id
+    intervalMinutes
+    name
+  }
+}`
 
+export const GET_ALL_TAGS = gql`
+query GetAllTags {
+  getAllTags {
+    color
+    id
+    name
+  }
+}`
