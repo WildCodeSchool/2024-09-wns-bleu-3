@@ -5,7 +5,7 @@ import ScansHistory from "@/components/ScansHistory"
 const HomePage = () => {
     return (
         <div className="w-full">
-            <div className="w-full">
+            <div className="">
                 <HeroSection />
             </div>
             <div className="w-full mb-16 px-6">

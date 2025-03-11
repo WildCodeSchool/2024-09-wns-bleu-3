@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox";
 
 const LoginPage = () => {
-    return (
-        <div className=" loginPage min-h-screen flex items-center justify-center min-w-sm">
+  return (
+    <div className="w-full py-12 md:py-24 bg-[#051525] text-white"> 
+           <div className=" loginPage flex items-center justify-center min-w-sm">
                     <div className="w-full max-w-md p-8 space-y-8 bg-[#0a2540] rounded-xl border border-[#0c2d4d] shadow  ">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-white">Se connecter à Sonar</h1>
@@ -69,6 +70,8 @@ const LoginPage = () => {
           </form>
         </div>
         </div>
+     </div>
+     
       
     )
 }
