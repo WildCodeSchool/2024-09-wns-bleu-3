@@ -108,6 +108,7 @@
         rgba(45, 164, 255, 0.3) 360deg
     );
     animation: radar-scan 6s linear infinite;
+    /* pointer-events: none; */
 }
   
   /* Background radar effect */
@@ -130,3 +131,5 @@
     background: radial-gradient(circle at center, rgba(45, 164, 255, 0.2) 0%, rgba(45, 164, 255, 0) 70%);
     pointer-events: none;
   }
+
+  
