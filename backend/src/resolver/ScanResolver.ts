@@ -4,6 +4,7 @@ import { ScanInput } from '../inputs/ScanInput'
 import { UpdateScanInput } from '../inputs/UpdateScanInput'
 import { Tag } from '../entities/Tag'
 import { scanUrl } from '../utils/scanUrl'
+import { Frequency } from '../entities/Frequency'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -34,8 +35,9 @@ class ScanResolver {
 
             const { url, statusCode, statusMessage, responseTime, sslCertificate, isOnline } = urlData
 
+            // Create the scan object
             const newScanToSave = Scan.create({
-                ...newScanData,
+                title: newScanData.title,
                 url,
                 statusCode,
                 statusMessage,
@@ -44,10 +46,23 @@ class ScanResolver {
                 isOnline,
             })
 
-            const result = await newScanToSave.save()
+            // Handle tags if provided
+            if (newScanData.tagIds && newScanData.tagIds.length > 0) {
+                const tags = await Tag.findByIds(newScanData.tagIds)
+                newScanToSave.tags = tags
+            }
 
+            if (newScanData.frequencyId) {
+                const frequency = await Frequency.findOne({ where: { id: newScanData.frequencyId } })
+                if (frequency) {
+                    newScanToSave.frequency = frequency
+                }
+            }
+
+            const result = await newScanToSave.save()
             return result
         }
+
         catch (error) {
             console.error({ 'Error creating scan': error })
             throw new Error('Something wrong happened')

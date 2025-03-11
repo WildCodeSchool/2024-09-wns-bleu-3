@@ -8,4 +8,10 @@ export class ScanInput implements Partial<Scan> {
 
     @Field()
     title: string
+
+    @Field(() => [Number], { nullable: true })
+    tagIds?: number[]
+
+    @Field(() => Number, { nullable: true })
+    frequencyId?: number
 }

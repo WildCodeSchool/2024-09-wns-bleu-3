@@ -9,12 +9,13 @@ import { useMutation, useQuery } from "@apollo/client";
 import { CREATE_NEW_SCAN } from "../graphql/mutations";
 import { GET_ALL_TAGS } from "../graphql/queries";
 import { useState } from "react";
+import { useGetAllFrequencesQuery } from "@/generated/graphql-types";
 
 // Schéma de validation
 const scanFormSchema = z.object({
     title: z.string().min(1, "Le titre est requis"),
     url: z.string().url("Veuillez entrer une URL valide"),
-    frequency: z.string().min(1, "La fréquence est requise"),
+    frequencyId: z.string().min(1, "Veuillez entrer une fréquence"),
     unit: z.enum(["minutes", "hours", "days"]),
     tagIds: z.array(z.number()).optional()
 });
@@ -39,13 +40,15 @@ export default function ScanForm() {
 
     // Récupérer les tags disponibles
     const { data: tagsData } = useQuery(GET_ALL_TAGS);
+    // Récupérer les fréquences disponibles
+    const { data: frequenciesData } = useGetAllFrequencesQuery();
 
     const form = useForm<ScanFormValues>({
         resolver: zodResolver(scanFormSchema),
         defaultValues: {
             title: "",
             url: "",
-            frequency: "60",
+            frequencyId: "",
             unit: "minutes",
             tagIds: []
         }
@@ -53,16 +56,24 @@ export default function ScanForm() {
 
     function onSubmit(data: ScanFormValues) {
         setIsLoading(true);
+        console.log("Données avant parsage:", data);
+
+        // Créer l'objet de variables pour la mutation avec conversion explicite
+        const mutationVariables = {
+            data: {
+                title: data.title,
+                url: data.url,
+                tagIds: data.tagIds,
+                frequencyId: parseInt(data.frequencyId)
+            }
+        };
+
+        // Logger les données après parsage pour vérifier
+        console.log("Données après parsage:", mutationVariables);
 
         // Exécuter la mutation
         createScan({
-            variables: {
-                data: {
-                    title: data.title,
-                    url: data.url,
-                    tagIds: data.tagIds
-                }
-            }
+            variables: mutationVariables
         });
     }
 
@@ -101,31 +112,25 @@ export default function ScanForm() {
 
                     <FormField
                         control={form.control}
-                        name="frequency"
+                        name="frequencyId"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel className="text-sm font-medium text-gray-300">Frequency</FormLabel>
-                                <div className="flex gap-2 mt-1">
-                                    <FormControl>
-                                        <Input {...field} placeholder="60" className="w-20 bg-[#0c2d4d] border-[#0e3359] text-white" />
-                                    </FormControl>
-                                    <FormField
-                                        control={form.control}
-                                        name="unit"
-                                        render={({ field }) => (
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <SelectTrigger className="w-full bg-[#0c2d4d] border-[#0e3359] text-white">
-                                                    <SelectValue placeholder="Select unit" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="minutes">Minutes</SelectItem>
-                                                    <SelectItem value="hours">Hours</SelectItem>
-                                                    <SelectItem value="days">Days</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        )}
-                                    />
-                                </div>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                >
+                                    <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white">
+                                        <SelectValue placeholder="Select a frequency" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {frequenciesData?.getAllFrequences?.map((frequency: any) => (
+                                            <SelectItem key={frequency.id} value={frequency.id.toString()}>
+                                                {frequency.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}

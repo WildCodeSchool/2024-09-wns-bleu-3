@@ -134,6 +134,8 @@ export type Scan = {
 };
 
 export type ScanInput = {
+  frequencyId?: InputMaybe<Scalars['Float']['input']>;
+  tagIds?: InputMaybe<Array<Scalars['Float']['input']>>;
   title: Scalars['String']['input'];
   url: Scalars['String']['input'];
 };
