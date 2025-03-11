@@ -4,11 +4,11 @@ import { CheckCircle, Clock, ExternalLink } from "lucide-react"
 const FeaturesSection = () => {
     return (
         <div>
-            <section className="container py-12 md:py-16 bg-white">
-                <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">
+            <section className="py-12 md:py-16 bg-white">
+                <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">
                     Discover how to effortlessly scan any URL in just a few steps
                 </h2>
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="text-left grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white p-6 hover:shadow-md transition-all">
                         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 mb-4">
                             <CheckCircle className="h-6 w-6" />

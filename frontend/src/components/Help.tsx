@@ -4,7 +4,7 @@ import { Input } from "./ui/input";
 const Help = () => {
     return (
         <section className="py-12 md:py-16 bg-[#051525] text-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
                 <div className="rounded-xl border border-[#0c2d4d] bg-[#0a2540] p-8 md:p-10 shadow-md">
                     <h2 className="text-2xl font-bold mb-4 text-white">Still have questions?</h2>
                     <p className="text-gray-300 mb-6">

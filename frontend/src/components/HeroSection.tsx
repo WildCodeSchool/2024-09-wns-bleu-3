@@ -5,7 +5,7 @@ const HeroSection = () => {
         <div>
             <section className="w-full py-12 md:py-24 bg-[#051525] text-white relative radar-background">
                 <div className="radar-glow"></div>
-                <div className="container radar-content relative z-10">
+                <div className=" radar-content relative z-10">
                     <div className="text-center mb-12">
                         <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-white mb-4">
                             Scan URLs Quickly and Easily
