@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    host: true, hmr: { overlay: true, path: "/hmr" }, watch: {
+    host: true, hmr: { path: "/hmr", protocol: "ws", host: "localhost" }, watch: {
       usePolling: true,
     }, allowedHosts: true
   },
