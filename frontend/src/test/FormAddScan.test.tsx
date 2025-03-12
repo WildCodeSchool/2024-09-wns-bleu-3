@@ -38,9 +38,9 @@ const mocks = [
         result: {
             data: {
                 getAllTags: [
-                    { id: 1, name: "production" },
-                    { id: 2, name: "staging" },
-                    { id: 3, name: "vitrine" }
+                    { id: 1, name: "production", color: "blue" },
+                    { id: 2, name: "staging", color: "red" },
+                    { id: 3, name: "vitrine", color: "green" }
                 ]
             }
         }
@@ -52,8 +52,8 @@ const mocks = [
         result: {
             data: {
                 getAllFrequences: [
-                    { id: 1, name: "Every 30 minutes" },
-                    { id: 2, name: "Hourly" }
+                    { id: 1, name: "Every 30 minutes", intervalMinutes: 30 },
+                    { id: 2, name: "Hourly", intervalMinutes: 60 }
                 ]
             }
         }
