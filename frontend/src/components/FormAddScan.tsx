@@ -15,6 +15,7 @@ export default function ScanForm() {
         }
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function onSubmit(data: any) {
         console.log(data);
     }

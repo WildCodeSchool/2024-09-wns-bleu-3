@@ -1,6 +1,7 @@
 import FeaturesSection from "@/components/FeaturesSection"
 import HeroSection from "@/components/HeroSection"
-import ScansHistory from "@/components/ScansHistory"
+import ScanHistory from "@/components/ScanHistory"
+
 
 const HomePage = () => {
     return (
@@ -12,7 +13,7 @@ const HomePage = () => {
                 <FeaturesSection />
             </div>
             <div className="w-full mb-16 px-6">
-                <ScansHistory />
+                <ScanHistory />
             </div>
         </div>
     )
