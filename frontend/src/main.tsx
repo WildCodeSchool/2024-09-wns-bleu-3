@@ -3,11 +3,13 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router';
-import './index.css'
+import './index.css';
+
 
 const client = new ApolloClient({
-  uri: '/api',
+  uri: "/api",
   cache: new InMemoryCache(),
+  credentials: "include", 
 });
 
 createRoot(document.getElementById("root")!).render(

@@ -61,24 +61,25 @@ const SignupPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="flex-1 flex items-center justify-center bg-[#051525] py-12">
+      <main className="flex-1 flex items-center justify-center bg-[#051525]">
         <div className="w-full max-w-md p-8 space-y-8 bg-[#0a2540] rounded-xl border border-[#0c2d4d] shadow-lg">
-          <h1 className="text-white text-center text-3xl font-bold">Create an Account</h1>
-          <p className="text-center text-gray-300">Sign up to start monitoring your URLs</p>
+          <div>
+            <h1 className="text-white text-center text-3xl font-bold">Create an Account</h1>
+            <p className="text-center text-gray-300">Sign up to start monitoring your URLs</p></div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8 space-y-6">
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField control={form.control} name="username" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-300">Username</FormLabel>
-                      <FormControl>
-                        <Input {...field} className="mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                </div>
+
+                <FormField control={form.control} name="username" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-300">Username</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+
                 <FormField control={form.control} name="email" render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-300">Email address</FormLabel>

@@ -4,7 +4,6 @@ import {
     Arg,
     Ctx,
     Mutation,
-
     Resolver,
 } from 'type-graphql'
 import * as argon2 from 'argon2'
@@ -30,7 +29,7 @@ class UserResolver {
     }
 
     @Mutation(() => String)
-    async login(@Arg('data') loginData: UserLoginInput) {
+    async login(@Arg('data') loginData: UserLoginInput,@Ctx() context: any) {
         let isPasswordCorrect = false
         const user = await User.findOneBy({ email: loginData.email })
 
@@ -46,22 +45,24 @@ class UserResolver {
                 { email: user.email },
                 process.env.JWT_SECRET_KEY as Secret,
             )
-            return token
+            context.res.setHeader("Set-Cookie", `token=${token}; Secure; HttpOnly`);
+            return "login ok"
         }
         else {
             throw new Error('Incorrect login')
         }
     }
+
+    @Mutation(() => String)
+    async logout(@Ctx() context: any) {
+        context.res.setHeader(
+            "Set-Cookie",
+            `token=; Secure; HttpOnly;expires=${new Date(Date.now()).toUTCString()}`
+        );
+        return "logged out";
+    }
 }
 
 
-@Mutation(() => String)
-async logout(@Ctx() context: any) {
-    context.res.setHeader(
-        "Set-Cookie",
-        `token=; Secure; HttpOnly;expires=${new Date(Date.now()).toUTCString()}`
-    );
-    return "logged out";
-}
 
 export default UserResolver
