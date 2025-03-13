@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@apollo/client";
 import { REGISTER } from "@/graphql/mutations";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 
 const scanFormSchema = z.object({
@@ -14,7 +15,9 @@ const scanFormSchema = z.object({
     .email("Veuillez entrer un email valide"),
 
   password: z.string()
-    .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
+    .min(8, "Le mot de passe doit contenir au moins 8 caractères")
+    .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/, 
+      "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&)"),
 
   username: z.string()
     .min(5, "Le nom d'utilisateur doit contenir au moins 5 caractères")
@@ -37,6 +40,7 @@ const SignupPage = () => {
   });
 
   const form = useForm({
+     resolver: zodResolver(scanFormSchema),
     defaultValues: {
       username: "",
       email: "",
