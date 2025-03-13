@@ -22,7 +22,7 @@ const Header = () => {
         {/* Desktop Navigation - Hidden on mobile */}
         <nav className="hidden md:flex items-center gap-4">
           <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-[#0a2540]" asChild>
-            <Link to="/scans">See all my scans</Link>
+            <Link to="/scans">See all my</Link>
           </Button>
 
           <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
