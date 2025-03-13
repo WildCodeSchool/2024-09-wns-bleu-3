@@ -1,75 +1,75 @@
 import "@testing-library/jest-dom";
-import { expect, test } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { MockedProvider } from "@apollo/client/testing";
-import ScanForm from "../components/FormAddScan"; // Updated to match the component name
-import { CREATE_NEW_SCAN } from "../graphql/mutations";
-import { GET_ALL_TAGS } from "../graphql/queries";
-import { GET_ALL_FREQUENCIES } from "../graphql/queries";
+import userEvent from '@testing-library/user-event'
+import { expect, test, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import ScanForm from "../components/FormAddScan";
 
-const mocks = [
-    {
-        request: {
-            query: CREATE_NEW_SCAN,
-            variables: {
-                data: {
-                    title: "youtube",
-                    url: "https://youtube.com/",
-                    frequencyId: 1,
-                    tagIds: [3]
-                }
-            }
-        },
-        result: {
-            data: {
-                createScan: {
-                    __typename: "Scan",
-                    id: "1",
-                    title: "youtube",
-                    url: "https://youtube.com/"
-                }
-            }
+const createScanMock = vi.fn(({ onCompleted }) => {
+    if (onCompleted) onCompleted();
+    return { loading: false };
+});
+
+const useGetAllFrequencesQueryMock = vi.fn(() => {
+    return ({
+        data: {
+            getAllFrequences: [
+                { id: 1, name: "Daily", intervalMinutes: 60 },
+                { id: 2, name: "Weekly", intervalMinutes: 30 },
+            ]
         }
-    },
-    {
-        request: {
-            query: GET_ALL_TAGS,
-        },
-        result: {
-            data: {
-                getAllTags: [
-                    { id: 1, name: "production", color: "blue" },
-                    { id: 2, name: "staging", color: "red" },
-                    { id: 3, name: "vitrine", color: "green" }
-                ]
-            }
+    })
+
+});
+
+const useGetAllTagsMock = vi.fn(() => ({
+    data: {
+        getAllTags: [
+            { id: 1, name: "Vitrine", color: "blue" },
+        ]
+    }
+}));
+
+vi.mock("../generated/graphql-types", () => ({
+    useCreateNewScanMutation: () => [createScanMock],
+    useGetAllFrequencesQuery: () => ({
+        data: {
+            getAllFrequences: [
+                { id: 1, name: "Daily", intervalMinutes: 60 },
+                { id: 2, name: "Weekly", intervalMinutes: 30 },
+            ]
         }
-    },
-    {
-        request: {
-            query: GET_ALL_FREQUENCIES,
-        },
-        result: {
-            data: {
-                getAllFrequences: [
-                    { id: 1, name: "Every 30 minutes", intervalMinutes: 30 },
-                    { id: 2, name: "Hourly", intervalMinutes: 60 }
-                ]
-            }
-        }
-    },
-];
+    }),
+    useGetAllTagsQuery: () => useGetAllTagsMock,
+}));
 
 test("displays ScanForm", async () => {
+    const user = userEvent.setup()
     render(
-        <MockedProvider mocks={mocks} addTypename={false}>
-            <ScanForm />
-        </MockedProvider>
+        <ScanForm />
     );
 
-    expect(screen.getByRole('button', { name: /start scanning/i })).toBeInTheDocument();
-    expect(screen.getByText(/URL to scan/i)).toBeInTheDocument();
-    expect(screen.getByText(/Title/i)).toBeInTheDocument();
-    expect(screen.getByText(/Select a frequency/i)).toBeInTheDocument();
-    expect(screen.getByText(/Select a tag/i)).toBeInTheDocument();
+    // expect(screen.getByRole('button', { name: /start scanning/i })).toBeInTheDocument();
+    // expect(screen.getByText(/URL to scan/i)).toBeInTheDocument();
+    // expect(screen.getByText(/Title/i)).toBeInTheDocument();
+    // expect(screen.getByText(/Select a frequency/i)).toBeInTheDocument();
+    // expect(screen.getByText(/Select a tag/i)).toBeInTheDocument();
+
+    const titleInput = screen.getByPlaceholderText("My Website Monitor");
+    const urlInput = screen.getByPlaceholderText("https://example.com");
+    const frequencySelect = screen.getByTestId("freqSelect");
+    const tagSelect = screen.getByRole("select", { name: "tag" });
+    const submitButton = screen.getByRole("button");
+    fireEvent.change(titleInput, { target: { value: "youtube" } });
+    fireEvent.change(urlInput, { target: { value: "https://youtube.com" } });
+    user.selectOptions(frequencySelect, "1");
+    user.selectOptions(tagSelect, "1");
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+        expect(createScanMock).toHaveBeenCalledWith(
+            expect.objectContaining({
+                variables: { data: { title: "youtube", url: "https://youtube.com", frequencyId: 3, tagIds: 1 } },
+            })
+        );
+    });
 });

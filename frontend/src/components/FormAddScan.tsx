@@ -5,9 +5,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useMutation, useQuery } from "@apollo/client";
-import { CREATE_NEW_SCAN } from "../graphql/mutations";
-import { GET_ALL_TAGS } from "../graphql/queries";
+import { useCreateNewScanMutation } from "@/generated/graphql-types";
+import { useGetAllTagsQuery } from "@/generated/graphql-types";
 import { useState } from "react";
 import { useGetAllFrequencesQuery } from "@/generated/graphql-types";
 
@@ -26,22 +25,15 @@ export default function ScanForm() {
     const [isLoading, setIsLoading] = useState(false);
 
     // Mutation pour créer un scan
-    const [createScan] = useMutation(CREATE_NEW_SCAN, {
-        refetchQueries: ['GetAllScans'],
-        onCompleted: () => {
-            form.reset();
-            setIsLoading(false);
-        },
-        onError: (error) => {
-            console.log(error)
-            setIsLoading(false);
-        }
-    });
+    const [createScan] = useCreateNewScanMutation();
 
     // Récupérer les tags disponibles
-    const { data: tagsData } = useQuery(GET_ALL_TAGS);
+    const { data: tagsData } = useGetAllTagsQuery();
     // Récupérer les fréquences disponibles
-    const { data: frequenciesData } = useGetAllFrequencesQuery();
+    const { data: frequenciesData, error: errorFreqData } = useGetAllFrequencesQuery();
+    console.log('log33', frequenciesData)
+
+    console.log('errorFrequency', errorFreqData)
 
     const form = useForm<ScanFormValues>({
         resolver: zodResolver(scanFormSchema),
@@ -57,7 +49,6 @@ export default function ScanForm() {
     function onSubmit(data: ScanFormValues) {
         setIsLoading(true);
         console.log("Données avant parsage:", data);
-
         // Créer l'objet de variables pour la mutation avec conversion explicite
         const mutationVariables = {
             data: {
@@ -67,16 +58,25 @@ export default function ScanForm() {
                 frequencyId: parseInt(data.frequencyId)
             }
         };
-
         // Logger les données après parsage pour vérifier
         console.log("Données après parsage:", mutationVariables);
-
         // Exécuter la mutation
         createScan({
-            variables: mutationVariables
+            variables: mutationVariables,
+            onCompleted: (result) => {
+                console.log(result);
+                setIsLoading(false);
+                form.reset();
+            },
+            onError: (error) => {
+                console.log(error);
+                setIsLoading(false);
+            }
         });
     }
 
+    // if (frequenciesData && tagsData) {
+    console.log("freqdata", frequenciesData)
     return (
         <div className="max-w-md mx-auto bg-[#0a2540] rounded-xl shadow-lg border border-[#0c2d4d] p-6">
             <h2 className="text-xl font-semibold mb-4 text-white">Start Scanning</h2>
@@ -115,8 +115,9 @@ export default function ScanForm() {
                         name="frequencyId"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-300">Frequency</FormLabel>
+                                <FormLabel htmlFor="frequency" className="text-sm font-medium text-gray-300">Frequency</FormLabel>
                                 <Select
+                                    name="frequency"
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
                                 >
@@ -125,7 +126,7 @@ export default function ScanForm() {
                                     </SelectTrigger>
                                     <SelectContent>
                                         {frequenciesData?.getAllFrequences?.map((frequency: any) => (
-                                            <SelectItem key={frequency.id} value={frequency.id.toString()}>
+                                            <SelectItem key={frequency.id} value={frequency.id.toString()} data-testid="freqSelect">
                                                 {frequency.name}
                                             </SelectItem>
                                         ))}
@@ -143,6 +144,7 @@ export default function ScanForm() {
                             <FormItem>
                                 <FormLabel className="text-sm font-medium text-gray-300">Tag</FormLabel>
                                 <Select
+                                    name="tag"
                                     onValueChange={(value) => field.onChange([parseInt(value)])}
                                     defaultValue={field.value?.length ? field.value[0].toString() : undefined}
                                 >
@@ -183,3 +185,5 @@ export default function ScanForm() {
         </div>
     );
 }
+
+

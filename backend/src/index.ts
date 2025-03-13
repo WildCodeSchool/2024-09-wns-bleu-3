@@ -7,16 +7,18 @@ import ScanResolver from './resolver/ScanResolver'
 import FrequenceResolver from './resolver/FrequenceResolver'
 import TagResolver from './resolver/TagResolver'
 
+export async function createSchema() {
+    return buildSchema({
+        resolvers: [ScanResolver, FrequenceResolver, TagResolver],
+    })
+}
+
 async function start() {
     await dataHealthCheck.initialize()
 
-    const schema = await buildSchema({
-        resolvers: [ScanResolver, FrequenceResolver, TagResolver],
-    })
+    const schema = await createSchema()
 
-    const server = new ApolloServer({
-        schema,
-    })
+    const server = new ApolloServer({ schema })
 
     const { url } = await startStandaloneServer(server, {
         listen: { port: 4000 },
