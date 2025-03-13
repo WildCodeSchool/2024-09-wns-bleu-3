@@ -6,12 +6,13 @@ import { dataHealthCheck } from './config/db'
 import ScanResolver from './resolver/ScanResolver'
 import FrequenceResolver from './resolver/FrequenceResolver'
 import TagResolver from './resolver/TagResolver'
+import UserResolver from './resolver/UserResolver'
 
 async function start() {
     await dataHealthCheck.initialize()
 
     const schema = await buildSchema({
-        resolvers: [ScanResolver, FrequenceResolver, TagResolver],
+        resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver],
     })
 
     const server = new ApolloServer({

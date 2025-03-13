@@ -29,7 +29,7 @@ const Header = () => {
             <Link to="/login">Se connecter</Link>
           </Button>
           <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
-            <Link to="/signin">S'inscrire</Link>
+            <Link to="/signup">S'inscrire</Link>
           </Button>
         </nav>
 
@@ -53,7 +53,7 @@ const Header = () => {
                 Se connecter
               </Link>
               <Link
-                to="/signin"
+                to="/signup"
                 className="flex items-center py-3 px-4 text-white hover:bg-[#0a2540] rounded-md  transition-colors"
               >
                 S'inscrire

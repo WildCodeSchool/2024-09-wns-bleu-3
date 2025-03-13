@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { expect, test } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import ScanForm from "../components/FormAddScan"; // Updated to match the component name
 import { CREATE_NEW_SCAN } from "../graphql/mutations";
@@ -26,7 +27,9 @@ const mocks = [
                     __typename: "Scan",
                     id: "1",
                     title: "youtube",
-                    url: "https://youtube.com/"
+                    url: "https://youtube.com/",
+                    frequencyId: "140",
+                    tagIds: [3]
                 }
             }
         }
@@ -38,9 +41,8 @@ const mocks = [
         result: {
             data: {
                 getAllTags: [
-                    { id: 1, name: "production", color: "blue" },
-                    { id: 2, name: "staging", color: "red" },
-                    { id: 3, name: "vitrine", color: "green" }
+                    { id: 1, name: "web", color: "green" },
+
                 ]
             }
         }
@@ -52,8 +54,8 @@ const mocks = [
         result: {
             data: {
                 getAllFrequences: [
-                    { id: 1, name: "Every 30 minutes", intervalMinutes: 30 },
-                    { id: 2, name: "Hourly", intervalMinutes: 60 }
+                    { id: 2, name: "360", intervalMinutes: 360 },
+                    { id: 3, name: "140", intervalMinutes: 140 }
                 ]
             }
         }
@@ -72,4 +74,34 @@ test("displays ScanForm", async () => {
     expect(screen.getByText(/Title/i)).toBeInTheDocument();
     expect(screen.getByText(/Select a frequency/i)).toBeInTheDocument();
     expect(screen.getByText(/Select a tag/i)).toBeInTheDocument();
+});
+
+
+test("creates a new scan", async () => {
+    render(
+        <MockedProvider mocks={mocks} addTypename={false}>
+            <ScanForm />
+        </MockedProvider>
+    );
+
+    // Récupérer les champs et le bouton
+    const titleInput = screen.getByLabelText(/title/i);
+    const urlInput = screen.getByLabelText(/url to scan/i);
+    const tagInput = screen.getByLabelText(/Select a tag/i)
+    const frequencyInput = screen.getByLabelText(/Select a frequency/i)
+    const submitButton = screen.getByRole("button", { name: /start scanning/i });
+
+    // Simuler l'entrée utilisateur
+    await userEvent.type(titleInput, "youtube");
+    await userEvent.type(urlInput, "https://youtube.com/");
+    await userEvent.selectOptions(tagInput, "web");
+    await userEvent.selectOptions(frequencyInput, "");
+
+
+
+    // Soumettre le formulaire
+    await userEvent.click(submitButton);
+
+    // Vérifier si l'entrée est bien soumise et une réponse est affichée
+    expect(await screen.findByText("Creating...")).toBeInTheDocument();
 });

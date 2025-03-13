@@ -39,6 +39,7 @@ export type Mutation = {
   deleteFrequence: Scalars['String']['output'];
   deleteScan: Scalars['String']['output'];
   deleteTag: Scalars['String']['output'];
+  register: Scalars['String']['output'];
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
   updateTag: Scalars['String']['output'];
@@ -72,6 +73,11 @@ export type MutationDeleteScanArgs = {
 
 export type MutationDeleteTagArgs = {
   id: Scalars['Float']['input'];
+};
+
+
+export type MutationRegisterArgs = {
+  data: UserInput;
 };
 
 
@@ -181,6 +187,12 @@ export type User = {
   username: Scalars['String']['output'];
 };
 
+export type UserInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
 export type CreateNewScanMutationVariables = Exact<{
   data: ScanInput;
 }>;
@@ -194,6 +206,13 @@ export type DeleteScanMutationVariables = Exact<{
 
 
 export type DeleteScanMutation = { __typename?: 'Mutation', deleteScan: string };
+
+export type RegisterMutationVariables = Exact<{
+  data: UserInput;
+}>;
+
+
+export type RegisterMutation = { __typename?: 'Mutation', register: string };
 
 export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -291,6 +310,37 @@ export function useDeleteScanMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteScanMutationHookResult = ReturnType<typeof useDeleteScanMutation>;
 export type DeleteScanMutationResult = Apollo.MutationResult<DeleteScanMutation>;
 export type DeleteScanMutationOptions = Apollo.BaseMutationOptions<DeleteScanMutation, DeleteScanMutationVariables>;
+export const RegisterDocument = gql`
+    mutation Register($data: UserInput!) {
+  register(data: $data)
+}
+    `;
+export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, RegisterMutationVariables>;
+
+/**
+ * __useRegisterMutation__
+ *
+ * To run a mutation, you first call `useRegisterMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerMutation, { data, loading, error }] = useRegisterMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<RegisterMutation, RegisterMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, options);
+      }
+export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
+export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
+export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
 export const GetAllScansDocument = gql`
     query GetAllScans {
   getAllScans {

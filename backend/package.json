@@ -17,6 +17,7 @@
         "@types/cors": "^2.8.17",
         "@types/node": "^22.13.2",
         "@types/pg": "^8.11.11",
+        "argon2": "^0.41.1",
         "axios": "^1.7.9",
         "class-validator": "^0.14.1",
         "dotenv": "^16.4.7",

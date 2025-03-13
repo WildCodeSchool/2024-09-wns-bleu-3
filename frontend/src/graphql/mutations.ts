@@ -17,7 +17,12 @@ mutation CreateNewScan($data: ScanInput!) {
     }
   }`
 
-  export const DELETE_SCAN = gql`
+export const DELETE_SCAN = gql`
 mutation DeleteScan($deleteScanId: Float!) {
     deleteScan(id: $deleteScanId)
   }`
+
+export const REGISTER = gql`
+  mutation Register($data: UserInput!) {
+  register(data: $data)
+}`
