@@ -9,15 +9,9 @@ import { useCreateNewScanMutation } from "@/generated/graphql-types";
 import { useGetAllTagsQuery } from "@/generated/graphql-types";
 import { useState } from "react";
 import { useGetAllFrequencesQuery } from "@/generated/graphql-types";
+import { scanFormSchema, Frequency, Tag } from "@/schema/FormAddScanSchema";
 
-// Schéma de validation
-const scanFormSchema = z.object({
-    title: z.string().min(1, "Le titre est requis"),
-    url: z.string().url("Veuillez entrer une URL valide"),
-    frequencyId: z.string().min(1, "Veuillez entrer une fréquence"),
-    unit: z.enum(["minutes", "hours", "days"]),
-    tagIds: z.array(z.number()).optional()
-});
+
 
 type ScanFormValues = z.infer<typeof scanFormSchema>;
 
@@ -125,7 +119,7 @@ export default function ScanForm() {
                                         <SelectValue placeholder="Select a frequency" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {frequenciesData?.getAllFrequences?.map((frequency: any) => (
+                                        {frequenciesData?.getAllFrequences?.map((frequency: Frequency) => (
                                             <SelectItem key={frequency.id} value={frequency.id.toString()} data-testid="freqSelect">
                                                 {frequency.name}
                                             </SelectItem>
@@ -152,7 +146,7 @@ export default function ScanForm() {
                                         <SelectValue placeholder="Select a tag" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {tagsData?.getAllTags?.map((tag: any) => (
+                                        {tagsData?.getAllTags?.map((tag: Tag) => (
                                             <SelectItem key={tag.id} value={tag.id.toString()}>
                                                 {tag.name}
                                             </SelectItem>
