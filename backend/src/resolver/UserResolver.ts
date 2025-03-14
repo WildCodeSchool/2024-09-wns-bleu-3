@@ -12,6 +12,10 @@ import {
 import * as argon2 from 'argon2'
 import jwt, { Secret } from 'jsonwebtoken'
 import { UserLoginInput } from '../inputs/UserLoginInput'
+import { v4 as uuidv4 } from 'uuid'
+import { Resend } from 'resend'
+import { ForgotPassword } from '../entities/ForgotPassword'
+import { emailHtml } from '../utils/user'
 
 
 @ObjectType()
@@ -76,6 +80,7 @@ class UserResolver {
         return 'logged out'
     }
 
+<<<<<<< HEAD
 
     @Query(() => UserInfo)
     async getUserInfo(@Ctx() context: any) {
@@ -84,6 +89,78 @@ class UserResolver {
         } else {
             return { isLoggedIn: false };
         }
+=======
+    @Mutation(() => String)
+    async forgotPassword(@Arg('userEmail') email: string) {
+        // search user if exist
+        const user = await User.findOneBy({ email })
+        // if user not found return false
+        if (!user) {
+            throw new Error('Identifiants incorrects')
+        }
+
+        // save user FORGETPASSWORD in db
+        const randomCode = uuidv4()
+        const expiresAt = new Date()
+        expiresAt.setMinutes(expiresAt.getMinutes() + 10) // expire dans 10 minutes
+        await ForgotPassword.save({ email, randomCode, expiresAt })
+
+        // Vérifie si RESEND_API_KEY est défini
+        if (!process.env.RESEND_API_KEY) {
+            throw new Error('RESEND_API_KEY is missing in the .env file')
+        }
+        const resend = new Resend(process.env.RESEND_API_KEY)
+
+        try {
+            const { data, error } = await resend.emails.send({
+                from: 'Acme <onboarding@resend.dev>',
+                to: [user.email],
+                subject: 'Réinitialisation mot de passe',
+                html: emailHtml(randomCode),
+            })
+
+            if (error) {
+                console.error('Email sending failed:', error)
+                throw new Error('L\'envoie du mail a échoué')
+            }
+            console.log({ data })
+        }
+        catch (err) {
+            console.error('Unexpected error:', err)
+            throw new Error('Erreur rencontrée dans la tentative d\'envoie du mail')
+        }
+        return 'OK'
+    }
+
+    @Mutation(() => String)
+    async changePassword(
+        @Arg('code') code: string,
+        @Arg('password') password: string,
+    ) {
+        // vérifier si le code de l'utilisateur est correct
+        const forgotPasswordUser = await ForgotPassword.findOneBy({ randomCode: code })
+        if (!forgotPasswordUser)
+            throw new Error('Le code de confirmation est incorrect')
+
+        // verifier si le code n'est pas expiré
+        const now = new Date()
+        const timeDifferenceMinutes = Math.floor(
+            (now.getTime() - forgotPasswordUser.expiresAt.getTime()) / (1000 * 60),
+        )
+
+        if (timeDifferenceMinutes > 0) {
+            throw new Error('Le code est expiré')
+        }
+
+        // chercher l'utilisateur
+        const user = await User.findOneByOrFail({ email: forgotPasswordUser.email })
+        // modifer le mot de passe de l'utilisateur
+        user.password = await argon2.hash(password)
+        user.save()
+        // supprimer l'utilisateur avec le mot de passe temporaire
+        await forgotPasswordUser.remove()
+        return 'Le mot de passe a bien été modifié'
+>>>>>>> 6a640367900376454a2f5923f99c39e7a57a8e7e
     }
 }
 

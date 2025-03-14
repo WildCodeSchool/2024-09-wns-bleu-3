@@ -32,7 +32,7 @@ async function start() {
         context: async ({ req, res }) => {
             if (req.headers.cookie) {
                 const cookies = cookie.parse(req.headers.cookie as string)
-                console.log('Headers ===> ', req.headers)
+                // console.log('Headers ===> ', req.headers)
                 console.log('Cookies in Headers ===> ', cookies)
 
                 if (cookies.token !== undefined) {
