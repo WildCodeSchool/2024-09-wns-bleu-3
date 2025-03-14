@@ -28,6 +28,11 @@ vi.mock("../generated/graphql-types", () => ({
 
 describe.runIf(isDev)("ScanForm", () => {
 
+  test("matches the snapshot when rendered", () => {
+    const { asFragment } = render(<ScanForm />);
+    expect(asFragment()).toMatchSnapshot();
+  })
+
   test("Create a scan", async () => {
     // const user = userEvent.setup();
   
