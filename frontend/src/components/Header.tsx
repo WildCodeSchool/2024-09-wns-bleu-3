@@ -10,7 +10,7 @@ const Header = () => {
     <header className="bg-[#051525] text-white px-6">
       <div className="flex h-16 items-center justify-between py-4">
         <div className="flex items-center gap-2">
-          <Link to="/" className="text-2xl font-bold">
+          <Link to="/" className="text-2xl font-bold" aria-label="Accueil">
             <span className="flex items-center">
               <span className="text-white">s</span>
               <span className="text-blue-400">0</span>
@@ -22,7 +22,7 @@ const Header = () => {
         {/* Desktop Navigation - Hidden on mobile */}
         <nav className="hidden md:flex items-center gap-4">
           <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-[#0a2540]" asChild>
-            <Link to="/scans">See all my</Link>
+            <Link to="/scans">See all my scans</Link>
           </Button>
 
           <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>

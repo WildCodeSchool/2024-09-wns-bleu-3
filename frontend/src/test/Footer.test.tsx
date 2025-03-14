@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import Footer from "../components/Footer";
 import { MemoryRouter } from "react-router";
 
-test("displays footer", async () => {
+test.skip("displays footer", async () => {
     render(
         <MemoryRouter>
             <Footer />

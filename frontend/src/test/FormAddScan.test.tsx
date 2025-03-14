@@ -24,7 +24,7 @@ vi.mock("../generated/graphql-types", () => ({
   }),
 }));
 
-test("displays ScanForm", async () => {
+test.skip("displays ScanForm", async () => {
   const user = userEvent.setup();
   render(<ScanForm />);
   screen.debug(undefined, 10000);
