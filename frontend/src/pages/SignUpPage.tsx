@@ -20,7 +20,7 @@ const scanFormSchema = z.object({
       "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&)"),
 
   username: z.string()
-    .min(5, "Le nom d'utilisateur doit contenir au moins 5 caractères")
+    .min(4, "Le nom d'utilisateur doit contenir au moins 4 caractères")
     .max(20, "Le nom d'utilisateur ne peut pas dépasser 20 caractères")
 });
 
