@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "test update": "vitest --update"
   },
   "dependencies": {
     "@apollo/client": "^3.13.0",
