@@ -22,12 +22,9 @@ export default function ScanForm() {
     const [createScan] = useCreateNewScanMutation();
 
     // Récupérer les tags disponibles
-    const { data: tagsData } = useGetAllTagsQuery();
+    const { data: tagsData, loading: tagsLoading, error: tagsError } = useGetAllTagsQuery();
     // Récupérer les fréquences disponibles
-    const { data: frequenciesData, error: errorFreqData } = useGetAllFrequencesQuery();
-    console.log('log33', frequenciesData)
-
-    console.log('errorFrequency', errorFreqData)
+    const { data: frequenciesData, loading: frequenciesLoading, error: frequenciesError } = useGetAllFrequencesQuery();
 
     const form = useForm<ScanFormValues>({
         resolver: zodResolver(scanFormSchema),
@@ -69,8 +66,15 @@ export default function ScanForm() {
         });
     }
 
-    // if (frequenciesData && tagsData) {
-    console.log("freqdata", frequenciesData)
+    if(tagsLoading || frequenciesLoading) {
+        return <p>Loading...</p>;
+    }
+
+    if(tagsError || frequenciesError) {
+        return <p>Error</p>;
+    }
+
+    if (frequenciesData && tagsData) {
     return (
         <div className="max-w-md mx-auto bg-[#0a2540] rounded-xl shadow-lg border border-[#0c2d4d] p-6">
             <h2 className="text-xl font-semibold mb-4 text-white">Start Scanning</h2>
@@ -115,7 +119,7 @@ export default function ScanForm() {
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
                                 >
-                                    <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white">
+                                    <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" data-testid="freqSelectButton">
                                         <SelectValue placeholder="Select a frequency" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -142,7 +146,7 @@ export default function ScanForm() {
                                     onValueChange={(value) => field.onChange([parseInt(value)])}
                                     defaultValue={field.value?.length ? field.value[0].toString() : undefined}
                                 >
-                                    <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white">
+                                    <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" data-testid="tagSelectButton">
                                         <SelectValue placeholder="Select a tag" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -178,6 +182,6 @@ export default function ScanForm() {
             </Form>
         </div>
     );
+    }
 }
-
 
