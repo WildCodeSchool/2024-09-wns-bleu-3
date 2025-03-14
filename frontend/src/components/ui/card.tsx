@@ -45,7 +45,6 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-<<<<<<< HEAD
 function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -59,8 +58,6 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-=======
->>>>>>> c01b0c1407af7d1edbd27b5b62ed536771a3917f
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -75,17 +72,12 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-footer"
-<<<<<<< HEAD
       className={cn("flex items-center px-6 [.border-t]:pt-6", className)}
-=======
-      className={cn("flex items-center px-6", className)}
->>>>>>> c01b0c1407af7d1edbd27b5b62ed536771a3917f
       {...props}
     />
   )
 }
 
-<<<<<<< HEAD
 export {
   Card,
   CardHeader,
@@ -95,6 +87,3 @@ export {
   CardDescription,
   CardContent,
 }
-=======
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
->>>>>>> c01b0c1407af7d1edbd27b5b62ed536771a3917f
