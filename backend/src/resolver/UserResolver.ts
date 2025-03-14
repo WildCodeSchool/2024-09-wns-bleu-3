@@ -3,12 +3,25 @@ import { UserInput } from '../inputs/UserInput'
 import {
     Arg,
     Ctx,
+    Field,
     Mutation,
+    ObjectType,
+    Query,
     Resolver,
 } from 'type-graphql'
 import * as argon2 from 'argon2'
 import jwt, { Secret } from 'jsonwebtoken'
 import { UserLoginInput } from '../inputs/UserLoginInput'
+
+
+@ObjectType()
+class UserInfo {
+    @Field()
+    isLoggedIn: boolean;
+
+    @Field({ nullable: true })
+    email?: String;
+}
 
 @Resolver(() => User)
 class UserResolver {
@@ -29,7 +42,7 @@ class UserResolver {
     }
 
     @Mutation(() => String)
-    async login(@Arg('data') loginData: UserLoginInput,@Ctx() context: any) {
+    async login(@Arg('data') loginData: UserLoginInput, @Ctx() context: any) {
         let isPasswordCorrect = false
         const user = await User.findOneBy({ email: loginData.email })
 
@@ -60,6 +73,16 @@ class UserResolver {
             `token=; Secure; HttpOnly;expires=${new Date(Date.now()).toUTCString()}`
         );
         return "logged out";
+    }
+
+
+    @Query(() => UserInfo)
+    async getUserInfo(@Ctx() context: any) {
+        if (context.email) {
+            return { isLoggedIn: true, userId: context.email };
+        } else {
+            return { isLoggedIn: false };
+        }
     }
 }
 
