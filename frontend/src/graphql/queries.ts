@@ -49,3 +49,13 @@ query GetAllTags {
     name
   }
 }`
+
+
+export const GET_USER_INFO = gql`
+  query GetUserInfo {
+    getUserInfo {
+      isLoggedIn
+      email
+    }
+  }
+`;

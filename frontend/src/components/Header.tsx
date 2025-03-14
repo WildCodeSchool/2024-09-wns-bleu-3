@@ -1,11 +1,34 @@
 
 import { Button } from "@/components/ui/button"
-import { Link } from "react-router"
-// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { Link, useNavigate } from "react-router"
+import { toast } from "sonner";
 import { Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet"
+import { useGetUserInfoQuery, useLogoutMutation } from "@/generated/graphql-types"
+import { GET_USER_INFO } from "@/graphql/queries"
 
 const Header = () => {
+  const navigate = useNavigate();
+
+  const { data, error } = useGetUserInfoQuery()
+  const isLoggedIn = data?.getUserInfo?.isLoggedIn;
+
+
+  const [logout] = useLogoutMutation({
+    refetchQueries: [{ query: GET_USER_INFO }],
+  
+    onCompleted: () => navigate("/")
+  });
+
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+
+
+
+
   return (
     <header className="bg-[#051525] text-white px-6">
       <div className="flex h-16 items-center justify-between py-4">
@@ -19,21 +42,31 @@ const Header = () => {
             </span>
           </Link>
         </div>
-        {/* Desktop Navigation - Hidden on mobile */}
+
+
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-4">
           <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-[#0a2540]" asChild>
             <Link to="/scans">See all my scans</Link>
           </Button>
 
-          <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
-            <Link to="/login">Sign in </Link>
-          </Button>
-          <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
-            <Link to="/signup">Sign up</Link>
-          </Button>
+          {isLoggedIn ? (
+            <Button className="bg-white text-[#051525] hover:bg-gray-200  cursor-pointer" onClick={() => logout()}>
+              Logout
+            </Button>
+          ) : (
+            <>
+              <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
+                <Link to="/login">Sign in</Link>
+              </Button>
+              <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
+                <Link to="/signup">Sign up</Link>
+              </Button>
+            </>
+          )}
         </nav>
 
-        {/* Mobile Burger Menu - Visible only on mobile */}
+        {/* Mobile Burger Menu */}
         <Sheet>
           <SheetTrigger asChild className="md:hidden">
             <Button variant="ghost" size="icon" className="text-white hover:bg-[#0a2540]">
@@ -46,18 +79,24 @@ const Header = () => {
               <Link to="/scans" className="flex items-center py-3 px-4 rounded-md hover:bg-[#0a2540] transition-colors">
                 See all my scans
               </Link>
-              <Link
-                to="/login"
-                className="flex items-center py-3 px-4 rounded-md hover:bg-[#0a2540] transition-colors"
-              >
-                Sign in
-              </Link>
-              <Link
-                to="/signup"
-                className="flex items-center py-3 px-4 text-white hover:bg-[#0a2540] rounded-md  transition-colors"
-              >
-                Sign up
-              </Link>
+
+              {isLoggedIn ? (
+                <button
+                  onClick={() => logout()}
+                  className="flex items-center py-3 px-4 text-red-400 hover:bg-red-600 hover:text-white rounded-md transition-colors"
+                >
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link to="/login" className="flex items-center py-3 px-4 rounded-md hover:bg-[#0a2540] transition-colors">
+                    Sign in
+                  </Link>
+                  <Link to="/signup" className="flex items-center py-3 px-4 text-white hover:bg-[#0a2540] rounded-md transition-colors">
+                    Sign up
+                  </Link>
+                </>
+              )}
             </div>
           </SheetContent>
         </Sheet>
@@ -66,4 +105,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default Header;
