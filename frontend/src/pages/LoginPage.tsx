@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 const LoginPage = () => {
   return (
-    <div className="w-full py-12 md:py-24 bg-[#051525] text-white"> 
+    <div className="w-full h-screen py-12 md:py-24 bg-[#051525] text-white"> 
            <div className=" loginPage flex items-center justify-center min-w-sm">
                     <div className="w-full max-w-md p-8 space-y-8 bg-[#0a2540] rounded-xl border border-[#0c2d4d] shadow  ">
           <div className="text-center">
