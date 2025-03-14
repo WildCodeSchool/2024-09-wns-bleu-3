@@ -26,10 +26,10 @@ const Header = () => {
           </Button>
 
           <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
-            <Link to="/login">Se connecter</Link>
+            <Link to="/login">Sign in </Link>
           </Button>
           <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
-            <Link to="/signin">S'inscrire</Link>
+            <Link to="/signup">Sign up</Link>
           </Button>
         </nav>
 
@@ -50,13 +50,13 @@ const Header = () => {
                 to="/login"
                 className="flex items-center py-3 px-4 rounded-md hover:bg-[#0a2540] transition-colors"
               >
-                Se connecter
+                Sign in
               </Link>
               <Link
-                to="/signin"
+                to="/signup"
                 className="flex items-center py-3 px-4 text-white hover:bg-[#0a2540] rounded-md  transition-colors"
               >
-                S'inscrire
+                Sign up
               </Link>
             </div>
           </SheetContent>
