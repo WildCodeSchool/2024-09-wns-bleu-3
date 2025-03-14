@@ -86,6 +86,7 @@
     0% {
         transform: rotate(0deg);
     }
+
     100% {
         transform: rotate(360deg);
     }
@@ -94,35 +95,34 @@
 .radar-background::before {
     content: "";
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(
-        from 0deg,
-        rgba(45, 164, 255, 0.3) 0deg,
-        rgba(45, 164, 255, 0.15) 30deg,
-        rgba(45, 164, 255, 0.05) 60deg,
-        rgba(45, 164, 255, 0) 300deg,
-        rgba(45, 164, 255, 0.15) 330deg,
-        rgba(45, 164, 255, 0.3) 360deg
-    );
+    top: -75%;
+    left: -75%;
+    width: 250%;
+    height: 250%;
+    background: conic-gradient(from 0deg,
+            rgba(45, 164, 255, 0.3) 0deg,
+            rgba(45, 164, 255, 0.15) 30deg,
+            rgba(45, 164, 255, 0.05) 60deg,
+            rgba(45, 164, 255, 0) 300deg,
+            rgba(45, 164, 255, 0.15) 330deg,
+            rgba(45, 164, 255, 0.3) 360deg);
     animation: radar-scan 6s linear infinite;
     /* pointer-events: none; */
 }
-  
-  /* Background radar effect */
-  .radar-background {
+
+/* Background radar effect */
+.radar-background {
     position: relative;
     overflow: hidden;
-  }
-  .radar-content {
-      position: relative;
-      overflow: hidden;
+}
+
+.radar-content {
+    position: relative;
+    overflow: hidden;
     z-index: 1;
-  }
-  
-  .radar-glow {
+}
+
+.radar-glow {
     position: absolute;
     top: 0;
     left: 0;
@@ -130,6 +130,4 @@
     bottom: 0;
     background: radial-gradient(circle at center, rgba(45, 164, 255, 0.2) 0%, rgba(45, 164, 255, 0) 70%);
     pointer-events: none;
-  }
-
-  
+}
