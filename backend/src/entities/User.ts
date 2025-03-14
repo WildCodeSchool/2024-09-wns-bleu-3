@@ -20,7 +20,7 @@ export class User extends BaseEntity {
     password: string
 
     @Field()
-    @MinLength(5)
+    @MinLength(4)
     @Column({ nullable: false })
     username: string
 
