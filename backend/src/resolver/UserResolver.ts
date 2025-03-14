@@ -80,7 +80,6 @@ class UserResolver {
         return 'logged out'
     }
 
-<<<<<<< HEAD
 
     @Query(() => UserInfo)
     async getUserInfo(@Ctx() context: any) {
@@ -89,7 +88,7 @@ class UserResolver {
         } else {
             return { isLoggedIn: false };
         }
-=======
+    }
     @Mutation(() => String)
     async forgotPassword(@Arg('userEmail') email: string) {
         // search user if exist
@@ -160,8 +159,8 @@ class UserResolver {
         // supprimer l'utilisateur avec le mot de passe temporaire
         await forgotPasswordUser.remove()
         return 'Le mot de passe a bien été modifié'
->>>>>>> 6a640367900376454a2f5923f99c39e7a57a8e7e
     }
 }
+
 
 export default UserResolver
