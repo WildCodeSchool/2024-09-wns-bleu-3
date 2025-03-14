@@ -33,3 +33,8 @@ export const LOGIN = gql`
   login(data: $data)
 }`
 
+export const LOGOUT = gql`
+  mutation Logout {
+    logout
+  }`
+

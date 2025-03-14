@@ -4,6 +4,7 @@ import Footer from './Footer';
 import Help from './Help';
 import Faq from './Faq';
 import Header from './Header';
+import { Toaster } from 'sonner';
 
 const Layout = () => {
     return (
@@ -15,6 +16,7 @@ const Layout = () => {
             <Faq />
             <Help />
             <Footer />
+            <Toaster />
         </div>
     );
 };

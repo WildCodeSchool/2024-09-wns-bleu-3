@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Form, FormField, FormItem, FormControl, FormLabel, FormMessage } from "@/components/ui/form";
 import { Link, useNavigate } from "react-router";
@@ -9,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLoginMutation } from "@/generated/graphql-types";
+import { GET_USER_INFO } from "@/graphql/queries";
 
 
 const loginFormSchema = z.object({
@@ -23,8 +25,10 @@ const loginFormSchema = z.object({
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export default function LoginPage() {
-  const navigate = useNavigate();
-  const [login] = useLoginMutation();
+    const navigate = useNavigate();
+    const [login] = useLoginMutation({
+        refetchQueries: [{ query: GET_USER_INFO }],
+    });
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginFormSchema),
@@ -34,18 +38,20 @@ export default function LoginPage() {
         }
     });
 
-  const onSubmit = async (data: LoginFormValues) => {
-      await login({
-        variables: { data: { email: data.email, password: data.password } },
-        onCompleted: (response) => {
-          console.log("Login réussi:", response);
-          navigate("/");
-        },
-        onError: (error) => {
-            console.error("Erreur de connexion:", error.message);
-        },
-    });
-      console.log("Données envoyées:", data);
+    const onSubmit = async (data: LoginFormValues) => {
+        await login({
+            variables: { data: { email: data.email, password: data.password } },
+            onCompleted: (response) => {
+                console.log("Login réussi:", response);
+                toast.success("You’ve successfully logged in! Welcome to s0nar!");
+                navigate("/");
+            },
+            onError: (error) => {
+                console.error("Erreur de connexion:", error.message);
+                toast.error("Login failed. Please check your credentials and try again.");
+            },
+        });
+        console.log("Données envoyées:", data);
     };
 
     return (
