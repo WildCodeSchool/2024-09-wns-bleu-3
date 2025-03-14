@@ -3,7 +3,10 @@ import { UserInput } from '../inputs/UserInput'
 import {
     Arg,
     Ctx,
+    Field,
     Mutation,
+    ObjectType,
+    Query,
     Resolver,
 } from 'type-graphql'
 import * as argon2 from 'argon2'
@@ -13,6 +16,16 @@ import { v4 as uuidv4 } from 'uuid'
 import { Resend } from 'resend'
 import { ForgotPassword } from '../entities/ForgotPassword'
 import { emailHtml } from '../utils/user'
+
+
+@ObjectType()
+class UserInfo {
+    @Field()
+    isLoggedIn: boolean;
+
+    @Field({ nullable: true })
+    email?: String;
+}
 
 @Resolver(() => User)
 class UserResolver {
@@ -67,6 +80,16 @@ class UserResolver {
         return 'logged out'
     }
 
+<<<<<<< HEAD
+
+    @Query(() => UserInfo)
+    async getUserInfo(@Ctx() context: any) {
+        if (context.email) {
+            return { isLoggedIn: true, userId: context.email };
+        } else {
+            return { isLoggedIn: false };
+        }
+=======
     @Mutation(() => String)
     async forgotPassword(@Arg('userEmail') email: string) {
         // search user if exist
@@ -137,6 +160,7 @@ class UserResolver {
         // supprimer l'utilisateur avec le mot de passe temporaire
         await forgotPasswordUser.remove()
         return 'Le mot de passe a bien été modifié'
+>>>>>>> 6a640367900376454a2f5923f99c39e7a57a8e7e
     }
 }
 

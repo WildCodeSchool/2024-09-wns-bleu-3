@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -6,6 +6,8 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@apollo/client";
 import { REGISTER } from "@/graphql/mutations";
+import { toast } from "sonner";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 
 
@@ -28,14 +30,18 @@ const scanFormSchema = z.object({
 type ScanFormValues = z.infer<typeof scanFormSchema>;
 
 const SignupPage = () => {
+  const navigate = useNavigate();
   const [registerMutation] = useMutation(REGISTER, {
     onCompleted: (data) => {
       console.log("Inscription réussie :", data);
-      // alert("Inscription réussie !");
+      toast.success("You’ve successfully signed up! Welcome to s0nar!.")
+      navigate("/");
+
     },
     onError: (error) => {
       console.error("Erreur lors de l'inscription :", error);
-      // alert("Une erreur est survenue. Vérifiez vos informations.");
+      toast.error("An error occurred. Please check your details.");
+
     }
   });
 
@@ -104,7 +110,7 @@ const SignupPage = () => {
                 )} />
 
               </div>
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" type="submit">
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white cursor-pointer" type="submit">
                 Create Account
               </Button>
               <div className="text-center text-sm text-gray-300">

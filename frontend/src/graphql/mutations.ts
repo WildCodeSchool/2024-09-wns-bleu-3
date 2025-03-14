@@ -33,6 +33,11 @@ export const LOGIN = gql`
   login(data: $data)
 }`
 
+export const LOGOUT = gql`
+  mutation Logout {
+    logout
+  }`
+
 export const FORGOT_PASSWORD = gql`
   mutation ForgotPassword($userEmail: String!) {
   forgotPassword(userEmail: $userEmail)
