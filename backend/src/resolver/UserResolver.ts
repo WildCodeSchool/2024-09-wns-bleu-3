@@ -58,8 +58,9 @@ class UserResolver {
                 { email: user.email },
                 process.env.JWT_SECRET_KEY as Secret,
             )
-            context.res.setHeader("Set-Cookie", `token=${token}; Secure; HttpOnly`);
-            return "login ok"
+            context.res.setHeader('Set-Cookie', `token=${token}; Secure; HttpOnly`)
+
+            return 'login ok'
         }
         else {
             throw new Error('Incorrect login')
@@ -69,10 +70,10 @@ class UserResolver {
     @Mutation(() => String)
     async logout(@Ctx() context: any) {
         context.res.setHeader(
-            "Set-Cookie",
-            `token=; Secure; HttpOnly;expires=${new Date(Date.now()).toUTCString()}`
-        );
-        return "logged out";
+            'Set-Cookie',
+            `token=; Secure; HttpOnly;expires=${new Date(Date.now()).toUTCString()}`,
+        )
+        return 'logged out'
     }
 
 
@@ -85,7 +86,5 @@ class UserResolver {
         }
     }
 }
-
-
 
 export default UserResolver

@@ -19,7 +19,7 @@ const loginFormSchema = z.object({
         .email("Veuillez entrer un email valide"),
 
     password: z.string()
-        .min(8, "Le mot de passe doit contenir au moins 8 caractères"),
+        .min(8, "Le mot de passe doit contenir au moins 8 caractères")
 });
 
 type LoginFormValues = z.infer<typeof loginFormSchema>;
@@ -115,3 +115,6 @@ export default function LoginPage() {
         </div>
     );
 }
+
+
+//TODO use .env variables in DB setup
