@@ -22,7 +22,7 @@ describe("Header Component Navigation", () => {
         // Configuration de userEvent
         const user = userEvent.setup();
 
-        // Rendu de l'application avec le routeur et les routes
+        // Rendu de l'application avec le routeur et les routes ainsi que le HEADER
         render(
             <MemoryRouter initialEntries={['/']}>
                 <Header />
