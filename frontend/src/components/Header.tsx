@@ -42,7 +42,7 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-4">
-          <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-[#0a2540]" asChild>
+          <Button variant="ghost" asChild>
             <Link to="/scans">See all my scans</Link>
           </Button>
 
