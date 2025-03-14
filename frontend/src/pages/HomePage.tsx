@@ -8,7 +8,7 @@ import ScanHistory from "@/components/ScanHistory"
 const HomePage = () => {
     return (
         <div className="w-full">
-            <div className="">
+            <div className="w-full">
                 <HeroSection />
             </div>
             <div className="w-full mb-16 px-6">
@@ -18,10 +18,10 @@ const HomePage = () => {
                 <ScanHistory />
             </div>
             <div className="w-full mb-16 px-6">
-            <Faq />
+                <Faq />
             </div>
             <div className="w-full">
-            <Help />
+                <Help />
             </div>
 
         </div>

@@ -2,8 +2,8 @@ import FormAddScan from "./FormAddScan";
 
 const HeroSection = () => {
     return (
-        <div>
-            <section className="w-full py-12 md:py-24 bg-[#051525] text-white relative radar-background">
+        <div className="h-screen">
+            <section className="w-full h-full py-12 md:py-24 bg-[#051525] text-white relative radar-background">
                 <div className="radar-glow"></div>
                 <div className=" radar-content relative z-10">
                     <div className="text-center mb-12">

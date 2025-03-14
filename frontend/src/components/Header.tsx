@@ -52,10 +52,10 @@ const Header = () => {
             </Button>
           ) : (
             <>
-              <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
+              <Button variant="outline" asChild>
                 <Link to="/login">Sign in</Link>
               </Button>
-              <Button className="bg-white text-[#051525] hover:bg-gray-200" asChild>
+              <Button variant="lightBlue" asChild>
                 <Link to="/signup">Sign up</Link>
               </Button>
             </>

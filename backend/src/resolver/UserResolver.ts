@@ -3,7 +3,10 @@ import { UserInput } from '../inputs/UserInput'
 import {
     Arg,
     Ctx,
+    Field,
     Mutation,
+    ObjectType,
+    Query,
     Resolver,
 } from 'type-graphql'
 import * as argon2 from 'argon2'
@@ -14,9 +17,27 @@ import { Resend } from 'resend'
 import { ForgotPassword } from '../entities/ForgotPassword'
 import { emailHtml } from '../utils/user'
 
+@ObjectType()
+class UserInfo {
+    @Field()
+    isLoggedIn: boolean
+
+    @Field({ nullable: true })
+    email?: string
+}
 
 @Resolver(() => User)
 class UserResolver {
+    @Query(() => UserInfo)
+    async getUserInfo(@Ctx() context: any) {
+        if (context.email) {
+            return { isLoggedIn: true, userId: context.email }
+        }
+        else {
+            return { isLoggedIn: false }
+        }
+    }
+
     @Mutation(() => String)
     async register(@Arg('data') newUserData: UserInput) {
         // const randomCode = uuidv4()
@@ -140,6 +161,5 @@ class UserResolver {
         return 'Le mot de passe a bien été modifié'
     }
 }
-
 
 export default UserResolver
