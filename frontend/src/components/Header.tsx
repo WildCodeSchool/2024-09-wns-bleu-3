@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Link, useNavigate } from "react-router"
-import { toast } from "sonner";
+// import { toast } from "sonner";
 import { Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet"
 import { useGetUserInfoQuery, useLogoutMutation } from "@/generated/graphql-types"
@@ -16,7 +16,7 @@ const Header = () => {
 
   const [logout] = useLogoutMutation({
     refetchQueries: [{ query: GET_USER_INFO }],
-  
+
     onCompleted: () => navigate("/")
   });
 
@@ -24,10 +24,6 @@ const Header = () => {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
-
-
-
-
 
   return (
     <header className="bg-[#051525] text-white px-6">
