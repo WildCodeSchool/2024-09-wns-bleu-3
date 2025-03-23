@@ -19,11 +19,17 @@ import { emailHtml } from '../utils/user'
 
 @ObjectType()
 class UserInfo {
+    @Field({ nullable: true })
+    id: number;
+
+    @Field({ nullable: true })
+    username: string
+
     @Field()
     isLoggedIn: boolean
 
     @Field({ nullable: true })
-    email?: string
+    email: string
 }
 
 @Resolver(() => User)
@@ -31,11 +37,25 @@ class UserResolver {
     @Query(() => UserInfo)
     async getUserInfo(@Ctx() context: any) {
         if (context.email) {
-            return { isLoggedIn: true, userId: context.email }
+            try {
+                const user = await User.findOne({ where: { email: context.email } })
+
+                if (!user) {
+                    return { isLoggedIn: false, email: null, username: null, id: null }
+                }
+
+                return {
+                    id: user.id,
+                    isLoggedIn: true,
+                    email: user.email,
+                    username: user.username
+                }
+            } catch (error) {
+                console.error('Error fetching user info:', error);
+                return { isLoggedIn: false, email: null, username: null, id: null }
+            }
         }
-        else {
-            return { isLoggedIn: false }
-        }
+        return { isLoggedIn: false, email: null, username: null, id: null }
     }
 
     @Mutation(() => String)
@@ -88,6 +108,36 @@ class UserResolver {
         )
         return 'logged out'
     }
+
+    @Mutation(() => String)
+    async deleteUser(@Arg('id') id: number, @Ctx() context: any) {
+        try {
+            const user = await User.findOne({ where: { id } });
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            // utilisateur connecté
+            const isCurrentUser = context.email === user.email;
+
+            const result = await User.delete(id);
+
+            // clear le cookie si le user était connecté
+            if (isCurrentUser) {
+                context.res.setHeader('Set-Cookie', 'token=; Path=/; Secure; HttpOnly; expires=' + new Date(0).toUTCString());
+            }
+
+            if (result.affected === 1) {
+                return isCurrentUser ? "Your account has been deleted. You will be logged out." : "User has been deleted";
+            } else {
+                throw new Error("User has not been found");
+            }
+        } catch (error) {
+            console.error({ 'Error deleting user': error });
+            throw new Error('Something went wrong');
+        }
+    }
+
 
     @Mutation(() => String)
     async forgotPassword(@Arg('userEmail') email: string) {
