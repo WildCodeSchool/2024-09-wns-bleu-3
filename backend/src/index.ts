@@ -9,12 +9,17 @@ import TagResolver from './resolver/TagResolver'
 import UserResolver from './resolver/UserResolver'
 import jwt, { Secret } from 'jsonwebtoken'
 import * as cookie from 'cookie'
+import { seedDatabase } from '../scripts/seed'
 
 async function start() {
     if (!process.env.JWT_SECRET_KEY) {
         throw new Error('no jwt secret')
     }
     await dataHealthCheck.initialize()
+
+    if (process.env.NODE_ENV === 'development') {
+        await seedDatabase()
+    }
 
     const schema = await buildSchema({
         resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver],

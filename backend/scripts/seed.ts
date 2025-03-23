@@ -1,0 +1,125 @@
+import { dataHealthCheck } from '../src/config/db'
+import { Frequency } from '../src/entities/Frequency'
+import { Scan } from '../src/entities/Scan'
+import { Tag } from '../src/entities/Tag'
+import { User } from '../src/entities/User'
+import { faker } from '@faker-js/faker'
+
+// Ton type pour un scan
+interface ScanData {
+    title: string
+    url: string
+    statusCode: 200 | 404 | 500
+    statusMessage: 'OK' | 'Not Found' | 'Internal Server Error'
+    responseTime: number
+    sslCertificate: '15 days' | '500 days' | 'Expired'
+    isOnline: boolean
+    tagIds: string[] // Tu peux mettre un type plus précis si nécessaire
+    frequencyId: null
+}
+
+// Create a mock scan object
+async function mockScanUrl(): Promise<ScanData> {
+    return {
+        title: faker.lorem.words(3),
+        url: faker.internet.url(),
+        statusCode: faker.helpers.arrayElement([200, 404, 500]),
+        statusMessage: faker.helpers.arrayElement(['OK', 'Not Found', 'Internal Server Error']),
+        responseTime: faker.number.int({ min: 10, max: 100 }),
+        sslCertificate: faker.helpers.arrayElement(['15 days', '500 days', 'Expired']),
+        isOnline: faker.datatype.boolean(),
+        tagIds: [], // Optional tags
+        frequencyId: null, // Optional frequency
+    }
+}
+
+// Create a certain number of fake scans
+async function createFakeScans(count: number): Promise<ScanData[]> {
+    const fakeScans: ScanData[] = []
+
+    for (let i = 0; i < count; i++) {
+        const scanData = await mockScanUrl()
+        fakeScans.push(scanData)
+    }
+
+    return fakeScans
+}
+
+export async function seedDatabase() {
+    // Seed the database with some data
+
+    try {
+        const userRepo = dataHealthCheck.getRepository(User)
+        const scanRepo = dataHealthCheck.getRepository(Scan)
+        const tagRepo = dataHealthCheck.getRepository(Tag)
+        const frequencyRepo = dataHealthCheck.getRepository(Frequency)
+
+        await userRepo.delete({})
+        await scanRepo.delete({})
+        await tagRepo.delete({})
+        await frequencyRepo.delete({})
+        console.log('Deleted all data')
+
+        // Create some fake users
+        const users = userRepo.create([
+            {
+                email: 'f.rumigny@gmail.com',
+                password: 'password',
+                username: 'frumigny',
+            },
+            {
+                email: 'umu@test.com',
+                password: 'password',
+                username: 'umu',
+            },
+        ])
+        await userRepo.save(users)
+
+        // Create fake tags
+        const tags = tagRepo.create([{
+            name: 'Vitrine',
+            color: '#FF0000',
+        }, {
+            name: 'Web App',
+            color: '#00FF00',
+        }, {
+            name: 'Mobile App',
+            color: '#0000FF',
+        }, {
+            name: 'API',
+            color: '#FFFF00',
+        }, {
+            name: 'Base de données',
+            color: '#00FFFF',
+        }, {
+            name: 'Serveur',
+            color: '#FF00FF',
+        }, {
+            name: 'Autre',
+            color: '#FFFFFF',
+        }])
+        await tagRepo.save(tags)
+
+        // Create fake frequencies
+        const frequencies = frequencyRepo.create([{
+            name: 'Every 15 minutes',
+            intervalMinutes: 15,
+        }, {
+            name: 'Every 30 minutes',
+            intervalMinutes: 30,
+        }, {
+            name: 'Every hour',
+            intervalMinutes: 60,
+        }])
+        await frequencyRepo.save(frequencies)
+
+        const fakeScans = await createFakeScans(10)
+        const scans = scanRepo.create(fakeScans)
+        await scanRepo.save(scans)
+
+        // Create fake scans
+    }
+    catch (error) {
+        console.error('Error initializing dataHealthCheck: ', error)
+    }
+}
