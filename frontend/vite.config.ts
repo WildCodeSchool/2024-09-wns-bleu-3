@@ -7,9 +7,12 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    host: true, hmr: { path: "/hmr", protocol: "ws", host: "localhost" }, watch: {
+    host: true, 
+    hmr: { path: "/hmr"}, 
+    watch: {
       usePolling: true,
-    }, allowedHosts: true
+    }, 
+    allowedHosts: true
   },
   test: { globals: true, environment: "jsdom" },
   resolve: {
