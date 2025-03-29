@@ -55,3 +55,7 @@ mutation DeleteUser($id: Float!) {
   deleteUser(id: $id)
 }
 `
+export const UPDATE_USER = gql`
+mutation UpdateUser($data: UpdateUserInput!, $updateUserId: Float!) {
+  updateUser(data: $data, id: $updateUserId)
+}`

@@ -8,6 +8,8 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignUpPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import SettingsPage from './pages/ProfilePage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
 
@@ -28,6 +30,7 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />
           <Route path="reset-password" element={<ResetPasswordPage />} />
+          <Route path="profile" element={<ProfilePage />} />
 
           {/* <Route path="confirm/:code?" element={<ConfirmEmailPage />} />
 

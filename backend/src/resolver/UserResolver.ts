@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Resend } from 'resend'
 import { ForgotPassword } from '../entities/ForgotPassword'
 import { emailHtml } from '../utils/user'
+import { UpdateUserInput } from '../inputs/UpdateUserInput'
 
 @ObjectType()
 class UserInfo {
@@ -72,6 +73,30 @@ class UserResolver {
 
         console.log('result', result)
         return 'user successfully created'
+    }
+
+
+    @Mutation(() => String)
+    async updateUser(@Arg('id') id: number, @Arg('data') updateUserData: UpdateUserInput) {
+        const userToUpdate = await User.findOne({
+            where: { id },
+        })
+        if (!userToUpdate)
+            throw new Error('User non trouvé')
+
+        if (updateUserData.username) {
+            const existingUser = await User.findOne({
+                where: { username: updateUserData.username },
+            })
+            if (existingUser && existingUser.id !== id) {
+                throw new Error('Un utilisateur avec ce nom existe déjà')
+            }
+        }
+
+        Object.assign(userToUpdate, updateUserData)
+        await User.save(userToUpdate)
+
+        return `L'utilisteur'${id} a bien été mis à jour`
     }
 
     @Mutation(() => String)

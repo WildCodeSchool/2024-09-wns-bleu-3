@@ -48,6 +48,7 @@ export type Mutation = {
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
   updateTag: Scalars['String']['output'];
+  updateUser: Scalars['String']['output'];
 };
 
 
@@ -120,6 +121,12 @@ export type MutationUpdateScanArgs = {
 
 export type MutationUpdateTagArgs = {
   data: UpdateTagInput;
+  id: Scalars['Float']['input'];
+};
+
+
+export type MutationUpdateUserArgs = {
+  data: UpdateUserInput;
   id: Scalars['Float']['input'];
 };
 
@@ -201,6 +208,10 @@ export type UpdateScanInput = {
 export type UpdateTagInput = {
   color?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateUserInput = {
+  username: Scalars['String']['input'];
 };
 
 export type User = {
@@ -287,6 +298,14 @@ export type DeleteUserMutationVariables = Exact<{
 
 
 export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser: string };
+
+export type UpdateUserMutationVariables = Exact<{
+  data: UpdateUserInput;
+  updateUserId: Scalars['Float']['input'];
+}>;
+
+
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: string };
 
 export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -575,6 +594,38 @@ export function useDeleteUserMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutation>;
 export type DeleteUserMutationResult = Apollo.MutationResult<DeleteUserMutation>;
 export type DeleteUserMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
+export const UpdateUserDocument = gql`
+    mutation UpdateUser($data: UpdateUserInput!, $updateUserId: Float!) {
+  updateUser(data: $data, id: $updateUserId)
+}
+    `;
+export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, UpdateUserMutationVariables>;
+
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *      updateUserId: // value for 'updateUserId'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserMutation, UpdateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, options);
+      }
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
 export const GetAllScansDocument = gql`
     query GetAllScans {
   getAllScans {
