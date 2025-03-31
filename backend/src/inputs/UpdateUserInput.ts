@@ -4,6 +4,4 @@ import { Field, InputType } from 'type-graphql'
 export class UpdateUserInput {
     @Field()
     username: string
-
-
 }

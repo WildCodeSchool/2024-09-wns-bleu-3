@@ -138,7 +138,7 @@ export type Query = {
   getFrequenceById: Frequency;
   getScanById: Scan;
   getTagById: Tag;
-  getUserInfo: UserInfo;
+  getUserInfo?: Maybe<UserInfo>;
 };
 
 
@@ -227,10 +227,10 @@ export type User = {
 
 export type UserInfo = {
   __typename?: 'UserInfo';
-  email?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['Float']['output']>;
+  email: Scalars['String']['output'];
+  id: Scalars['Float']['output'];
   isLoggedIn: Scalars['Boolean']['output'];
-  username?: Maybe<Scalars['String']['output']>;
+  username: Scalars['String']['output'];
 };
 
 export type UserInput = {
@@ -332,7 +332,7 @@ export type GetAllTagsQuery = { __typename?: 'Query', getAllTags: Array<{ __type
 export type GetUserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserInfoQuery = { __typename?: 'Query', getUserInfo: { __typename?: 'UserInfo', id?: number | null, isLoggedIn: boolean, email?: string | null, username?: string | null } };
+export type GetUserInfoQuery = { __typename?: 'Query', getUserInfo?: { __typename?: 'UserInfo', id: number, isLoggedIn: boolean, email: string, username: string } | null };
 
 
 export const CreateNewScanDocument = gql`
