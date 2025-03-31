@@ -149,6 +149,8 @@ export type Scan = {
   frequency: Frequency;
   id: Scalars['Float']['output'];
   isOnline: Scalars['Boolean']['output'];
+  lastScannedAt?: Maybe<Scalars['DateTimeISO']['output']>;
+  nextScanAt?: Maybe<Scalars['DateTimeISO']['output']>;
   responseTime: Scalars['Float']['output'];
   sslCertificate: Scalars['String']['output'];
   statusCode: Scalars['Float']['output'];
@@ -161,8 +163,8 @@ export type Scan = {
 };
 
 export type ScanInput = {
-  frequencyId?: InputMaybe<Scalars['Float']['input']>;
-  tagIds?: InputMaybe<Array<Scalars['Float']['input']>>;
+  frequencyId?: InputMaybe<Scalars['Int']['input']>;
+  tagIds?: InputMaybe<Array<Scalars['Int']['input']>>;
   title: Scalars['String']['input'];
   url: Scalars['String']['input'];
 };
@@ -187,6 +189,7 @@ export type UpdateFrequencyInput = {
 };
 
 export type UpdateScanInput = {
+  frequencyId?: InputMaybe<Scalars['Int']['input']>;
   id: Scalars['Float']['input'];
   tagIds?: InputMaybe<Array<Scalars['Float']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;

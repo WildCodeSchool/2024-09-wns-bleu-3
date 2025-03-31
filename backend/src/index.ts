@@ -9,6 +9,7 @@ import TagResolver from './resolver/TagResolver'
 import UserResolver from './resolver/UserResolver'
 import jwt, { Secret } from 'jsonwebtoken'
 import * as cookie from 'cookie'
+import { initCronJobs } from './cron'
 
 async function start() {
     if (!process.env.JWT_SECRET_KEY) {
@@ -26,6 +27,8 @@ async function start() {
     const server = new ApolloServer({
         schema,
     })
+
+    initCronJobs();
 
     const { url } = await startStandaloneServer(server, {
         listen: { port: 4000 },
