@@ -1,9 +1,8 @@
-// src/cron/index.ts
 import cron from 'node-cron';
 import { runScheduledScans } from '../utils/scheduledScans';
 
 /**
- * Initialise les tâches CRON pour l'application
+ * Initialise CRON 
  */
 export function initCronJobs() {
     // Exécuter toutes les minutes pour vérifier les scans
@@ -12,5 +11,5 @@ export function initCronJobs() {
         await runScheduledScans();
     });
 
-    console.log('CRON jobs initialized');
+    console.log('CRON initialized');
 }

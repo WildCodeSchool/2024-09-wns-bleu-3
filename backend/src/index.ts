@@ -28,6 +28,10 @@ async function start() {
         schema,
     })
 
+    /**
+ * Initialise CRON 
+ */
+
     initCronJobs();
 
     const { url } = await startStandaloneServer(server, {

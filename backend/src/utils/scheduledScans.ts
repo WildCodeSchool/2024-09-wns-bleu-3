@@ -1,10 +1,9 @@
-// src/utils/scheduledScans.ts
 import { Scan } from '../entities/Scan';
 import { scanUrl } from './scanUrl';
 import { LessThan } from 'typeorm';
 
 /**
- * Exécute tous les scans programmés qui doivent être effectués
+ * Exécute tous les scans avec fréquences programmé
  */
 export async function runScheduledScans() {
     try {
@@ -14,14 +13,14 @@ export async function runScheduledScans() {
         const scans = await Scan.find({
             relations: ['frequency'],
             where: {
-                // Si le scan n'a jamais été exécuté OU si le dernier scan + intervalle < maintenant
+                // Si le scan n'a jamais été exécuté oi si le dernier scan + intervalle < maintenant
                 nextScanAt: LessThan(now)
             }
         });
 
-        console.log(`Found ${scans.length} scans to execute`);
+        console.log(`Found ${scans.length} scans to run`);
 
-        // Pour chaque scan éligible, mettre à jour les résultats
+        // Pour chaque scan à exec, mettre à jour les résultats
         for (const scan of scans) {
             await updateScanResults(scan);
         }
