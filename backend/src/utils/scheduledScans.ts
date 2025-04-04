@@ -13,7 +13,7 @@ export async function runScheduledScans() {
         const scans = await Scan.find({
             relations: ['frequency'],
             where: {
-                // Si le scan n'a jamais été exécuté oi si le dernier scan + intervalle < maintenant
+                // scan + intervalle < maintenant
                 nextScanAt: LessThan(now)
             }
         });
