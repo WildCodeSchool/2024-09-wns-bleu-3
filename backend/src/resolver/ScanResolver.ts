@@ -56,6 +56,10 @@ class ScanResolver {
                 const frequency = await Frequency.findOne({ where: { id: newScanData.frequencyId } })
                 if (frequency) {
                     newScanToSave.frequency = frequency
+                    // Initialiser la date du prochain scan
+                    const nextScanDate = new Date()
+                    nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
+                    newScanToSave.nextScanAt = nextScanDate
                 }
             }
 
@@ -122,6 +126,21 @@ class ScanResolver {
             }
 
             await scanToUpdate.save()
+
+            if (updateScanData.frequencyId !== undefined) {
+                const frequency = await Frequency.findOne({ where: { id: updateScanData.frequencyId } })
+                if (frequency) {
+                    scanToUpdate.frequency = frequency
+
+                    // Mettre à jour la date du prochain scan
+                    const nextScanDate = new Date()
+                    nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
+                    scanToUpdate.nextScanAt = nextScanDate
+                } else {
+                    scanToUpdate.frequency = null
+                    scanToUpdate.nextScanAt = null
+                }
+            }
 
             return 'Scan has been updated'
         }

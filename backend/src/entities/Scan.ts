@@ -43,7 +43,7 @@ export class Scan extends BaseEntity {
     // nullable true a frequency pour les test, a enlever après
     @Field(() => Frequency)
     @ManyToOne(() => Frequency, frequency => frequency.scans, { nullable: true, eager: true })
-    frequency: Frequency
+    frequency: Frequency | null
 
     // Relation Many-to-Many avec Tag
     @Field(() => [Tag])
@@ -63,4 +63,12 @@ export class Scan extends BaseEntity {
     @Field()
     @UpdateDateColumn()
     updatedAt: Date
+
+    @Field(() => Date, { nullable: true })
+    @Column({ nullable: true })
+    lastScannedAt: Date
+
+    @Field(() => Date, { nullable: true })
+    @Column({ type: "timestamp", nullable: true })
+    nextScanAt: Date | null
 }

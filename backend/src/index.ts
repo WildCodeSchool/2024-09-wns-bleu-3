@@ -9,6 +9,7 @@ import TagResolver from './resolver/TagResolver'
 import UserResolver from './resolver/UserResolver'
 import jwt, { Secret } from 'jsonwebtoken'
 import * as cookie from 'cookie'
+import { initCronJobs } from './cron'
 import { ContextSchema, ContextType } from './schema/context'
 import { JwtPayload } from './@types/payload'
 
@@ -28,6 +29,12 @@ async function start() {
     const server = new ApolloServer({
         schema,
     })
+
+    /**
+ * Initialise CRON 
+ */
+
+    initCronJobs();
 
     const { url } = await startStandaloneServer(server, {
         listen: { port: 4000 },
