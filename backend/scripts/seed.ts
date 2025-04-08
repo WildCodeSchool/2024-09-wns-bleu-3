@@ -15,11 +15,13 @@ interface ScanData {
     sslCertificate: '15 days' | '500 days' | 'Expired'
     isOnline: boolean
     tagIds: string[] // Tu peux mettre un type plus précis si nécessaire
-    frequencyId: null
+    frequencyId: null | number // null si pas de fréquence
+    lastScannedAt: null
+    nextScanAt: Date | null
 }
 
 // Create a mock scan object
-async function mockScanUrl(): Promise<ScanData> {
+async function mockScanUrl(frequency: Frequency): Promise<ScanData> {
     return {
         title: faker.lorem.words(3),
         url: faker.internet.url(),
@@ -29,16 +31,18 @@ async function mockScanUrl(): Promise<ScanData> {
         sslCertificate: faker.helpers.arrayElement(['15 days', '500 days', 'Expired']),
         isOnline: faker.datatype.boolean(),
         tagIds: [], // Optional tags
-        frequencyId: null, // Optional frequency
+        frequencyId: frequency.id, // Optional frequency
+        lastScannedAt: null,
+        nextScanAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
     }
 }
 
 // Create a certain number of fake scans
-async function createFakeScans(count: number): Promise<ScanData[]> {
+async function createFakeScans(count: number, frequency: Frequency): Promise<ScanData[]> {
     const fakeScans: ScanData[] = []
 
     for (let i = 0; i < count; i++) {
-        const scanData = await mockScanUrl()
+        const scanData = await mockScanUrl(frequency)
         fakeScans.push(scanData)
     }
 
@@ -113,7 +117,7 @@ export async function seedDatabase() {
         }])
         await frequencyRepo.save(frequencies)
 
-        const fakeScans = await createFakeScans(10)
+        const fakeScans = await createFakeScans(10, frequencies[0])
         const scans = scanRepo.create(fakeScans)
         await scanRepo.save(scans)
 
