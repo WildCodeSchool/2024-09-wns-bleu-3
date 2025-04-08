@@ -18,7 +18,7 @@ export async function scanUrl(url: string): Promise<scanUrlResponse | { error: s
     // To verify if the URL is an url with the Zod schema
     const urlParse = scanUrlResponseSchema.shape.url.safeParse(url)
     if (!urlParse.success) {
-        return { error: 'An error occured' }
+        return { error: 'An error occur' }
     }
     try {
         // To do the request, validateStatus on true to retrieve all the status code without the catch
