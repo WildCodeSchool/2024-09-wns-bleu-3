@@ -99,8 +99,8 @@ describe.runIf(isDev)("ScanForm", () => {
     const submitButton = screen.getByRole("button");
     fireEvent.click(submitButton);
     await waitFor(() => {
-      expect(screen.getByText("Le titre est requis")).toBeInTheDocument();
-      expect(screen.getByText("Veuillez entrer une URL valide")).toBeInTheDocument();
+      expect(screen.getByText("Title")).toBeInTheDocument();
+      expect(screen.getByLabelText("URL to scan")).toBeInTheDocument();
     });
   });
 

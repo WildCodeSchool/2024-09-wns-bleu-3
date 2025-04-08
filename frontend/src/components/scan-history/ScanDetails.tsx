@@ -31,6 +31,8 @@ export function ScanDetails({ scan }: ScanDetailsProps) {
     )
   }
 
+  console.log(scan)
+
   return (
     <div className="space-y-4">
       <div>
@@ -41,7 +43,7 @@ export function ScanDetails({ scan }: ScanDetailsProps) {
             {/* Last scan information */}
             <div className="flex items-center text-xs text-gray-500 font-barlow mt-1">
               <Clock className="h-3 w-3 mr-1" />
-              <span>Last scan: {formatDate(scan.createdAt)}</span>
+              <span>Last scan: {formatDate(scan.lastScannedAt)}</span>
             </div>
           </div>
           <div className={`px-3 py-1 rounded-full text-sm font-barlow font-medium ${getStatusStyle(scan.statusCode)}`}>

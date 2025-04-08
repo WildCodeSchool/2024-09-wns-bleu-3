@@ -1,5 +1,5 @@
 import { Scan } from '../entities/Scan'
-import { Field, InputType } from 'type-graphql'
+import { Field, InputType, Int } from 'type-graphql'
 
 @InputType()
 export class ScanInput implements Partial<Scan> {
@@ -9,9 +9,9 @@ export class ScanInput implements Partial<Scan> {
     @Field()
     title: string
 
-    @Field(() => [Number], { nullable: true })
+    @Field(() => [Int], { nullable: true })
     tagIds?: number[]
 
-    @Field(() => Number, { nullable: true })
+    @Field(() => Int, { nullable: true })
     frequencyId?: number
 }

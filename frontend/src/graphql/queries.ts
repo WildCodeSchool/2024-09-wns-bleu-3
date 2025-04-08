@@ -13,6 +13,7 @@ query GetAllScans {
     isOnline
     createdAt
     updatedAt
+    lastScannedAt
   }
 }`
 
@@ -29,6 +30,7 @@ query Query($getScanByIdId: Float!) {
     isOnline
     createdAt
     updatedAt
+    lastScannedAt
   }
 }`
 
@@ -54,8 +56,10 @@ query GetAllTags {
 export const GET_USER_INFO = gql`
   query GetUserInfo {
     getUserInfo {
+      id
       isLoggedIn
       email
+      username
     }
   }
 `;

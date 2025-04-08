@@ -49,3 +49,13 @@ export const CHANGE_PASSWORD = gql`
   changePassword(password: $password, code: $code)
 }
 `
+
+export const DELETE_USER = gql`
+mutation DeleteUser($id: Float!) {
+  deleteUser(id: $id)
+}
+`
+export const UPDATE_USER = gql`
+mutation UpdateUser($data: UpdateUserInput!, $updateUserId: Float!) {
+  updateUser(data: $data, id: $updateUserId)
+}`
