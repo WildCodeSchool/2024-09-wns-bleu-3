@@ -10,6 +10,8 @@ import UserResolver from './resolver/UserResolver'
 import jwt, { Secret } from 'jsonwebtoken'
 import * as cookie from 'cookie'
 import { initCronJobs } from './cron'
+import { ContextSchema, ContextType } from './schema/context'
+import { JwtPayload } from './@types/payload'
 
 async function start() {
     if (!process.env.JWT_SECRET_KEY) {
@@ -36,23 +38,28 @@ async function start() {
 
     const { url } = await startStandaloneServer(server, {
         listen: { port: 4000 },
-        context: async ({ req, res }) => {
+        context: async ({ req, res }): Promise<ContextType> => {
             if (req.headers.cookie) {
                 const cookies = cookie.parse(req.headers.cookie as string)
                 // console.log('Headers ===> ', req.headers)
                 console.log('Cookies in Headers ===> ', cookies)
 
-                if (cookies.token !== undefined) {
+                if (cookies.token !== undefined && cookies.token !== '') {
                     try {
-                        const payload: any = jwt.verify(
+                        const payload: JwtPayload = jwt.verify(
                             cookies.token,
                             process.env.JWT_SECRET_KEY as Secret,
-                        )
-                        console.log('payload in context', payload)
-                        if (payload) {
-                            console.log('payload was found and returned to resolver')
-                            return { email: payload.email, res }
+                        ) as JwtPayload
+                        // Validate the payload using Zod
+                        const parsedPayload = ContextSchema.safeParse({ email: payload.email })
+
+                        if (!parsedPayload.success) {
+                            console.error('Invalid JWT payload:', parsedPayload.error)
+                            return { res }
                         }
+
+                        console.log('payload was found and returned to resolver')
+                        return { email: payload.email, res }
                     }
                     catch (error) {
                         console.error('JWT verification failed: ', error)

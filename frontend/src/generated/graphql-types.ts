@@ -40,6 +40,7 @@ export type Mutation = {
   deleteFrequence: Scalars['String']['output'];
   deleteScan: Scalars['String']['output'];
   deleteTag: Scalars['String']['output'];
+  deleteUser: Scalars['String']['output'];
   forgotPassword: Scalars['String']['output'];
   login: Scalars['String']['output'];
   logout: Scalars['String']['output'];
@@ -47,6 +48,7 @@ export type Mutation = {
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
   updateTag: Scalars['String']['output'];
+  updateUser: Scalars['String']['output'];
 };
 
 
@@ -86,6 +88,11 @@ export type MutationDeleteTagArgs = {
 };
 
 
+export type MutationDeleteUserArgs = {
+  id: Scalars['Float']['input'];
+};
+
+
 export type MutationForgotPasswordArgs = {
   userEmail: Scalars['String']['input'];
 };
@@ -117,6 +124,12 @@ export type MutationUpdateTagArgs = {
   id: Scalars['Float']['input'];
 };
 
+
+export type MutationUpdateUserArgs = {
+  data: UpdateUserInput;
+  id: Scalars['Float']['input'];
+};
+
 export type Query = {
   __typename?: 'Query';
   getAllFrequences: Array<Frequency>;
@@ -125,7 +138,7 @@ export type Query = {
   getFrequenceById: Frequency;
   getScanById: Scan;
   getTagById: Tag;
-  getUserInfo: UserInfo;
+  getUserInfo?: Maybe<UserInfo>;
 };
 
 
@@ -200,6 +213,10 @@ export type UpdateTagInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateUserInput = {
+  username: Scalars['String']['input'];
+};
+
 export type User = {
   __typename?: 'User';
   createdAt: Scalars['DateTimeISO']['output'];
@@ -213,8 +230,10 @@ export type User = {
 
 export type UserInfo = {
   __typename?: 'UserInfo';
-  email?: Maybe<Scalars['String']['output']>;
+  email: Scalars['String']['output'];
+  id: Scalars['Float']['output'];
   isLoggedIn: Scalars['Boolean']['output'];
+  username: Scalars['String']['output'];
 };
 
 export type UserInput = {
@@ -276,6 +295,21 @@ export type ChangePasswordMutationVariables = Exact<{
 
 export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: string };
 
+export type DeleteUserMutationVariables = Exact<{
+  id: Scalars['Float']['input'];
+}>;
+
+
+export type DeleteUserMutation = { __typename?: 'Mutation', deleteUser: string };
+
+export type UpdateUserMutationVariables = Exact<{
+  data: UpdateUserInput;
+  updateUserId: Scalars['Float']['input'];
+}>;
+
+
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: string };
+
 export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -301,7 +335,7 @@ export type GetAllTagsQuery = { __typename?: 'Query', getAllTags: Array<{ __type
 export type GetUserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserInfoQuery = { __typename?: 'Query', getUserInfo: { __typename?: 'UserInfo', isLoggedIn: boolean, email?: string | null } };
+export type GetUserInfoQuery = { __typename?: 'Query', getUserInfo?: { __typename?: 'UserInfo', id: number, isLoggedIn: boolean, email: string, username: string } | null };
 
 
 export const CreateNewScanDocument = gql`
@@ -532,6 +566,69 @@ export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptio
 export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
+export const DeleteUserDocument = gql`
+    mutation DeleteUser($id: Float!) {
+  deleteUser(id: $id)
+}
+    `;
+export type DeleteUserMutationFn = Apollo.MutationFunction<DeleteUserMutation, DeleteUserMutationVariables>;
+
+/**
+ * __useDeleteUserMutation__
+ *
+ * To run a mutation, you first call `useDeleteUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteUserMutation, { data, loading, error }] = useDeleteUserMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteUserMutation(baseOptions?: Apollo.MutationHookOptions<DeleteUserMutation, DeleteUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteUserMutation, DeleteUserMutationVariables>(DeleteUserDocument, options);
+      }
+export type DeleteUserMutationHookResult = ReturnType<typeof useDeleteUserMutation>;
+export type DeleteUserMutationResult = Apollo.MutationResult<DeleteUserMutation>;
+export type DeleteUserMutationOptions = Apollo.BaseMutationOptions<DeleteUserMutation, DeleteUserMutationVariables>;
+export const UpdateUserDocument = gql`
+    mutation UpdateUser($data: UpdateUserInput!, $updateUserId: Float!) {
+  updateUser(data: $data, id: $updateUserId)
+}
+    `;
+export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, UpdateUserMutationVariables>;
+
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *      updateUserId: // value for 'updateUserId'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserMutation, UpdateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, options);
+      }
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
 export const GetAllScansDocument = gql`
     query GetAllScans {
   getAllScans {
@@ -714,8 +811,10 @@ export type GetAllTagsQueryResult = Apollo.QueryResult<GetAllTagsQuery, GetAllTa
 export const GetUserInfoDocument = gql`
     query GetUserInfo {
   getUserInfo {
+    id
     isLoggedIn
     email
+    username
   }
 }
     `;

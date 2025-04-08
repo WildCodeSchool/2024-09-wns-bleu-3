@@ -3,9 +3,7 @@ import { UserInput } from '../inputs/UserInput'
 import {
     Arg,
     Ctx,
-    Field,
     Mutation,
-    ObjectType,
     Query,
     Resolver,
 } from 'type-graphql'
@@ -16,25 +14,39 @@ import { v4 as uuidv4 } from 'uuid'
 import { Resend } from 'resend'
 import { ForgotPassword } from '../entities/ForgotPassword'
 import { emailHtml } from '../utils/user'
-
-@ObjectType()
-class UserInfo {
-    @Field()
-    isLoggedIn: boolean
-
-    @Field({ nullable: true })
-    email?: string
-}
+import { UpdateUserInput } from '../inputs/UpdateUserInput'
+import { ContextType } from '../schema/context'
+import UserInfo from '../inputs/UserInfo'
 
 @Resolver(() => User)
 class UserResolver {
-    @Query(() => UserInfo)
-    async getUserInfo(@Ctx() context: any) {
-        if (context.email) {
-            return { isLoggedIn: true, userId: context.email }
+    @Query(() => UserInfo, { nullable: true })
+    async getUserInfo(@Ctx() context: ContextType): Promise<UserInfo | null> {
+        // Extract email from the context
+        const { email } = context
+
+        if (!email) {
+            return null
         }
-        else {
-            return { isLoggedIn: false }
+        try {
+            // Use the email to find the user
+            // {email} is sugar syntax for { email: email }
+            const user = await User.findOne({ where: { email } })
+
+            if (!user) {
+                return null
+            }
+
+            return {
+                id: user.id,
+                isLoggedIn: true,
+                email: user.email,
+                username: user.username,
+            }
+        }
+        catch (error) {
+            console.error('Error fetching user info:', error)
+            return null
         }
     }
 
@@ -52,6 +64,29 @@ class UserResolver {
 
         console.log('result', result)
         return 'user successfully created'
+    }
+
+    @Mutation(() => String)
+    async updateUser(@Arg('id') id: number, @Arg('data') updateUserData: UpdateUserInput) {
+        const userToUpdate = await User.findOne({
+            where: { id },
+        })
+        if (!userToUpdate)
+            throw new Error('User non trouvé')
+
+        if (updateUserData.username) {
+            const existingUser = await User.findOne({
+                where: { username: updateUserData.username },
+            })
+            if (existingUser && existingUser.id !== id) {
+                throw new Error('Un utilisateur avec ce nom existe déjà')
+            }
+        }
+
+        Object.assign(userToUpdate, updateUserData)
+        await User.save(userToUpdate)
+
+        return `L'utilisteur'${id} a bien été mis à jour`
     }
 
     @Mutation(() => String)
@@ -87,6 +122,37 @@ class UserResolver {
             `token=; Secure; HttpOnly;expires=${new Date(Date.now()).toUTCString()}`,
         )
         return 'logged out'
+    }
+
+    @Mutation(() => String)
+    async deleteUser(@Arg('id') id: number, @Ctx() context: any) {
+        try {
+            const user = await User.findOne({ where: { id } })
+            if (!user) {
+                throw new Error('User not found')
+            }
+
+            // utilisateur connecté
+            const isCurrentUser = context.email === user.email
+
+            const result = await User.delete(id)
+
+            // clear le cookie si le user était connecté
+            if (isCurrentUser) {
+                context.res.setHeader('Set-Cookie', `token=; Path=/; Secure; HttpOnly; expires=${new Date(0).toUTCString()}`)
+            }
+
+            if (result.affected === 1) {
+                return isCurrentUser ? 'Your account has been deleted. You will be logged out.' : 'User has been deleted'
+            }
+            else {
+                throw new Error('User has not been found')
+            }
+        }
+        catch (error) {
+            console.error({ 'Error deleting user': error })
+            throw new Error('Something went wrong')
+        }
     }
 
     @Mutation(() => String)
