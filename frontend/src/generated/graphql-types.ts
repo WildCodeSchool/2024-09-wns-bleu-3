@@ -313,14 +313,14 @@ export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: string }
 export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllScansQuery = { __typename?: 'Query', getAllScans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any }> };
+export type GetAllScansQuery = { __typename?: 'Query', getAllScans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null }> };
 
 export type QueryQueryVariables = Exact<{
   getScanByIdId: Scalars['Float']['input'];
 }>;
 
 
-export type QueryQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any } };
+export type QueryQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null } };
 
 export type GetAllFrequencesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -642,6 +642,7 @@ export const GetAllScansDocument = gql`
     isOnline
     createdAt
     updatedAt
+    lastScannedAt
   }
 }
     `;
@@ -690,6 +691,7 @@ export const QueryDocument = gql`
     isOnline
     createdAt
     updatedAt
+    lastScannedAt
   }
 }
     `;

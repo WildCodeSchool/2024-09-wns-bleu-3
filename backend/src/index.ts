@@ -31,10 +31,10 @@ async function start() {
     })
 
     /**
- * Initialise CRON 
- */
+     * Initialise CRON
+     */
 
-    initCronJobs();
+    initCronJobs()
 
     const { url } = await startStandaloneServer(server, {
         listen: { port: 4000 },
