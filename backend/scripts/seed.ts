@@ -16,15 +16,24 @@ interface ScanData {
     isOnline: boolean
     tagIds: string[] // Tu peux mettre un type plus précis si nécessaire
     frequencyId: null | number // null si pas de fréquence
-    lastScannedAt: null
+    lastScannedAt: Date | null
     nextScanAt: Date | null
 }
 
 // Create a mock scan object
 async function mockScanUrl(frequency: Frequency): Promise<ScanData> {
+    // Mocking a scan URL
+    const urls = [
+        'http://vitest.dev/',
+        'https://fr.react.dev/',
+        'https://www.youtube.com/',
+        'https://openai.com/',
+        'https://vite.dev/',
+    ]
+
     return {
         title: faker.lorem.words(3),
-        url: faker.internet.url(),
+        url: faker.helpers.arrayElement(urls),
         statusCode: faker.helpers.arrayElement([200, 404, 500]),
         statusMessage: faker.helpers.arrayElement(['OK', 'Not Found', 'Internal Server Error']),
         responseTime: faker.number.int({ min: 10, max: 100 }),

@@ -65,10 +65,10 @@ export class Scan extends BaseEntity {
     updatedAt: Date
 
     @Field(() => Date, { nullable: true })
-    @Column({ nullable: true })
-    lastScannedAt: Date
+    @Column({ type: 'timestamp', nullable: true })
+    lastScannedAt: Date | null
 
     @Field(() => Date, { nullable: true })
-    @Column({ type: "timestamp", nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     nextScanAt: Date | null
 }
