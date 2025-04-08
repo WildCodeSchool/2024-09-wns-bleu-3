@@ -54,8 +54,10 @@ query GetAllTags {
 export const GET_USER_INFO = gql`
   query GetUserInfo {
     getUserInfo {
+      id
       isLoggedIn
       email
+      username
     }
   }
 `;
