@@ -16,4 +16,5 @@ export const dataHealthCheck = new DataSource({
     synchronize: true,
     logging: ['error', 'query'],
     namingStrategy: new SnakeNamingStrategy(),
+    migrations: ['src/migrations/*.ts'],
 })

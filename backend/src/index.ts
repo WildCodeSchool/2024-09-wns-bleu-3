@@ -9,6 +9,7 @@ import TagResolver from './resolver/TagResolver'
 import UserResolver from './resolver/UserResolver'
 import jwt, { Secret } from 'jsonwebtoken'
 import * as cookie from 'cookie'
+import { seedDatabase } from '../scripts/seed'
 import { initCronJobs } from './cron'
 import { ContextSchema, ContextType } from './schema/context'
 import { JwtPayload } from './@types/payload'
@@ -18,6 +19,10 @@ async function start() {
         throw new Error('no jwt secret')
     }
     await dataHealthCheck.initialize()
+
+    if (process.env.NODE_ENV === 'development') {
+        await seedDatabase()
+    }
 
     const schema = await buildSchema({
         resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver],
