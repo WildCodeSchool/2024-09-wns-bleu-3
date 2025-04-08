@@ -26,11 +26,11 @@ exports[`ScanForm > matches the snapshot when rendered 1`] = `
         <input
           aria-describedby=":r0:-form-item-description"
           aria-invalid="false"
-          class="flex h-9 w-full rounded-md border px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 mt-1 bg-[#0c2d4d] border-[#0e3359] text-white"
+          class="flex h-10 w-full rounded-md border px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm mt-1 bg-[#0c2d4d] border-[#0e3359] text-white"
           id=":r0:-form-item"
           name="title"
           placeholder="My Website Monitor"
-          value=""
+          value="Vitest Website Monitor"
         />
       </div>
       <div
@@ -46,11 +46,11 @@ exports[`ScanForm > matches the snapshot when rendered 1`] = `
         <input
           aria-describedby=":r1:-form-item-description"
           aria-invalid="false"
-          class="flex h-9 w-full rounded-md border px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300 mt-1 bg-[#0c2d4d] border-[#0e3359] text-white"
+          class="flex h-10 w-full rounded-md border px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm mt-1 bg-[#0c2d4d] border-[#0e3359] text-white"
           id=":r1:-form-item"
           name="url"
           placeholder="https://example.com"
-          value=""
+          value="https://vitest.dev/"
         />
       </div>
       <div

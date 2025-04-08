@@ -1,0 +1,14 @@
+name: test-e2e-workflow
+on: push
+jobs:
+    test-e2e:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+              
+            - name: create .env
+              run: cp .env.example .env
+
+            - name: Launch e2e tests
+              run: docker compose -f docker-compose.e2e.yml up --build --exit-code-from=e2e
