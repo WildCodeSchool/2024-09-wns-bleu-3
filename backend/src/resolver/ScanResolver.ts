@@ -56,7 +56,7 @@ class ScanResolver {
                 const frequency = await Frequency.findOne({ where: { id: newScanData.frequencyId } })
                 if (frequency) {
                     newScanToSave.frequency = frequency
-                    // Initialiser la date du prochain scan
+                    // Initialize the next scan date
                     const nextScanDate = new Date()
                     nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
                     newScanToSave.nextScanAt = nextScanDate
@@ -136,7 +136,8 @@ class ScanResolver {
                     const nextScanDate = new Date()
                     nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
                     scanToUpdate.nextScanAt = nextScanDate
-                } else {
+                }
+                else {
                     scanToUpdate.frequency = null
                     scanToUpdate.nextScanAt = null
                 }
