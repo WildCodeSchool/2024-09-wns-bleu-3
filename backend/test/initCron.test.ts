@@ -18,7 +18,7 @@ describe('initCronJobs', () => {
         vi.resetAllMocks();
     });
 
-    it('should initialize the cron job with the correct schedule and execute the callback', () => {
+    it('Vérif que le cron job est initialisé avec le bon patern (1min) et exec le callback', () => {
         (cron.schedule as unknown as MockInstance).mockImplementation((pattern: string, callback: () => void) => {
             expect(pattern).toBe('* * * * *');
             callback();
