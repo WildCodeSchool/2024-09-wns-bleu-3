@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 
+/******* SCAN *********/
 
 export const CREATE_NEW_SCAN = gql`
 mutation CreateNewScan($data: ScanInput!) {
@@ -22,6 +23,8 @@ mutation DeleteScan($deleteScanId: Float!) {
     deleteScan(id: $deleteScanId)
   }`
 
+
+  /******* USER *********/
 export const REGISTER = gql`
   mutation Register($data: UserInput!) {
   register(data: $data)

@@ -14,7 +14,7 @@ export function emailHtml(randomCode: string) {
       <p style="font-size: 16px;">Vous avez demandé à réinitialiser votre mot de passe.</p>
       <p style="font-size: 16px;">Veuillez cliquer sur le bouton ci-dessous pour le réinitialiser :</p>
       
-      <a href="http://localhost:7000/reset-password/${randomCode}" 
+      <a href="http://localhost:3030/reset-password?tab=reset&code=${randomCode}" 
          style="display: inline-block; padding: 12px 20px; font-size: 16px; 
                 color: #ffffff; background-color: #007bff; text-decoration: none;
                 border-radius: 8px; font-weight: bold; margin: 20px 0;">

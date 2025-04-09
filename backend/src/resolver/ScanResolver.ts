@@ -136,7 +136,8 @@ class ScanResolver {
                     const nextScanDate = new Date()
                     nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
                     scanToUpdate.nextScanAt = nextScanDate
-                } else {
+                }
+                else {
                     scanToUpdate.frequency = null
                     scanToUpdate.nextScanAt = null
                 }

@@ -1,4 +1,5 @@
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, CheckCircle, Lock, Mail } from "lucide-react";
@@ -8,6 +9,9 @@ import { useForm } from "react-hook-form";
 
 
 const ForgotPasswordPage = () => {
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState("request");
+
   const form = useForm({
     defaultValues: {
       email: "",
@@ -17,9 +21,29 @@ const ForgotPasswordPage = () => {
     },
   });
 
-  const onSubmit = (data: any) => {
-    console.log("Form Data:", data);
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    const codeParam = searchParams.get("code");
 
+    console.log('🔍 codeParam from URL:', codeParam);
+
+    if (tabParam === "reset") setTab("reset");
+    if (codeParam) form.setValue("code", codeParam);
+  }, [searchParams, form]);
+
+
+  const handleRequestReset = (data: {email:string}) => {
+    const { email } = data;
+    console.log("🔑 Request Reset - Email:", email);
+    // call your backend for forgotPassword
+  };
+
+  const handleResetPassword = (data:  { code:string, newPassword:string, confirmPassword:string }) => {
+    const { code, newPassword, confirmPassword } = data;
+    console.log("🔒 Code:", code);
+    console.log("🔒 New Password ", newPassword);
+    console.log("🔒 Confirm Password :", confirmPassword);
+    // call your backend for changePassword
   };
 
   return (
@@ -34,7 +58,7 @@ const ForgotPasswordPage = () => {
         </div>
 
 
-        <Tabs defaultValue="request" className="w-full">
+        <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsList className="grid grid-cols-2 w-full bg-[#0c2d4d]">
             <TabsTrigger value="request" className="w-full flex-1 text-center data-[state=active]:bg-main-500">
               Request
@@ -53,7 +77,7 @@ const ForgotPasswordPage = () => {
             </div>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(handleRequestReset)} className="space-y-6">
                 <FormField
                   control={form.control}
                   name="email"
@@ -93,7 +117,7 @@ const ForgotPasswordPage = () => {
             </div>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(handleResetPassword)} className="space-y-6">
                 <FormField
                   control={form.control}
                   name="code"

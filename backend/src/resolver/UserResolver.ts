@@ -62,7 +62,7 @@ class UserResolver {
         if (!result)
             throw new Error('Error on creating user')
 
-        console.log('result', result)
+        // console.log('result', result)
         return 'user successfully created'
     }
 
@@ -178,7 +178,7 @@ class UserResolver {
 
         try {
             const { data, error } = await resend.emails.send({
-                from: 'Acme <onboarding@resend.dev>',
+                from: 'Sonar <onboarding@resend.dev>',
                 to: [user.email],
                 subject: 'Réinitialisation mot de passe',
                 html: emailHtml(randomCode),
