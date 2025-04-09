@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForgotPasswordMutation, useRegisterMutation } from "@/generated/graphql-types";
+import { toast } from "sonner";
 
 // Define Zod schema
 const resetPasswordSchema = z.object({
@@ -35,6 +37,7 @@ type resetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 const ForgotPasswordPage = () => {
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState("request");
+  const [forgotPassword]=useForgotPasswordMutation()
 
   const form = useForm<resetPasswordFormValues>({
     resolver:zodResolver(resetPasswordSchema),
@@ -57,9 +60,16 @@ const ForgotPasswordPage = () => {
   }, [searchParams, form]);
 
 
-  const handleRequestReset = (data: {email:string}) => {
+  const handleRequestReset = async(data:resetPasswordFormValues) => {
     const { email } = data;
-    console.log("🔑 Request Reset - Email:", email);
+    await forgotPassword({
+      variables: { userEmail: email }, onCompleted: () => {
+        toast.success("Code de vérification envoyé");
+        setTab("reset");
+      }, onError: (err) => {
+        console.error(err)
+        toast.error("Email introuvable !");
+    }})
     // call your backend for forgotPassword
   };
 
