@@ -18,6 +18,7 @@ vi.mock("sonner", () => ({
 // Mock useNavigate
 const navigateMock = vi.fn()
 vi.mock("react-router", async () => {
+    //on utilise la version réelle de react-router
     const actual = await vi.importActual("react-router")
     return {
         ...actual,
@@ -58,6 +59,8 @@ beforeEach(() => {
     loginMutationMock.mockReset();
 });
 
+
+// TEST D'INTEGRATION:
 test("submits form with valid data and redirects", async () => {
     // mock en cas de succès de la mutation
     loginMutationMock.mockImplementation(({ onCompleted }) => {
@@ -86,7 +89,7 @@ test("submits form with valid data and redirects", async () => {
 })
 
 
-
+// TEST UNITAIRE:
 test("Required field error messages are displayed on submit if fields are empty", async () => {
     renderWithProviders(<LoginPage />);
 
@@ -100,10 +103,12 @@ test("Required field error messages are displayed on submit if fields are empty"
     const passwordErrorMessage = await screen.findByText(/Le mot de passe doit contenir au moins 8 caractères/i);
 
     // Vérification avec les assertions de Vitest + React Testing Library
-    expect(emailErrorMessage).toBeInTheDocument();
-    expect(passwordErrorMessage).toBeInTheDocument();
-});
+    expect(emailErrorMessage).toBeInTheDocument()
+    expect(passwordErrorMessage).toBeInTheDocument()
+})
 
+
+// TEST D'INTEGRATION:
 test("submits form with invalid data (unknown email) and displays error messages", async () => {
     // mock en cas d'erreur
     loginMutationMock.mockImplementation(({ onError }) => {
