@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForgotPasswordMutation } from "@/generated/graphql-types";
+import { useChangePasswordMutation, useForgotPasswordMutation } from "@/generated/graphql-types";
 import { toast } from "sonner";
 
 // Define Zod schema
@@ -36,8 +36,10 @@ type resetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 const ForgotPasswordPage = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate()
   const [tab, setTab] = useState("request");
   const [forgotPassword]=useForgotPasswordMutation()
+  const [changePassword]=useChangePasswordMutation()
 
   const form = useForm<resetPasswordFormValues>({
     resolver:zodResolver(resetPasswordSchema),
@@ -47,6 +49,7 @@ const ForgotPasswordPage = () => {
       newPassword: "",
       confirmPassword: "",
     },
+    mode: "onChange",
   });
 
   useEffect(() => {
@@ -58,24 +61,38 @@ const ForgotPasswordPage = () => {
 
 
   const handleRequestReset = async(data:resetPasswordFormValues) => {
+    // call your backend for forgotPassword
     const { email } = data;
     await forgotPassword({
       variables: { userEmail: email }, onCompleted: () => {
         toast.success("Code de vérification envoyé");
         setTab("reset");
       }, onError: (err) => {
-        console.error(err)
-        toast.error("Email introuvable !");
+        console.error("Error ask reset code : ",err)
+        const errorMessage = err.message;
+        toast.error(errorMessage)
     }})
-    // call your backend for forgotPassword
   };
 
   const handleResetPassword = (data:  resetPasswordFormValues) => {
     const { code, newPassword, confirmPassword } = data;
-    console.log("🔒 Code:", code);
-    console.log("🔒 New Password ", newPassword);
-    console.log("🔒 Confirm Password :", confirmPassword);
+    if (!newPassword || !confirmPassword || !code) {
+      toast.error("Tous les champs sont requis.");
+      return;
+    }    
     // call your backend for changePassword
+    changePassword({
+      variables: { newPassword: newPassword, confirmPassword: confirmPassword, code: code },
+      onCompleted: () => {
+        toast.success("Votre mot de passe a été mis à jour. Vous pouvez maintenant vous reconnecter.");
+        navigate('/')
+      },
+      onError: (err) => {
+        console.error("Error change password", err)
+        const errorMessage = err.message;
+        toast.error(errorMessage)
+      }
+    })
   };
 
   return (
@@ -125,7 +142,7 @@ const ForgotPasswordPage = () => {
                             autoComplete="email"
                             required
                             className="pl-10 bg-[#0c2d4d] border-[#0e3359] text-white"
-                            placeholder="name@example.com"
+                            placeholder="email@example.com"
                           />
                         </div>
                       </FormControl>

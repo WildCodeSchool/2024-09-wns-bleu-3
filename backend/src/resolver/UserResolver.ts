@@ -52,6 +52,18 @@ class UserResolver {
 
     @Mutation(() => String)
     async register(@Arg('data') newUserData: UserInput) {
+        const isUserExist = await User.findOneBy({ email: newUserData.email });
+
+        if (isUserExist) {
+        throw new Error("Un utilisateur avec cet email existe déjà.");
+        }
+            //validaton du mot de passe
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+        if (!passwordRegex.test(newUserData.password)) {
+            throw new Error('Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&)');
+        }
+        
         // const randomCode = uuidv4()
         const result = await User.save({
             username: newUserData.username,
@@ -60,7 +72,7 @@ class UserResolver {
         })
 
         if (!result)
-            throw new Error('Error on creating user')
+            throw new Error('Une erreur est survenue, veuillez réessayer')
 
         // console.log('result', result)
         return 'user successfully created'
@@ -111,7 +123,7 @@ class UserResolver {
             return 'login ok'
         }
         else {
-            throw new Error('Incorrect login')
+            throw new Error('Identifiants incorrects')
         }
     }
 
@@ -161,7 +173,7 @@ class UserResolver {
         const user = await User.findOneBy({ email })
         // if user not found return false
         if (!user) {
-            throw new Error('Identifiants incorrects')
+            throw new Error('Email introuvable')
         }
 
         // save user FORGETPASSWORD in db
@@ -200,12 +212,24 @@ class UserResolver {
     @Mutation(() => String)
     async changePassword(
         @Arg('code') code: string,
-        @Arg('password') password: string,
+        @Arg('newPassword') newPassword: string,
+        @Arg('confirmPassword') confirmPassword: string,
     ) {
-        // vérifier si le code de l'utilisateur est correct
+        //vérifier si les 2 mots de passe sont identiques
+        if (newPassword !== confirmPassword)
+            throw new Error("Les mots de passe ne correspondent pas")
+
+        //validation du mot de passe
+        
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+        if (!passwordRegex.test(newPassword)) {
+            throw new Error('Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&)');
+        }
+
+        // vérifier si le code de vérification est correct
         const forgotPasswordUser = await ForgotPassword.findOneBy({ randomCode: code })
         if (!forgotPasswordUser)
-            throw new Error('Le code de confirmation est incorrect')
+            throw new Error('Le code de vérification est incorrect')
 
         // verifier si le code n'est pas expiré
         const now = new Date()
@@ -214,13 +238,12 @@ class UserResolver {
         )
 
         if (timeDifferenceMinutes > 0) {
-            throw new Error('Le code est expiré')
+            throw new Error('Le code de vérification est expiré')
         }
-
         // chercher l'utilisateur
         const user = await User.findOneByOrFail({ email: forgotPasswordUser.email })
         // modifer le mot de passe de l'utilisateur
-        user.password = await argon2.hash(password)
+        user.password = await argon2.hash(newPassword)
         user.save()
         // supprimer l'utilisateur avec le mot de passe temporaire
         await forgotPasswordUser.remove()

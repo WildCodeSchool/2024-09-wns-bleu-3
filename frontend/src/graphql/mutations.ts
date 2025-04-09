@@ -48,9 +48,10 @@ export const FORGOT_PASSWORD = gql`
 `
 
 export const CHANGE_PASSWORD = gql`
-  mutation ChangePassword($password: String!, $code: String!) {
-  changePassword(password: $password, code: $code)
+  mutation ChangePassword($confirmPassword: String!, $newPassword: String!, $code: String!) {
+  changePassword(confirmPassword: $confirmPassword, newPassword: $newPassword, code: $code)
 }
+
 `
 
 export const DELETE_USER = gql`

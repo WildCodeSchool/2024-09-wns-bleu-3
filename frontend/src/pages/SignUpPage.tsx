@@ -34,14 +34,14 @@ const SignupPage = () => {
   const [registerMutation] = useMutation(REGISTER, {
     onCompleted: (data) => {
       console.log("Inscription réussie :", data);
-      toast.success("You’ve successfully signed up! Welcome to s0nar!.")
+      toast.success("🚀 Inscription réussi, Bienvenu sur s0nar!.")
       navigate("/");
 
     },
-    onError: (error) => {
-      console.error("Erreur lors de l'inscription :", error);
-      toast.error("An error occurred. Please check your details.");
-
+    onError: (err) => {
+      console.error("Erreur lors de l'inscription :", err);
+      const errorMessage = err.message
+      toast.error(errorMessage);
     }
   });
 
@@ -51,7 +51,8 @@ const SignupPage = () => {
       username: "",
       email: "",
       password: "",
-    }
+    },
+    mode:"onChange"
   });
 
   const onSubmit = (data: ScanFormValues) => {
