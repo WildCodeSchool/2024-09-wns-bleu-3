@@ -7,12 +7,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// Define Zod schema
+const resetPasswordSchema = z.object({
+  email: z.string().min(1, "L'email est requis").email("Veuillez entrer un email valide"),
+  code: z.string().optional(), // Code will be handled by backend validation
+  newPassword: z.string().optional().refine(val => !val || val.length >= 8, {
+    message: "Le mot de passe doit contenir au moins 8 caractères",
+  }).refine(val => !val || /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(val!), {
+    message: "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&)",
+  }),
+  confirmPassword: z.string().optional(),
+}).refine((data) => {
+  if (data.newPassword || data.confirmPassword) {
+    return data.newPassword === data.confirmPassword;
+  }
+  return true;
+}, {
+  message: "Les mots de passe ne correspondent pas",
+  path: ["confirmPassword"],
+});
+
+type resetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 const ForgotPasswordPage = () => {
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState("request");
 
-  const form = useForm({
+  const form = useForm<resetPasswordFormValues>({
+    resolver:zodResolver(resetPasswordSchema),
     defaultValues: {
       email: "",
       code: "",
@@ -38,7 +63,7 @@ const ForgotPasswordPage = () => {
     // call your backend for forgotPassword
   };
 
-  const handleResetPassword = (data:  { code:string, newPassword:string, confirmPassword:string }) => {
+  const handleResetPassword = (data:  resetPasswordFormValues) => {
     const { code, newPassword, confirmPassword } = data;
     console.log("🔒 Code:", code);
     console.log("🔒 New Password ", newPassword);
