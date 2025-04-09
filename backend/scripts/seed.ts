@@ -115,6 +115,9 @@ export async function seedDatabase() {
 
         // Create fake frequencies
         const frequencies = frequencyRepo.create([{
+            name: 'Every 1 minutes',
+            intervalMinutes: 1,
+        }, {
             name: 'Every 15 minutes',
             intervalMinutes: 15,
         }, {
