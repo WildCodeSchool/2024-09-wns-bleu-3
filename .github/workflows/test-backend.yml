@@ -1,15 +1,15 @@
 name: test-client-workflow
 on: push
 jobs:
-  test-client:
+  test-backend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Go to frontend and run test
-        run: cd frontend && npm install && npm test
+      - name: Go to backend and run test
+        run: cd backend && npm install && npm test
   docker:
-    needs: test-client
+    needs: test-backend
     if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/HC-24-docker-image'
     runs-on: ubuntu-latest
     steps:
@@ -26,5 +26,5 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: "{{defaultContext}}:frontend"
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/healthcheck-frontend:latest
+          context: "{{defaultContext}}:backend"
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/healthcheck-backend:latest
