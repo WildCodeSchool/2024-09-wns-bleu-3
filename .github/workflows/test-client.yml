@@ -26,5 +26,5 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: "{{defaultContext}}:client"
+          context: "{{defaultContext}}:frontend"
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/healthCheck:latest
