@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForgotPasswordMutation, useRegisterMutation } from "@/generated/graphql-types";
+import { useForgotPasswordMutation } from "@/generated/graphql-types";
 import { toast } from "sonner";
 
 // Define Zod schema
@@ -52,9 +52,6 @@ const ForgotPasswordPage = () => {
   useEffect(() => {
     const tabParam = searchParams.get("tab");
     const codeParam = searchParams.get("code");
-
-    console.log('🔍 codeParam from URL:', codeParam);
-
     if (tabParam === "reset") setTab("reset");
     if (codeParam) form.setValue("code", codeParam);
   }, [searchParams, form]);
