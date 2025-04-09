@@ -10,6 +10,25 @@ vi.mock('../src/entities/Scan', () => ({
     },
 }));
 
+const mockScanHistorySave = vi.fn().mockResolvedValue(true);
+const mockScanHistoryInstance = {
+    save: mockScanHistorySave,
+    scan: null,
+    statusCode: 0,
+    statusMessage: '',
+    responseTime: 0,
+    sslCertificate: '',
+    isOnline: false
+};
+
+vi.mock('../src/entities/ScanHistory', () => {
+    return {
+        ScanHistory: function () {
+            return { ...mockScanHistoryInstance };
+        }
+    };
+});
+
 vi.mock('../src/utils/scanUrl', () => ({
     scanUrl: vi.fn(),
 }));
