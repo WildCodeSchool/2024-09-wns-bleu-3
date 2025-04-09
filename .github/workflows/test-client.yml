@@ -10,7 +10,7 @@ jobs:
         run: cd frontend && npm install && npm test
   docker:
     needs: test-client
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/HC-24-docker-image'
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
@@ -26,5 +26,5 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          context: "{{defaultContext}}:client"
+          context: "{{defaultContext}}:frontend"
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/healthCheck:latest
