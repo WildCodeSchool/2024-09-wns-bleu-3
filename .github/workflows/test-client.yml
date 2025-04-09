@@ -27,4 +27,4 @@ jobs:
         with:
           push: true
           context: "{{defaultContext}}:frontend"
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/healthCheck:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/healthcheck:latest
