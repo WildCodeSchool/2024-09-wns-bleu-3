@@ -5,6 +5,11 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "baseUrl": ".",
+    "paths": {
+      "src/*": ["./src/*"],
+      "scripts/*": ["./scripts/*"],
+      "test/*": ["./test/*"],
+      },
     "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -21,8 +26,9 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["vitest/globals", "node"],
   },
-  "include": ["./src/**/*.ts", "./scripts/**/*.ts"],
+  "include": ["./src/**/*.ts", "./scripts/**/*.ts", "./test/**/*.ts"],
   "exclude": ["node_modules"]
 }
