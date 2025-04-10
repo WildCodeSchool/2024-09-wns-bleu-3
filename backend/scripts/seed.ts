@@ -85,6 +85,11 @@ export async function seedDatabase() {
                 password: 'password',
                 username: 'umu',
             },
+            {
+                email: 'bylo@duck.com',
+                password: '$argon2id$v=19$m=65536,t=3,p=4$FwWGT2p/5nv2rd/68srNCQ$W4W8Fl7f2cSdvbwnwprACl8cwa1ykbz/ORiBkMAk3KU',
+                username: 'amadou',
+            },
         ])
         await userRepo.save(users)
 
