@@ -12,25 +12,35 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useChangePasswordMutation, useForgotPasswordMutation } from '@/generated/graphql-types';
 import { toast } from 'sonner';
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+
+import { isPasswordValid } from '@/utils/isPasswordValid';
 
 // === Schema === //
 const requestResetSchema = z.object({
-  email: z.string().min(1, "L'email est requis").email('Veuillez entrer un email valide'),
+  email: z.string().min(1, 'Email is required.').email('Please enter a valid email address.'),
 });
 
 const resetPasswordSchema = z
   .object({
-    code: z.string().min(1, 'Code requis'),
-    newPassword: z
-      .string()
-      .min(8, 'Minimum 8 caractères')
-      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/, {
-        message: 'Le mot de passe doit contenir au moins : 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (@$!%*?&)',
-      }),
-    confirmPassword: z.string().min(1, 'Confirmation requise'),
+    code: z.string().min(1, 'Code is required.'),
+    newPassword: z.string().min(1, 'Password is required.').refine(
+      (password) => {
+        try {
+          isPasswordValid(password);
+          return true;
+        } catch {
+          return false;
+        }
+      },
+      {
+        message: 'Password must include 8+ chars, uppercase, lowercase, number, and special character.',
+      }
+    ),
+    confirmPassword: z.string().min(1, 'Confirmation is required.'),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Les mots de passe ne correspondent pas',
+    message: 'Passwords do not match.',
     path: ['confirmPassword'],
   });
 
@@ -39,11 +49,14 @@ type RequestResetFormValues = z.infer<typeof requestResetSchema>;
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 const ForgotPasswordPage = () => {
+  const [isRequestSent, setIsRequestSent] = useState(false)
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [tab, setTab] = useState('request');
   const [forgotPassword] = useForgotPasswordMutation();
   const [changePassword] = useChangePasswordMutation();
+
 
   // Separate forms
   const requestResetForm = useForm<RequestResetFormValues>({
@@ -68,12 +81,12 @@ const ForgotPasswordPage = () => {
   }, [searchParams, resetPasswordForm]);
 
   const handleRequestReset = async (data: RequestResetFormValues) => {
-    // console.log('handleRequestReset data:', data);
     await forgotPassword({
       variables: { userEmail: data.email },
       onCompleted: () => {
-        toast.success('Code de vérification envoyé');
-        navigate('/reset-password?tab=reset');
+        toast.success('✉️ Verification code sent.');
+        setIsRequestSent(true)
+        // navigate('/reset-password?tab=reset');
       },
       onError: (err) => {
         console.error('Error ask reset code:', err);
@@ -91,7 +104,7 @@ const ForgotPasswordPage = () => {
         confirmPassword: data.confirmPassword,
       },
       onCompleted: () => {
-        toast.success('Mot de passe mis à jour');
+        toast.success('Password updated successfully.')
         navigate('/login');
       },
       onError: (err) => {
@@ -120,29 +133,41 @@ const ForgotPasswordPage = () => {
 
           {/* Request Form */}
           <TabsContent value="request" className="mt-6 space-y-6">
-            <Form {...requestResetForm}>
-              <form onSubmit={requestResetForm.handleSubmit(handleRequestReset)} className="space-y-6">
-                <FormField
-                  control={requestResetForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Email Address</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                          <Input {...field} type="email" className="pl-10 bg-[#0c2d4d] border-[#0e3359] text-white" placeholder="email@example.com" />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                  Send Reset Link
-                </Button>
-              </form>
+            <Form {...requestResetForm}>
+              {!isRequestSent &&
+                <form onSubmit={requestResetForm.handleSubmit(handleRequestReset)} className="space-y-6">
+                  <FormField
+                    control={requestResetForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Email Address</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <Input {...field} type="email" className="pl-10 bg-[#0c2d4d] border-[#0e3359] text-white" placeholder="email@example.com" />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    Send Reset Link
+                  </Button>
+                </form>
+              }
+              {isRequestSent &&
+                <Alert className="bg-[#0c2d4d] border-[#0e3359] text-white">
+
+                  <AlertTitle className="text-white">Verification code sent!</AlertTitle>
+                  <AlertDescription className="text-gray-300">
+                    Please check your inbox or spam folder for the verification code.
+                  </AlertDescription>
+                </Alert>
+              }
             </Form>
           </TabsContent>
 
@@ -204,6 +229,7 @@ const ForgotPasswordPage = () => {
               </form>
             </Form>
           </TabsContent>
+
         </Tabs>
       </div>
     </main>
