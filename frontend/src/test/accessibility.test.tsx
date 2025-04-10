@@ -8,7 +8,7 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import SignupPage from "@/pages/SignUpPage";
 import HomePage from "@/pages/HomePage";
 import ProfilePage from "@/pages/ProfilePage";
-import ResetPasswordPage from "@/pages/ResetPasswordPage";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 
 
 // Apollo client mock
@@ -138,7 +138,7 @@ test("should have no accessibility violations for resetpassword page", async () 
   const { container } = render(
     <ApolloProvider client={client}>
       <MemoryRouter>
-        <ResetPasswordPage />
+        <ForgotPasswordPage />
       </MemoryRouter>
     </ApolloProvider>
   )
