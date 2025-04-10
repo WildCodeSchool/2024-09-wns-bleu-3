@@ -34,6 +34,8 @@ vi.mock("../generated/graphql-types", () => ({
 
 describe.runIf(isDev)("ScanForm", () => {
 
+
+
   // Test de soumission du formulaire
   test("Create a scan", async () => {
     // const user = userEvent.setup();
