@@ -1,6 +1,6 @@
 import { ScanHistory } from "../entities/ScanHistory";
 
-export async function limitScanHistory(scanId: number, maxRecords: number = 2) {
+export async function limitScanHistory(scanId: number, maxRecords: number = 6) {
 
     try {
         const countScanHistory = await ScanHistory.count({

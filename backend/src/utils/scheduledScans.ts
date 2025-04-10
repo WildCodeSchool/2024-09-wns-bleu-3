@@ -45,17 +45,6 @@ async function updateScanResults(scan: Scan) {
             console.error(`Error scanning ${scan.url}: ${urlData.error}`);
             scan.isOnline = false;
             scan.statusMessage = `Error: ${urlData.error}`;
-
-            // Create a history record for the error state
-            const historyRecord = new ScanHistory();
-            historyRecord.scan = scan;
-            historyRecord.url = scan.url;
-            historyRecord.statusCode = 0; // You might want a specific error code
-            historyRecord.statusMessage = `Error: ${urlData.error}`;
-            historyRecord.responseTime = 0;
-            historyRecord.isOnline = false;
-            historyRecord.sslCertificate = "";
-            await historyRecord.save();
         } else {
             // Update the scan record with latest data
             const { statusCode, statusMessage, responseTime, sslCertificate, isOnline } = urlData;
