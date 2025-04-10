@@ -1,6 +1,8 @@
+import { ScanHistory } from '../entities/ScanHistory';
 import { Scan } from '../entities/Scan';
 import { scanUrl } from './scanUrl';
 import { LessThan } from 'typeorm';
+import { limitScanHistory } from './scheduleDeleteHistoryScans';
 
 /**
  * Exécute tous les scans avec fréquences programmé
@@ -44,7 +46,7 @@ async function updateScanResults(scan: Scan) {
             scan.isOnline = false;
             scan.statusMessage = `Error: ${urlData.error}`;
         } else {
-            // Mettre à jour les données du scan
+            // Update the scan record with latest data
             const { statusCode, statusMessage, responseTime, sslCertificate, isOnline } = urlData;
 
             scan.statusCode = statusCode;
@@ -52,12 +54,23 @@ async function updateScanResults(scan: Scan) {
             scan.responseTime = responseTime;
             scan.sslCertificate = sslCertificate || "";
             scan.isOnline = isOnline;
+
+            // Create a history record
+            const historyRecord = new ScanHistory();
+            historyRecord.scan = scan;
+            historyRecord.url = scan.url;
+            historyRecord.statusCode = statusCode;
+            historyRecord.statusMessage = statusMessage;
+            historyRecord.responseTime = responseTime;
+            historyRecord.sslCertificate = sslCertificate || "";
+            historyRecord.isOnline = isOnline;
+            await historyRecord.save();
         }
 
-        // Mise à jour de la date du dernier scan
+        // Update the scan's last scanned date
         scan.lastScannedAt = new Date();
 
-        // Calcul de la prochaine date de scan en fonction de la fréquence
+        // Calculate next scan date
         if (scan.frequency) {
             const nextScanDate = new Date();
             nextScanDate.setMinutes(nextScanDate.getMinutes() + scan.frequency.intervalMinutes);
@@ -65,6 +78,7 @@ async function updateScanResults(scan: Scan) {
         }
 
         await scan.save();
+        await limitScanHistory(scan.id);
         console.log(`Scan updated for ${scan.url}`);
     } catch (error) {
         console.error(`Failed to update scan ${scan.id}:`, error);

@@ -5,7 +5,7 @@ import { Tag } from '../src/entities/Tag'
 import { User } from '../src/entities/User'
 import { faker } from '@faker-js/faker'
 
-// Ton type pour un scan
+// Scan type for creation
 interface ScanData {
     title: string
     url: string
@@ -14,8 +14,8 @@ interface ScanData {
     responseTime: number
     sslCertificate: '15 days' | '500 days' | 'Expired'
     isOnline: boolean
-    tagIds: string[] // Tu peux mettre un type plus précis si nécessaire
-    frequencyId: null | number // null si pas de fréquence
+    tagIds: string[]
+    frequencyId: null | number
     lastScannedAt: Date | null
     nextScanAt: Date | null
 }
