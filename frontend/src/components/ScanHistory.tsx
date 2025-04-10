@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent} from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import type { ScanItem } from "./scan-history/types"
 import { SearchFilter } from "./scan-history/SearchFilter"
 import { ScanDetails } from "./scan-history/ScanDetails"
@@ -16,29 +16,29 @@ export default function ScanHistory() {
 
   console.log("selectedScanId", selectedScanId);
 
-// fetch all Scans
-const {loading: allScansLoading, error: allScansError, data: allScansData} = useQuery(GET_ALL_SCANS, {
-    pollInterval: 30000,
+  // fetch all Scans
+  const { loading: allScansLoading, error: allScansError, data: allScansData } = useQuery(GET_ALL_SCANS, {
+    pollInterval: 10000,
     // To poll every 30 seconds new scans
-});
+  });
 
-// TODO: infinite scrolling
-// const { loading, error, data, fetchMore } = useQuery(GET_SCAN_HISTORY, {
-//     variables: { limit: 10, offset: 0 }
-//   });
-  
-//   // Function to load more data
-//   const loadMore = () => {
-//     fetchMore({
-//       variables: { offset: allScans.length },
-//       updateQuery: (prev, { fetchMoreResult }) => {
-//         if (!fetchMoreResult) return prev;
-//         return {
-//           scans: [...prev.scans, ...fetchMoreResult.scans]
-//         };
-//       }
-//     });
-//   };
+  // TODO: infinite scrolling
+  // const { loading, error, data, fetchMore } = useQuery(GET_SCAN_HISTORY, {
+  //     variables: { limit: 10, offset: 0 }
+  //   });
+
+  //   // Function to load more data
+  //   const loadMore = () => {
+  //     fetchMore({
+  //       variables: { offset: allScans.length },
+  //       updateQuery: (prev, { fetchMoreResult }) => {
+  //         if (!fetchMoreResult) return prev;
+  //         return {
+  //           scans: [...prev.scans, ...fetchMoreResult.scans]
+  //         };
+  //       }
+  //     });
+  //   };
 
   // Expanded sample data with hourly history and longer URLs
   const allScans: ScanItem[] = allScansData?.getAllScans || [];
@@ -46,7 +46,7 @@ const {loading: allScansLoading, error: allScansError, data: allScansData} = use
 
 
 
-// Filter scans based on search term and active filters
+  // Filter scans based on search term and active filters
   const filteredScans = allScans.filter((scan) => {
     // Filter by search term
     const matchesSearch =
@@ -76,53 +76,53 @@ const {loading: allScansLoading, error: allScansError, data: allScansData} = use
     }
   }, [filteredScans, selectedScanId])
 
-  const {loading: scanByIdLoading, error: scanByIdError, data: scanByIdData} = useQuery(GET_SCAN_BY_ID, {
-    variables: {getScanByIdId: selectedScanId ? Number(selectedScanId) : 0},
+  const { loading: scanByIdLoading, error: scanByIdError, data: scanByIdData } = useQuery(GET_SCAN_BY_ID, {
+    variables: { getScanByIdId: selectedScanId ? Number(selectedScanId) : 0 },
     skip: !selectedScanId,
-});
+  });
 
   const selectedScan = scanByIdData?.getScanById || null;
 
-  if(allScansLoading) return <p>Loading...</p>
+  if (allScansLoading) return <p>Loading...</p>
 
-  if (allScansError ) return <p>Error: {allScansError.message}</p>
+  if (allScansError) return <p>Error: {allScansError.message}</p>
 
   return (
     <div className="w-full mb-16 px-6">
-    <h2 className=" text-2xl text-black text-center font-bold">Scan History</h2>
-    <Card className="w-full max-w-5xl mx-auto border-none shadow-xl rounded-xl overflow-hidden bg-white">
-      <CardContent className="p-0">
-        <div className="flex flex-col">
-          {/* Search and filter section */}
-          <SearchFilter
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            activeFilters={activeFilters}
-            setActiveFilters={setActiveFilters}
-          />
+      <h2 className=" text-2xl text-black text-center font-bold">Scan History</h2>
+      <Card className="w-full max-w-5xl mx-auto border-none shadow-xl rounded-xl overflow-hidden bg-white">
+        <CardContent className="p-0">
+          <div className="flex flex-col">
+            {/* Search and filter section */}
+            <SearchFilter
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              activeFilters={activeFilters}
+              setActiveFilters={setActiveFilters}
+            />
 
-          {/* Main content area */}
-          <div className="grid grid-cols-1 md:grid-cols-3 h-[550px]">
-            {/* Scan list */}
-            <ScanList scans={filteredScans} selectedScanId={selectedScanId} onSelectScan={setSelectedScanId} />
+            {/* Main content area */}
+            <div className="grid grid-cols-1 md:grid-cols-3 h-[550px]">
+              {/* Scan list */}
+              <ScanList scans={filteredScans} selectedScanId={selectedScanId} onSelectScan={setSelectedScanId} />
 
-            {/* Scan details */}
-            <div className="md:col-span-2 p-4 bg-white h-full overflow-y-auto">
-                {scanByIdLoading ?(
-                    <div className="flex justify-center items-center h-full">
+              {/* Scan details */}
+              <div className="md:col-span-2 p-4 bg-white h-full overflow-y-auto">
+                {scanByIdLoading ? (
+                  <div className="flex justify-center items-center h-full">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                   </div>
                 ) : scanByIdError ? (
-                    <div className="text-red-500">Error loading scan details: {scanByIdError.message}</div>
-                ) 
-                : (
+                  <div className="text-red-500">Error loading scan details: {scanByIdError.message}</div>
+                )
+                  : (
                     <ScanDetails scan={selectedScan} />
-                )}
+                  )}
+              </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
     </div>
   )
 }

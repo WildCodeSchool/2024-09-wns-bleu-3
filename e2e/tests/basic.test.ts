@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
  
 test("Go to home page", async ({ page }) => {
    //accèder à la page d'accueil
-   await page.goto("http://api_gateway:80/");
+   await page.goto("/");
   
   //attendre que la page soit complètement chargée
    await page.waitForLoadState("networkidle");

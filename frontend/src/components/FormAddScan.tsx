@@ -23,15 +23,15 @@ export default function ScanForm() {
     const [createScan] = useCreateNewScanMutation();
 
     // Récupérer les tags disponibles
-    const { data: tagsData, loading: tagsLoading, error: tagsError } = useGetAllTagsQuery();
+    const { data: tagsData } = useGetAllTagsQuery();
     // Récupérer les fréquences disponibles
-    const { data: frequenciesData, loading: frequenciesLoading, error: frequenciesError } = useGetAllFrequencesQuery();
+    const { data: frequenciesData } = useGetAllFrequencesQuery();
 
     const form = useForm<ScanFormValues>({
         resolver: zodResolver(scanFormSchema),
         defaultValues: {
-            title: "Vitest Website Monitor",
-            url: "https://vitest.dev/",
+            title: "",
+            url: "",
             frequencyId: "",
             unit: "minutes",
             tagIds: []
@@ -65,14 +65,6 @@ export default function ScanForm() {
                 setIsLoading(false);
             }
         });
-    }
-
-    if (tagsLoading || frequenciesLoading) {
-        return <p>Loading...</p>;
-    }
-
-    if (tagsError || frequenciesError) {
-        return <p>Error</p>;
     }
 
     if (frequenciesData && tagsData) {
@@ -188,6 +180,7 @@ export default function ScanForm() {
                                     type="submit"
                                     variant="lightBlue"
                                     className="w-full"
+                                    id="createScanButton"
 
                                 >
                                     Start Scanning

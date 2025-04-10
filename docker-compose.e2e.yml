@@ -69,6 +69,7 @@ services:
       - api_gateway
     environment:
       - NODE_ENV=development
+      - PLAYWRIGHT_BASE_URL=http://api_gateway
   
 
 volumes:

@@ -25,3 +25,17 @@ test:
 # Purge Docker system: remove unused containers, volumes, networks, and dangling images
 clean:
 	docker system prune -f --volumes
+
+# Launch codegen from playwright
+codegen:
+	npx playwright codegen http://localhost:3030
+
+# Run Playwright tests
+play:
+	npx playwright test
+
+play-report:
+	npx playwright show-report
+
+play-headed:
+	npx playwright test --headed
