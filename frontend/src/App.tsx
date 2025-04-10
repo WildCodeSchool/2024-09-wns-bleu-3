@@ -7,13 +7,12 @@ import { useQuery } from '@apollo/client';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignUpPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import SettingsPage from './pages/ProfilePage';
+
+// import SettingsPage from './pages/ProfilePage';
 import ProfilePage from './pages/ProfilePage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 function App() {
-
-
   const { loading, error, data } = useQuery(GET_ALL_SCANS);
   console.log(data)
 
@@ -24,17 +23,12 @@ function App() {
   return (
     <>
       <Routes>
-
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />
-          <Route path="reset-password" element={<ResetPasswordPage />} />
+          <Route path="reset-password" element={<ForgotPasswordPage />} />
           <Route path="profile" element={<ProfilePage />} />
-
-          {/* <Route path="confirm/:code?" element={<ConfirmEmailPage />} />
-
-          <Route path="forgotPassword" element={<ForgotPasswordPage />} /> */}
         </Route>
 
       </Routes>
