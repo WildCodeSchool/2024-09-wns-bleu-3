@@ -48,7 +48,11 @@ test("should have no accessibility violations for login page", async () => {
   }
 
   expect(results.violations.length).toBe(0)
-});
+})
+
+
+
+
 
 test("should have no accessibility violations for signup page", async () => {
   const { container } = render(
