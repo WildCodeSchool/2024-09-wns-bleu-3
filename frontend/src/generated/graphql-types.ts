@@ -54,7 +54,8 @@ export type Mutation = {
 
 export type MutationChangePasswordArgs = {
   code: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  confirmPassword: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
 };
 
 
@@ -309,7 +310,8 @@ export type ForgotPasswordMutationVariables = Exact<{
 export type ForgotPasswordMutation = { __typename?: 'Mutation', forgotPassword: string };
 
 export type ChangePasswordMutationVariables = Exact<{
-  password: Scalars['String']['input'];
+  confirmPassword: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
   code: Scalars['String']['input'];
 }>;
 
@@ -556,8 +558,12 @@ export type ForgotPasswordMutationHookResult = ReturnType<typeof useForgotPasswo
 export type ForgotPasswordMutationResult = Apollo.MutationResult<ForgotPasswordMutation>;
 export type ForgotPasswordMutationOptions = Apollo.BaseMutationOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
 export const ChangePasswordDocument = gql`
-    mutation ChangePassword($password: String!, $code: String!) {
-  changePassword(password: $password, code: $code)
+    mutation ChangePassword($confirmPassword: String!, $newPassword: String!, $code: String!) {
+  changePassword(
+    confirmPassword: $confirmPassword
+    newPassword: $newPassword
+    code: $code
+  )
 }
     `;
 export type ChangePasswordMutationFn = Apollo.MutationFunction<ChangePasswordMutation, ChangePasswordMutationVariables>;
@@ -575,7 +581,8 @@ export type ChangePasswordMutationFn = Apollo.MutationFunction<ChangePasswordMut
  * @example
  * const [changePasswordMutation, { data, loading, error }] = useChangePasswordMutation({
  *   variables: {
- *      password: // value for 'password'
+ *      confirmPassword: // value for 'confirmPassword'
+ *      newPassword: // value for 'newPassword'
  *      code: // value for 'code'
  *   },
  * });

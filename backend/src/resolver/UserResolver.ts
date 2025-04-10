@@ -17,6 +17,7 @@ import { emailHtml } from '../utils/user'
 import { UpdateUserInput } from '../inputs/UpdateUserInput'
 import { ContextType } from '../schema/context'
 import UserInfo from '../inputs/UserInfo'
+import { isPasswordValid } from '../utils/isPasswordValid'
 
 @Resolver(() => User)
 class UserResolver {
@@ -52,19 +53,29 @@ class UserResolver {
 
     @Mutation(() => String)
     async register(@Arg('data') newUserData: UserInput) {
-        // const randomCode = uuidv4()
+        const isUserExist = await User.findOneBy({ email: newUserData.email });
+
+        // Check if user already exists
+        if (isUserExist) {
+            throw new Error('An account with this email already exists.');
+        }
+
+        // Validate password strength
+        isPasswordValid(newUserData.password);
+
         const result = await User.save({
             username: newUserData.username,
             email: newUserData.email,
             password: await argon2.hash(newUserData.password),
-        })
+        });
 
-        if (!result)
-            throw new Error('Error on creating user')
+        if (!result) {
+            throw new Error('An error occurred, please try again.');
+        }
 
-        console.log('result', result)
-        return 'user successfully created'
+        return 'User successfully created';
     }
+
 
     @Mutation(() => String)
     async updateUser(@Arg('id') id: number, @Arg('data') updateUserData: UpdateUserInput) {
@@ -111,7 +122,7 @@ class UserResolver {
             return 'login ok'
         }
         else {
-            throw new Error('Incorrect login')
+            throw new Error('Identifiants incorrects')
         }
     }
 
@@ -157,75 +168,91 @@ class UserResolver {
 
     @Mutation(() => String)
     async forgotPassword(@Arg('userEmail') email: string) {
-        // search user if exist
-        const user = await User.findOneBy({ email })
-        // if user not found return false
+        // Check if user exists
+        const user = await User.findOneBy({ email });
         if (!user) {
-            throw new Error('Identifiants incorrects')
+            throw new Error('Email not found.');
         }
 
-        // save user FORGETPASSWORD in db
-        const randomCode = uuidv4()
-        const expiresAt = new Date()
-        expiresAt.setMinutes(expiresAt.getMinutes() + 10) // expire dans 10 minutes
-        await ForgotPassword.save({ email, randomCode, expiresAt })
+        // Generate verification code and expiry
+        const randomCode = uuidv4();
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 10);
 
-        // Vérifie si RESEND_API_KEY est défini
+        await ForgotPassword.save({ email, randomCode, expiresAt });
+
+        // Check if email service API key is set
         if (!process.env.RESEND_API_KEY) {
-            throw new Error('RESEND_API_KEY is missing in the .env file')
+            throw new Error('RESEND_API_KEY is missing in the environment variables.');
         }
-        const resend = new Resend(process.env.RESEND_API_KEY)
+
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
         try {
             const { data, error } = await resend.emails.send({
-                from: 'Acme <onboarding@resend.dev>',
+                from: 'Sonar <onboarding@resend.dev>',
                 to: [user.email],
-                subject: 'Réinitialisation mot de passe',
+                subject: 'Password Reset Request',
                 html: emailHtml(randomCode),
-            })
+            });
 
             if (error) {
-                console.error('Email sending failed:', error)
-                throw new Error('L\'envoie du mail a échoué')
+                console.error('Email sending failed:', error);
+                throw new Error('Failed to send verification email.');
             }
-            console.log({ data })
+
+            console.log({ data });
+        } catch (err) {
+            console.error('Unexpected error:', err);
+            throw new Error('An error occurred while sending the email.');
         }
-        catch (err) {
-            console.error('Unexpected error:', err)
-            throw new Error('Erreur rencontrée dans la tentative d\'envoie du mail')
-        }
-        return 'OK'
+
+        return 'Verification code sent successfully.';
     }
 
     @Mutation(() => String)
     async changePassword(
         @Arg('code') code: string,
-        @Arg('password') password: string,
+        @Arg('newPassword') newPassword: string,
+        @Arg('confirmPassword') confirmPassword: string,
     ) {
-        // vérifier si le code de l'utilisateur est correct
-        const forgotPasswordUser = await ForgotPassword.findOneBy({ randomCode: code })
-        if (!forgotPasswordUser)
-            throw new Error('Le code de confirmation est incorrect')
-
-        // verifier si le code n'est pas expiré
-        const now = new Date()
-        const timeDifferenceMinutes = Math.floor(
-            (now.getTime() - forgotPasswordUser.expiresAt.getTime()) / (1000 * 60),
-        )
-
-        if (timeDifferenceMinutes > 0) {
-            throw new Error('Le code est expiré')
+        // Check if passwords match
+        if (newPassword !== confirmPassword) {
+            throw new Error('Passwords do not match.');
         }
 
-        // chercher l'utilisateur
-        const user = await User.findOneByOrFail({ email: forgotPasswordUser.email })
-        // modifer le mot de passe de l'utilisateur
-        user.password = await argon2.hash(password)
-        user.save()
-        // supprimer l'utilisateur avec le mot de passe temporaire
-        await forgotPasswordUser.remove()
-        return 'Le mot de passe a bien été modifié'
+        // Validate password strength
+        isPasswordValid(newPassword);
+
+        // Check if the verification code is valid
+        const forgotPasswordUser = await ForgotPassword.findOneBy({ randomCode: code });
+        if (!forgotPasswordUser) {
+            throw new Error('Invalid verification code.');
+        }
+
+        // Check if the verification code has expired
+        const now = new Date();
+        const timeDifferenceMinutes = Math.floor(
+            (now.getTime() - forgotPasswordUser.expiresAt.getTime()) / (1000 * 60)
+        );
+
+        if (timeDifferenceMinutes > 0) {
+            throw new Error('Verification code has expired.');
+        }
+
+        // Retrieve the user by email
+        const user = await User.findOneByOrFail({ email: forgotPasswordUser.email });
+
+        // Update the user's password
+        user.password = await argon2.hash(newPassword);
+        await user.save();
+
+        // Remove the temporary reset code
+        await forgotPasswordUser.remove();
+
+        return 'Password has been successfully updated.';
     }
+
 }
 
 export default UserResolver

@@ -37,10 +37,10 @@ async function start() {
     })
 
     /**
- * Initialise CRON 
- */
+     * Initialise CRON
+     */
 
-    initCronJobs();
+    initCronJobs()
 
     const { url } = await startStandaloneServer(server, {
         listen: { port: 4000 },
@@ -48,7 +48,7 @@ async function start() {
             if (req.headers.cookie) {
                 const cookies = cookie.parse(req.headers.cookie as string)
                 // console.log('Headers ===> ', req.headers)
-                console.log('Cookies in Headers ===> ', cookies)
+                // console.log('Cookies in Headers ===> ', cookies)
 
                 if (cookies.token !== undefined && cookies.token !== '') {
                     try {

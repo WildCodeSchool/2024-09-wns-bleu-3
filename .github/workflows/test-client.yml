@@ -10,7 +10,7 @@ jobs:
         run: cd frontend && npm install && npm test
   docker:
     needs: test-client
-    if: github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/HC-18'
     runs-on: ubuntu-latest
     steps:
       - name: Login to Docker Hub
