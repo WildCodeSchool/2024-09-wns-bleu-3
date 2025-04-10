@@ -29,7 +29,8 @@ export default function LoginPage() {
         defaultValues: {
             email: "",
             password: "",
-        }
+        },
+        mode:"onChange"
     });
     const onSubmit = async (data: LoginFormValues) => {
         await login({
@@ -39,9 +40,10 @@ export default function LoginPage() {
                 toast.success("You’ve successfully logged in! Welcome to s0nar!");
                 navigate("/");
             },
-            onError: (error) => {
-                console.error("Erreur de connexion:", error.message);
-                toast.error("Login failed. Please check your credentials and try again.");
+            onError: (err) => {
+                console.error("Erreur de connexion:", err);
+                // const errorMessage = err.message;
+                toast.error("Login failed. Please check your credentials and try again.")
             },
         });
         console.log("Données envoyées:", data);

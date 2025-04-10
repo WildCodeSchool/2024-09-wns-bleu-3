@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 
+/******* SCAN *********/
 
 export const CREATE_NEW_SCAN = gql`
 mutation CreateNewScan($data: ScanInput!) {
@@ -22,6 +23,8 @@ mutation DeleteScan($deleteScanId: Float!) {
     deleteScan(id: $deleteScanId)
   }`
 
+
+  /******* USER *********/
 export const REGISTER = gql`
   mutation Register($data: UserInput!) {
   register(data: $data)
@@ -45,9 +48,10 @@ export const FORGOT_PASSWORD = gql`
 `
 
 export const CHANGE_PASSWORD = gql`
-  mutation ChangePassword($password: String!, $code: String!) {
-  changePassword(password: $password, code: $code)
+  mutation ChangePassword($confirmPassword: String!, $newPassword: String!, $code: String!) {
+  changePassword(confirmPassword: $confirmPassword, newPassword: $newPassword, code: $code)
 }
+
 `
 
 export const DELETE_USER = gql`
