@@ -9,7 +9,7 @@ import './index.css';
 const client = new ApolloClient({
   uri: "/api",
   cache: new InMemoryCache(),
-  credentials: "include", 
+  credentials: "include",
 });
 
 createRoot(document.getElementById("root")!).render(
