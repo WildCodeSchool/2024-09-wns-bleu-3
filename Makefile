@@ -15,7 +15,7 @@ remove:
 # stop and run Docker Container
 restart:
 	$(MAKE) stop
-	$(MAKE) run
+	$(MAKE) start
 
 # Run Docker Container for E2E Testing
 test:
