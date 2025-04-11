@@ -189,7 +189,7 @@ class UserResolver {
 
         try {
             const { data, error } = await resend.emails.send({
-                from: 'Sonar <onboarding@resend.dev>',
+                from: 'Sonar <no-reply@sonar.ovh>',
                 to: [user.email],
                 subject: 'Password Reset Request',
                 html: emailHtml(randomCode),
