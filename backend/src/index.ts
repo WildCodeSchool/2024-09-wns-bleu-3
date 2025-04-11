@@ -21,7 +21,7 @@ import { ContextSchema, ContextType } from './schema/context';
 import { JwtPayload } from './@types/payload';
 
 const PORT = 4000;
-const API_PATH = '/api';
+const API_PATH = '/';
 const SUBSCRIPTIONS_PATH = '/subscriptions';
 
 async function verifyToken(cookieStr: string): Promise<ContextType> {
@@ -56,10 +56,8 @@ async function createContext({ req, res }: { req: express.Request, res: express.
   const context: ContextType = { res };
   
   if (req.headers.cookie) {
-    const authContext = await verifyToken(req.headers.cookie as string);
-    if (authContext.email) {
-      context.email = authContext.email;
-    }
+    const {email} = await verifyToken(req.headers.cookie as string);
+    if (email) context.email = email;
   }
   
   return context;
@@ -106,7 +104,11 @@ async function start() {
       introspection: true,
       formatError: (err) => {
         console.error('GraphQL Error:', err);
-        return err;
+        return {
+          message: 'Something went wrong',
+          code: err.extensions?.code,
+          locations: err.locations,
+        }
       },
       plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
@@ -125,35 +127,29 @@ async function start() {
     // Start the server
     await server.start();
     console.log('✅ Apollo Server started');
-    
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-
-    app.use(cors({
-        origin: ['http://localhost:3030', 'http://localhost:5173'],
-        credentials: true,
-        methods: ['GET', 'POST', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-    }))
-
-    // Debug middleware - add this temporarily
-    app.use((req, _res, next) => {
-        console.log(`Request to ${req.path}, method: ${req.method}, body:`, req.body);
-        next();
-    });
 
     // Configure Express middleware
     app.use(
       API_PATH,
+      cors<cors.CorsRequest>({
+        origin: ['http://localhost:3030', 'http://localhost:5173'],
+        credentials: true,
+        methods: ['GET', 'POST', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+      }),
+      express.json(),
       expressMiddleware(server, {
         context: createContext
       })
     );
 
+    // Error Middleware to trace errors
     app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-        console.error('Error occurred:', err); // Log the error to the console
-        res.status(500).json({ error: 'Internal Server Error' }); // Send a proper error message in the response
+      console.error('Unhandled error:', err.stack || err);
+      res.status(err.status || 500).json({
+        error: err.message || 'Internal Server Error'
       });
+    });
     
     // Start HTTP server
     httpServer.listen(PORT, () => {
