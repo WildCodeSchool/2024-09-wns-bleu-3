@@ -5,15 +5,15 @@ import { Scan } from './Scan'
 @ObjectType()
 @Entity()
 export class Frequency extends BaseEntity {
-    @Field()
+    @Field(() => Number)
     @PrimaryGeneratedColumn()
     id: number
 
-    @Field()
-    @Column({ unique: true, nullable: false })
+    @Field(() => String)
+    @Column({ type: 'varchar', unique: true, nullable: false })
     name: string
 
-    @Field()
+    @Field(() => Number)
     @Column({ type: 'int', nullable: false })
     intervalMinutes: number
 

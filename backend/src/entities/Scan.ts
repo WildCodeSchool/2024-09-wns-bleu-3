@@ -7,36 +7,36 @@ import { User } from './User'
 @ObjectType()
 @Entity()
 export class Scan extends BaseEntity {
-    @Field()
+    @Field(() => Number)
     @PrimaryGeneratedColumn()
     id: number
 
-    @Field()
-    @Column()
+    @Field(() => String)
+    @Column({ type: 'varchar' })
     url: string
 
-    @Field()
-    @Column()
+    @Field(() => String)
+    @Column({ type: 'varchar' })
     title: string
 
-    @Field()
-    @Column()
+    @Field(() => Number)
+    @Column({ type: 'int' })
     statusCode: number
 
-    @Field()
-    @Column()
+    @Field(() => String)
+    @Column({ type: 'varchar' })
     statusMessage: string
 
-    @Field()
-    @Column()
+    @Field(() => Number)
+    @Column({ type: 'int' })
     responseTime: number
 
-    @Field()
-    @Column()
+    @Field(() => String)
+    @Column({ type: 'varchar' })
     sslCertificate: string
 
-    @Field()
-    @Column()
+    @Field(() => Boolean)
+    @Column({ type: 'boolean' })
     isOnline: boolean
 
     // Relation Many-to-One avec Frequency
@@ -56,12 +56,12 @@ export class Scan extends BaseEntity {
     @ManyToOne(() => User, user => user.scans, { nullable: true, onDelete: 'CASCADE', eager: true })
     user: User
 
-    @Field()
-    @CreateDateColumn()
+    @Field(() => Date)
+    @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date
 
-    @Field()
-    @UpdateDateColumn()
+    @Field(() => Date)
+    @UpdateDateColumn({ type: 'timestamp' })
     updatedAt: Date
 
     @Field(() => Date, { nullable: true })
