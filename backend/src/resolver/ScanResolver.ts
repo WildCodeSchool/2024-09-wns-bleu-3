@@ -1,3 +1,4 @@
+
 import { Arg, Mutation, Query, Resolver } from 'type-graphql'
 import { Scan } from '../entities/Scan'
 import { ScanInput } from '../inputs/ScanInput'
