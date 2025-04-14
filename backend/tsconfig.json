@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],
+    "target": "ES2017",
+    "lib": ["ES2017", "ES6", "esnext.asynciterable"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
       "src/*": ["./src/*"],
       "scripts/*": ["./scripts/*"],
-      "test/*": ["./test/*"],
+      "test/*": ["./test/*"]
       },
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
@@ -27,8 +27,11 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["vitest/globals", "node"],
   },
-  "include": ["./src/**/*.ts", "./scripts/**/*.ts", "./test/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*",
+    "scripts/**/*",
+    "test/**/*",
+  ],
+  "exclude": ["node_modules", "dist"]
 }
