@@ -1,11 +1,11 @@
-
-import { Arg, Mutation, Query, Resolver } from 'type-graphql'
+import { Arg, Mutation, Query, Resolver, Root, Subscription } from 'type-graphql'
 import { Scan } from '../entities/Scan'
 import { ScanInput } from '../inputs/ScanInput'
 import { UpdateScanInput } from '../inputs/UpdateScanInput'
 import { Tag } from '../entities/Tag'
 import { scanUrl } from '../utils/scanUrl'
 import { Frequency } from '../entities/Frequency'
+import { pubSub } from '../utils/pubSub'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -23,6 +23,14 @@ class ScanResolver {
             console.error({ 'Error getting all scans': error })
             throw new Error('Something wrong happened')
         }
+    }
+
+    @Subscription({
+        topics: 'SCAN_CREATED',
+    })
+    newScan(@Root() scan: Scan): Scan {
+        console.log('New scan created:', scan)
+        return scan
     }
 
     @Mutation(() => Scan)
@@ -65,6 +73,10 @@ class ScanResolver {
             }
 
             const result = await newScanToSave.save()
+
+            // Publish the new scan to subscribers
+            pubSub.publish('SCAN_CREATED', result)
+
             return result
         }
 

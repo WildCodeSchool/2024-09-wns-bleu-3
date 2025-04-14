@@ -182,6 +182,11 @@ export type ScanInput = {
   url: Scalars['String']['input'];
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  newScan: Scan;
+};
+
 export type Tag = {
   __typename?: 'Tag';
   color: Scalars['String']['output'];

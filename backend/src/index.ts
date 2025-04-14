@@ -12,26 +12,11 @@ import * as cookie from 'cookie'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from './@types/payload'
 import { ContextSchema } from './schema/context'
-
-// import jwt, { Secret } from 'jsonwebtoken';
-// import * as cookie from 'cookie';
 import { seedDatabase } from '../scripts/seed'
 import { initCronJobs } from './cron'
-// import { ContextSchema, ContextType } from './schema/context';
-// import { JwtPayload } from './@types/payload';
+import { pubSub } from './utils/pubSub'
 
 const PORT = 4000
-
-// async function createContext({ req, res }: { req: express.Request, res: express.Response }): Promise<ContextType> {
-//   const context: ContextType = { res };
-
-//   if (req.headers.cookie) {
-//     const {email} = await verifyToken(req.headers.cookie as string);
-//     if (email) context.email = email;
-//   }
-
-//   return context;
-// }
 
 async function start() {
     try {
@@ -53,6 +38,7 @@ async function start() {
         // Build GraphQL schema with TypeGraphQL
         const schema = await buildSchema({
             resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver],
+            pubSub,
             // authChecker: ({ context }) => !!context.email,
         })
 
