@@ -6,6 +6,8 @@ import {
   } from '@apollo/client/core';
   import { print } from 'graphql';
   import { createClient, ClientOptions, Client } from 'graphql-sse';
+
+  // Idea from the documentation of graphql-sse with Apollo Client : https://the-guild.dev/graphql/sse/recipes
   
   class SSELink extends ApolloLink {
     private client: Client;
@@ -30,7 +32,7 @@ import {
   }
   
   export const sseLink = new SSELink({
-    url: 'http://localhost:3030/api', // 👈 adapt to your endpoint
+    url: 'http://localhost:3030/api',
     headers: async () => {
       // Add any auth here if needed
       return {

@@ -17,6 +17,8 @@ export default function ScanHistory() {
 
   const client = useApolloClient()
 
+  //  Function subscribption to new scans with SSE 
+
   useScanCreatedSubscription({
     onData: ({ data }) => {
       const newScan = data?.data?.newScan
