@@ -5,46 +5,45 @@ import { Card, CardContent } from "@/components/ui/card"
 import type { ScanItem } from "./scan-history/types"
 import { SearchFilter } from "./scan-history/SearchFilter"
 import { ScanDetails } from "./scan-history/ScanDetails"
-import { useQuery } from "@apollo/client"
+import { useApolloClient, useQuery } from "@apollo/client"
 import { GET_ALL_SCANS, GET_SCAN_BY_ID } from "@/graphql/queries"
 import { ScanList } from "./scan-history/ScanList"
+import { Scan, useScanCreatedSubscription } from "@/generated/graphql-types"
 
 export default function ScanHistory() {
   const [selectedScanId, setSelectedScanId] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [activeFilters, setActiveFilters] = useState<string[]>([])
 
+  const client = useApolloClient()
+
+  useScanCreatedSubscription({
+    onData: ({ data }) => {
+      const newScan = data?.data?.newScan
+      if (!newScan) return
+
+      client.cache.updateQuery({ query: GET_ALL_SCANS }, (prev) => {
+        if (!prev?.getAllScans) return prev
+
+        const alreadyExists = prev.getAllScans.some((scan: Scan) => scan.id === newScan.id)
+
+        if (alreadyExists) return prev
+
+        return {
+          getAllScans: [newScan, ...prev.getAllScans]
+        }
+
+      })
+    }
+  })
+
   console.log("selectedScanId", selectedScanId);
 
   // fetch all Scans
-  const { loading: allScansLoading, error: allScansError, data: allScansData } = useQuery(GET_ALL_SCANS, {
-    pollInterval: 10000,
-    // To poll every 30 seconds new scans
-  });
-
-  // TODO: infinite scrolling
-  // const { loading, error, data, fetchMore } = useQuery(GET_SCAN_HISTORY, {
-  //     variables: { limit: 10, offset: 0 }
-  //   });
-
-  //   // Function to load more data
-  //   const loadMore = () => {
-  //     fetchMore({
-  //       variables: { offset: allScans.length },
-  //       updateQuery: (prev, { fetchMoreResult }) => {
-  //         if (!fetchMoreResult) return prev;
-  //         return {
-  //           scans: [...prev.scans, ...fetchMoreResult.scans]
-  //         };
-  //       }
-  //     });
-  //   };
+  const { loading: allScansLoading, error: allScansError, data: allScansData } = useQuery(GET_ALL_SCANS);
 
   // Expanded sample data with hourly history and longer URLs
   const allScans: ScanItem[] = allScansData?.getAllScans || [];
-
-
-
 
   // Filter scans based on search term and active filters
   const filteredScans = allScans.filter((scan) => {

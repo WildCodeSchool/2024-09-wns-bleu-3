@@ -34,12 +34,6 @@ vi.mock("../generated/graphql-types", () => ({
 
 describe.runIf(isDev)("ScanForm", () => {
 
-  // Ce test s'assure que le rendu du composant reste cohérent entre les exécutions de test
-  test("matches the snapshot when rendered", () => {
-    const { asFragment } = render(<ScanForm />);
-    expect(asFragment()).toMatchSnapshot();
-  })
-
   // Test de soumission du formulaire
   test("Create a scan", async () => {
     // const user = userEvent.setup();

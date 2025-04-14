@@ -342,6 +342,11 @@ export type GetUserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetUserInfoQuery = { __typename?: 'Query', getUserInfo?: { __typename?: 'UserInfo', id: number, isLoggedIn: boolean, email: string, username: string } | null };
 
+export type ScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ScanCreatedSubscription = { __typename?: 'Subscription', newScan: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null } };
+
 
 export const CreateNewScanDocument = gql`
     mutation CreateNewScan($data: ScanInput!) {
@@ -857,3 +862,42 @@ export type GetUserInfoQueryHookResult = ReturnType<typeof useGetUserInfoQuery>;
 export type GetUserInfoLazyQueryHookResult = ReturnType<typeof useGetUserInfoLazyQuery>;
 export type GetUserInfoSuspenseQueryHookResult = ReturnType<typeof useGetUserInfoSuspenseQuery>;
 export type GetUserInfoQueryResult = Apollo.QueryResult<GetUserInfoQuery, GetUserInfoQueryVariables>;
+export const ScanCreatedDocument = gql`
+    subscription ScanCreated {
+  newScan {
+    id
+    url
+    title
+    statusCode
+    statusMessage
+    responseTime
+    sslCertificate
+    isOnline
+    createdAt
+    updatedAt
+    lastScannedAt
+  }
+}
+    `;
+
+/**
+ * __useScanCreatedSubscription__
+ *
+ * To run a query within a React component, call `useScanCreatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useScanCreatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useScanCreatedSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useScanCreatedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ScanCreatedSubscription, ScanCreatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ScanCreatedSubscription, ScanCreatedSubscriptionVariables>(ScanCreatedDocument, options);
+      }
+export type ScanCreatedSubscriptionHookResult = ReturnType<typeof useScanCreatedSubscription>;
+export type ScanCreatedSubscriptionResult = Apollo.SubscriptionResult<ScanCreatedSubscription>;
