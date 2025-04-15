@@ -1,55 +1,142 @@
 import { test, expect } from '@playwright/test';
 import { Client } from 'pg';
 
+let errors: Error[] = [];     
+
 test.describe('Create Scan', () => {
 
     test.beforeEach(async ({ page }) => {
+
+        // push errors if there is any
+        page.on('pageerror', (error: Error) => {
+            errors.push(error);
+        })
+
+        page.on('console', msg => {
+            if (msg.type() === 'error') {
+                console.error('Console error:', msg.text());
+                errors.push(new Error(`Console error: ${msg.text()}`));
+            }
+        });
+        
         // Navigate to the home page
         await page.goto('/');
-        // Wait for the page to load
-        await page.waitForLoadState('networkidle');
-        // Click on the "See all my scans" link
     });
 
-    // TODO: faire un test pour voir si le form existe
+    test.afterEach(() => {
+        // Expect to have 0 errors after each test
+        expect(errors).toHaveLength(0);
+    });
 
-    // TODO: corriger le texte de création de scan, juste pour voir si la création fonctionne et si c'est visible dans la page après la création ?
-
-    // TODO: faire un test pour voir si le scan est disponible, je suis capable de voir les détails et si le response time est dispo etc.
-
-    // TODO: est-ce que je fais un test pour voir si c'est bien enregistré en BDD ?
-
-
-    // Je veux aller sur la page / créer un scan et trouver mon scan dans la page
-    test('user can create and view the scan result', async ({ page }) => {
+    // Je veux aller sur la page / créer un scan
+    test('user can create a scan succesfully', async ({ page }) => {
+        //Fill in Title
         await page.getByRole('textbox', { name: 'Title' }).click();
-        await page.getByRole('textbox', { name: 'Title' }).fill('Test Scan Creation for PlayWright');
+        await page.getByRole('textbox', { name: 'Title' }).fill('My Website Monitor Test');
+
+        // Fill in URL
         await page.getByRole('textbox', { name: 'URL to scan' }).click();
-        await page.getByRole('textbox', { name: 'URL to scan' }).fill('https://vitest.dev/');
-        await page.getByTestId('freqSelectButton').click();
-        await page.getByRole('option', { name: 'Every 15 minutes' }).click();
-        await page.getByTestId('tagSelectButton').click();
+        await page.getByRole('textbox', { name: 'URL to scan' }).fill('https://www.youtube.com/');
+
+        // Select frequency
+        await page.locator('button[name="frequency-combobox"]').click();
+        await page.getByRole('option', { name: 'Every 15 minutes' }).click(); 
+
+        // Select tag
+        await page.locator('button[name="tag-combobox"]').click();
         await page.getByRole('option', { name: 'Base de données' }).click();
-        await page.getByRole('button', { name: 'Start Scanning' }).click();
-        await page.getByText('Test Scan Creation for PlayWrighthttps://vitest.dev/200').first().click();
+
+        // Click on create button and wait for the loading state
+        const startButton = page.getByRole('button', { name: 'Start Scanning' });
+        await startButton.click();
+
+        const loadButton = page.getByRole('button', { name: 'Creating...' });
+
+        await expect(loadButton).toBeVisible();
+
+        // Wait for the toast message to appear
+        const successToast = page.getByText('Scan [My Website Monitor Test] has been created successfully');
+        await expect(successToast).toBeVisible();
+
+        await expect(startButton).toBeVisible();
+        await expect(loadButton).not.toBeVisible();
     });
+
+    test('Scan appears in the scan history', async ({page }) => {
+        const createdScan =  page.locator('.md\\:col-span-1 > div').first();
+        await expect(createdScan).toBeVisible();
+        await expect(createdScan).toHaveText('My Website Monitor Testhttps://www.youtube.com/200');
+    })
+
+    test('User can see scan details of his scan', async ({ page}) => {
+        const createdScan =  page.locator('.md\\:col-span-1 > div').first();
+        await expect(createdScan).toHaveText("My Website Monitor Testhttps://www.youtube.com/200");
+        await createdScan.click();
+
+        const scanDetails = page.getByRole('heading', { name: 'My Website Monitor Test' });
+
+        await expect(scanDetails).toBeVisible();
+        await expect(scanDetails).toHaveText('My Website Monitor Test');
+    })
+
+    test('User cant submit a wrong URL in Scan', async ({ page }) => {
+         //Fill in Title
+         await page.getByRole('textbox', { name: 'Title' }).click();
+         await page.getByRole('textbox', { name: 'Title' }).fill('My Website Monitor Test');
+ 
+         // Fill in URL
+         await page.getByRole('textbox', { name: 'URL to scan' }).click();
+         await page.getByRole('textbox', { name: 'URL to scan' }).fill('https://www.youtube');
+ 
+         // Select frequency
+         await page.locator('button[name="frequency-combobox"]').click();
+         await page.getByRole('option', { name: 'Every 15 minutes' }).click(); 
+ 
+         // Select tag
+         await page.locator('button[name="tag-combobox"]').click();
+         await page.getByRole('option', { name: 'Base de données' }).click();
+ 
+         // Click on create button and wait for the loading state
+         const startButton = page.getByRole('button', { name: 'Start Scanning' });
+         await startButton.click();
+ 
+         const loadButton = page.getByRole('button', { name: 'Creating...' });
+ 
+         await expect(loadButton).toBeVisible();
+ 
+        // Wait for the toast message to appear
+        const errorToast = page.getByText('An error occured while creating the scan. Try again');
+        await expect(errorToast).toBeVisible();
+        
+        await expect(startButton).toBeVisible();
+        await expect(loadButton).not.toBeVisible();
+
+    })
+
+    test('Show error with Zod Validation if the fields are not valid', async ({ page}) => {
+                //Fill in Title
+                await page.getByRole('textbox', { name: 'Title' }).click();
+                await page.getByRole('textbox', { name: 'Title' }).fill('My Website Monitor Test Is Too Long Here');
+
+                const titleError = page.getByText('Title is too long');
+
+        
+                // Fill in URL
+                await page.getByRole('textbox', { name: 'URL to scan' }).click();
+                await page.getByRole('textbox', { name: 'URL to scan' }).fill('test');
+
+                const urlError = page.getByText('Enter a valid URL');
+
+        
+                // No Select frequency or frequency
+                const frequencyError = page.getByText('Enter a valid frequency');
+
+                // Click on create button and wait for the loading state
+                const startButton = page.getByRole('button', { name: 'Start Scanning' });
+                await startButton.click();
+                
+                await expect(titleError).toBeVisible();
+                await expect(urlError).toBeVisible();
+                await expect(frequencyError).toBeVisible();
+    })
 });
-
-
-// test("create scan well registered in DB", async ({ page }) => { 
-//     const client = new Client({
-//         host: process.env.DB_HOST || "db",
-//         user: "postgres",
-//         database: "postgres",
-//         password: "postgres",
-//     })
-
-//     await client.connect();
-
-//     const res = await client.query("SELECT * FROM scan WHERE title = 'Vitest Website Monitor' AND url = 'https://vitest.dev/'");
-//     await client.end();
-//     expect(res.rows.length).toBe(1);
-//     expect(res.rows[0].title).toBe("Vitest Website Monitor");
-//     expect(res.rows[0].url).toBe("https://vitest.dev/");
-
-// })

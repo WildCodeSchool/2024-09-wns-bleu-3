@@ -61,7 +61,7 @@ export default function ScanForm() {
                 console.log(result);
                 setIsLoading(false);
                 form.reset();
-                toast.success(`Scan ${result.createNewScan.title} created successfully!`);
+                toast.success(`Your scan [${result.createNewScan.title}] has been created successfully!`);
 
                 // Redirect to the block scan history
 
@@ -74,13 +74,14 @@ export default function ScanForm() {
             onError: (error) => {
                 console.log(error);
                 setIsLoading(false);
+                toast.error(`An error occured while creating the scan. Try again`)
             }
         });
     }
 
     if (frequenciesData && tagsData) {
         return (
-            <div className="max-w-md mx-auto bg-[#0a2540] rounded-xl shadow-lg border border-[#0c2d4d] p-6">
+            <div className="max-w-md mx-auto bg-[#0a2540] rounded-xl shadow-lg border border-[#0c2d4d] p-6 mb-5">
                 <h2 className="text-xl font-semibold mb-4 text-white">Start Scanning</h2>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -123,12 +124,12 @@ export default function ScanForm() {
                                         onValueChange={field.onChange}
                                         value={field.value}
                                     >
-                                        <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" data-testid="freqSelectButton">
+                                        <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" name="frequency-combobox">
                                             <SelectValue placeholder="Select a frequency" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {frequenciesData?.getAllFrequences?.map((frequency: Frequency) => (
-                                                <SelectItem key={frequency.id} value={frequency.id.toString()} data-testid="freqSelect">
+                                                <SelectItem key={frequency.id} value={frequency.id.toString()}>
                                                     {frequency.name}
                                                 </SelectItem>
                                             ))}
@@ -150,7 +151,7 @@ export default function ScanForm() {
                                         onValueChange={(value) => field.onChange([parseInt(value)])}
                                         value={field.value?.length ? field.value[0].toString() : ""}
                                     >
-                                        <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" data-testid="tagSelectButton">
+                                        <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" name="tag-combobox">
                                             <SelectValue placeholder="Select a tag" />
                                         </SelectTrigger>
                                         <SelectContent>
