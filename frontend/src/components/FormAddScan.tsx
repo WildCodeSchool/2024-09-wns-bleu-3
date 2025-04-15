@@ -11,6 +11,8 @@ import { useState } from "react";
 import { useGetAllFrequencesQuery } from "@/generated/graphql-types";
 import { Loader2 } from "lucide-react";
 import { scanFormSchema, Frequency, Tag } from "@/schema/FormAddScanSchema";
+import { toast } from "sonner";
+
 
 
 
@@ -59,6 +61,15 @@ export default function ScanForm() {
                 console.log(result);
                 setIsLoading(false);
                 form.reset();
+                toast.success(`Scan ${result.createNewScan.title} created successfully!`);
+
+                // Redirect to the block scan history
+
+                const scanHistoryElement = document.getElementById("scan-history");
+                if (scanHistoryElement) {
+                    scanHistoryElement.scrollIntoView({ behavior: "smooth" });
+                }
+
             },
             onError: (error) => {
                 console.log(error);

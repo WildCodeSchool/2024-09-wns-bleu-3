@@ -89,7 +89,7 @@ export default function ScanHistory() {
   if (allScansError) return <p>Error: {allScansError.message}</p>
 
   return (
-    <div className="w-full mb-16 px-6">
+    <div className="w-full mb-16 px-6" id="scan-history">
       <h2 className=" text-2xl text-black text-center font-bold">Scan History</h2>
       <Card className="w-full max-w-5xl mx-auto border-none shadow-xl rounded-xl overflow-hidden bg-white">
         <CardContent className="p-0">
