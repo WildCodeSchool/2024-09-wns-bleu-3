@@ -110,7 +110,7 @@ export default function ScanForm() {
                                     <Select
                                         name="frequency"
                                         onValueChange={field.onChange}
-                                        defaultValue={field.value}
+                                        value={field.value}
                                     >
                                         <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" data-testid="freqSelectButton">
                                             <SelectValue placeholder="Select a frequency" />
@@ -137,7 +137,7 @@ export default function ScanForm() {
                                     <Select
                                         name="tag"
                                         onValueChange={(value) => field.onChange([parseInt(value)])}
-                                        defaultValue={field.value?.length ? field.value[0].toString() : undefined}
+                                        value={field.value?.length ? field.value[0].toString() : ""}
                                     >
                                         <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" data-testid="tagSelectButton">
                                             <SelectValue placeholder="Select a tag" />
