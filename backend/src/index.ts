@@ -34,7 +34,7 @@ async function start() {
 
     const server = new ApolloServer({
         schema,
-        introspection: process.env.NODE_ENV === 'production',
+        introspection: true,
     })
 
     /**
