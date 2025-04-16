@@ -11,6 +11,6 @@ COPY tsconfig.json tsconfig.json
 
 RUN npm run build
 
-# COPY dist dist
+COPY dist dist
 # Commande à exécuter pour démarrer le backend
 CMD npm run startprod
