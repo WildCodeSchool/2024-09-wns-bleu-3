@@ -1,33 +1,16 @@
-# Première étape : build de l'application
-FROM node:lts-alpine as builder
-
+FROM node:lts-alpine
+RUN apk --no-cache add curl
 WORKDIR /app
-
-# Copie des fichiers nécessaires pour l'installation
-COPY package.json ./
+# Copie des fichiers nécessaires
+# COPY package.json package.json
+COPY package.json package.json 
 RUN npm install
+COPY scripts scripts
+COPY src src
+COPY tsconfig.json tsconfig.json
 
-# Copie des fichiers sources
-COPY scripts ./scripts
-COPY src ./src
-COPY tsconfig.json ./
-
-# Construction du projet
 RUN npm run build
 
-# Deuxième étape : préparation de l'image d'exécution
-FROM node:lts-alpine as runner
-
-RUN apk --no-cache add curl
-
-WORKDIR /app
-
-# Copie uniquement des fichiers nécessaires à l'exécution
-COPY package.json ./
-COPY --from=builder /app/dist ./dist
-
-# Installation uniquement des dépendances de production
-RUN npm install --production
-
-# La commande à exécuter au démarrage
-CMD ["npm", "run", "startprod"]
+# COPY dist dist
+# Commande à exécuter pour démarrer le backend
+CMD npm run startprod
