@@ -58,7 +58,7 @@ function renderWithProviders(ui: ReactElement) {
 // TEST D'INTEGRATION
 test("submit signup form with valid data and redirect", async () => {
     // setup le mock pour qu'il appelle le callback onCompleted
-    registerMutationMock.mockImplementation(async (options) => {
+    registerMutationMock.mockImplementation(async (_options) => {
         const result = { data: { register: "user successfully created" } }
         // Appeler manuellement le toast.success pour simuler le callback onCompleted
         toast.success("You’ve successfully signed up! Welcome to s0nar!")
@@ -115,7 +115,7 @@ test("Required field error messages are displayed on submit if fields are empty"
 //TEST UNITAIRE:
 test("submits form with known email and shows error toast", async () => {
     // simuler une mutation échouée (email déjà utilisé)
-    registerMutationMock.mockImplementation(async (options) => {
+    registerMutationMock.mockImplementation(async (_options) => {
         const error = new Error("/Erreur lors de l'inscription :/")
         // Appeler manuellement toast.error pour simuler l'affichage de l'erreur
         toast.error("An error occurred. Please check your details.")
