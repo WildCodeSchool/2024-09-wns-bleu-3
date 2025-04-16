@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   db:
     image: postgres:latest
@@ -10,8 +8,6 @@ services:
       interval: 1s
       timeout: 2s
       retries: 100
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
   adminer:
     image: adminer
@@ -20,8 +16,9 @@ services:
         condition: service_healthy
 
   backend:
-    image: s0ma8/healthcheck-backend:latest
-    command: sh -c "npm run startprod"
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
     environment:
       - CHOKIDAR_USEPOLLING=true
       - NODE_ENV=development
@@ -37,7 +34,9 @@ services:
         condition: service_healthy
 
   frontend:
-    image: s0ma8/healthcheck-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
@@ -64,3 +63,5 @@ services:
 
 volumes:
   postgres_data:
+
+
