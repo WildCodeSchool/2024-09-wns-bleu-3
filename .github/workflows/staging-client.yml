@@ -4,7 +4,7 @@ name: Compile and push client image
 # Controls when the workflow will run
 on:
   workflow_run:
-    workflows: ["test-client-workflow"]
+    workflows: ["test-client-workflow", "test-e2e-workflow"]
     types: [completed]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -22,7 +22,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so yor job can access it
+      # Checks-out your repository under $GITHUB_WORKSPACE, so yor job can access
       - name: Check out code
         uses: actions/checkout@v2
 
