@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="coneGradient" x1="50%" y1="50%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0289f5" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0289f5" stop-opacity="0.1"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Fond circulaire -->
+  <circle cx="32" cy="32" r="28" fill="#1d436d" opacity="0.9"/>
+  
+  <!-- Cône de balayage -->
+  <path d="M32 32L64 32A32 32 0 0 0 32 0Z" fill="url(#coneGradient)" transform="rotate(45 32 32)"/>
+  
+  <!-- Cercles de concentration -->
+  <circle cx="32" cy="32" r="24" fill="none" stroke="#051525" stroke-width="1.5"/>
+  <circle cx="32" cy="32" r="16" fill="none" stroke="#051525" stroke-width="1"/>
+  <circle cx="32" cy="32" r="8" fill="none" stroke="#051525" stroke-width="0.5"/>
+  
+  <!-- Point central -->
+  <circle cx="32" cy="32" r="2" fill="#0289f5"/>
+</svg>
