@@ -5,15 +5,18 @@ on: push
 
 jobs:
     test-server:
+        if: github.ref != 'refs/heads/main'
         uses: ./.github/workflows/test-server.yml
         with:
             ref: ${{ github.ref }}
     test-client:
+        if: github.ref != 'refs/heads/main'
         uses: ./.github/workflows/test-client.yml
         with:
             ref: ${{ github.ref }}
 
     test-e2e:
+        if: github.ref != 'refs/heads/main'
         needs: [ test-server, test-client ]
         uses: ./.github/workflows/e2e.yml
         with:
@@ -100,10 +103,9 @@ jobs:
                 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
     
     deploy-main:
-        needs: [ test-e2e ]
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main'
         
         steps:
             - name: Call production webhook
-              run: curl -X POST https://ops.092024-bleu-3.wns.wilders.dev/hooks/update-production-sonar
+              run: curl -X POST https://ops.092024-bleu-3.wns.wilders.dev/hooks/${{secrets.WEBHOOK_ID}}
