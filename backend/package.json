@@ -12,7 +12,9 @@
         "lint:fix": "eslint . --fix",
         "test": "vitest",
         "test:coverage": "vitest --coverage",
-        "test:watch": "vitest --watch"
+        "test:watch": "vitest --watch",
+        "build": "tsc",
+        "startprod": "node ./dist/src/index.js"
     },
     "dependencies": {
         "@apollo/server": "^4.11.3",

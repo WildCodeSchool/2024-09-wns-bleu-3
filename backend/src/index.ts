@@ -34,6 +34,7 @@ async function start() {
 
     const server = new ApolloServer({
         schema,
+        introspection: true,
     })
 
     /**
