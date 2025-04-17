@@ -1,22 +1,26 @@
 # .github/workflows/staging-client.yml
 name: Compile and push client image
 
+# Controls when the workflow will run
 on:
-  # Only use workflow_run for the automated pipeline
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: ["staging"]
+  
   workflow_run:
-    workflows: ["test-client-workflow"]
+    workflows: test-client-workflow
     types:
       - completed
-    branches:
-      - staging
-  
-  # Keep manual trigger option
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # This workflow contains a single job called "build"
   build:
-    # This condition only applies to workflow_run events
-    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
