@@ -4,7 +4,7 @@ name: Compile and push server image
 # Controls when the workflow will run
 on:
   workflow_run:
-    workflows: ["test-server"]
+    workflows: ["test-server-workflow"]
     types: [completed]
 
   # Allows you to run this workflow manually from the Actions tab
