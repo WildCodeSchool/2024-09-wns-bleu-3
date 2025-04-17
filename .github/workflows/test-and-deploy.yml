@@ -1,11 +1,6 @@
 name: Test and Deploy
 
-on: 
-    push:
-    pull_request:
-        branches:
-            - staging
-            - main
+on: push
 
 jobs:
     test-server:
@@ -26,7 +21,7 @@ jobs:
     deploy-server:
         needs: [ test-e2e ]
         runs-on: ubuntu-latest
-        if: github.event_name == 'pull_request' && github.base_ref == 'staging'
+        if: github.ref == 'refs/heads/staging'
     
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
@@ -65,7 +60,7 @@ jobs:
     deploy-client:
         needs: [ test-e2e ]
         runs-on: ubuntu-latest
-        if: github.event_name == 'pull_request' && github.base_ref == 'staging'
+        if: github.ref == 'refs/heads/staging'
 
     
         # Steps represent a sequence of tasks that will be executed as part of the job
