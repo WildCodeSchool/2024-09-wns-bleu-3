@@ -32,7 +32,7 @@ import {
   }
   
   export const sseLink = new SSELink({
-    url: 'http://localhost:3030/api',
+    url: import.meta.env.VITE_BACKEND_URL || 'http://localhost:3030/api',
     headers: async () => {
       // Add any auth here if needed
       return {

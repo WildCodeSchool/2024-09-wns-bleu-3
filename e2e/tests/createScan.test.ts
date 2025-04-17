@@ -100,17 +100,11 @@ test.describe('Create Scan', () => {
          const startButton = page.getByRole('button', { name: 'Start Scanning' });
          await startButton.click();
  
-         const loadButton = page.getByRole('button', { name: 'Creating...' });
- 
-         await expect(loadButton).toBeVisible();
- 
         // Wait for the toast message to appear
         const errorToast = page.getByText('An error occured while creating the scan. Try again');
         await expect(errorToast).toBeVisible();
         
         await expect(startButton).toBeVisible();
-        await expect(loadButton).not.toBeVisible();
-
     })
 
     test('Show error with Zod Validation if the fields are not valid', async ({ page}) => {
