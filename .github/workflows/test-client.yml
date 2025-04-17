@@ -1,5 +1,10 @@
 name: test-client-workflow
-on: push
+on: 
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
 jobs:
   test-client:
     runs-on: ubuntu-latest

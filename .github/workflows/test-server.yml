@@ -1,5 +1,10 @@
 name: test-server-workflow
-on: push
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
 jobs:
     test-server:
         runs-on: ubuntu-latest
