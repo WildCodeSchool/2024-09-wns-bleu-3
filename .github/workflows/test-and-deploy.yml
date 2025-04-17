@@ -1,3 +1,4 @@
+# This workflow is responsible for testing and deploying the application.
 name: Test and Deploy
 
 on: push
@@ -56,7 +57,7 @@ jobs:
               tags: |
                 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}:latest
                 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
-                
+
     deploy-client:
         needs: [ test-e2e ]
         runs-on: ubuntu-latest
