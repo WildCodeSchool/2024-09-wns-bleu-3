@@ -1,7 +1,12 @@
 # This workflow is responsible for testing and deploying the application.
 name: Test and Deploy
 
-on: push
+on: 
+    push:
+    pull_request:
+        branches:
+            - staging
+            - main
 
 jobs:
     test-server:
@@ -22,7 +27,7 @@ jobs:
     deploy-server:
         needs: [ test-e2e ]
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/staging'
+        if: github.event_name == 'pull_request' && github.base_ref == 'staging'
     
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
@@ -61,7 +66,7 @@ jobs:
     deploy-client:
         needs: [ test-e2e ]
         runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/staging'
+        if: github.event_name == 'pull_request' && github.base_ref == 'staging'
 
     
         # Steps represent a sequence of tasks that will be executed as part of the job
