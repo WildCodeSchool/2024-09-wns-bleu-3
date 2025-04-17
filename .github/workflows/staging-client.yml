@@ -2,22 +2,21 @@
 name: Compile and push client image
 
 on:
+  # Only use workflow_run for the automated pipeline
   workflow_run:
     workflows: ["test-client-workflow"]
     types:
       - completed
     branches:
       - staging
-
-  # Allows you to run this workflow manually from the Actions tab
+  
+  # Keep manual trigger option
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    # The type of runner that the job will run on
+    # This condition only applies to workflow_run events
+    if: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
