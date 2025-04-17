@@ -1,0 +1,15 @@
+name: test-client-workflow
+on: 
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+jobs:
+  test-client:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Go to frontend and run test
+        run: cd frontend && npm install && npm test

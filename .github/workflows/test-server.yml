@@ -1,0 +1,19 @@
+name: test-server-workflow
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+jobs:
+    test-server:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: create .env
+              run: cp .env.example .env
+
+            - name: Go to backend and run test
+              run: cd backend && npm install && npm test

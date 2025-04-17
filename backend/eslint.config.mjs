@@ -7,6 +7,7 @@ export default antfu(
             'no-console': 'off',
             'n/prefer-global/process': 'off',
             'perfectionist/sort-imports': 'off',
+            'ts/consistent-type-imports': 'off',
         },
         stylistic: {
             indent: 4, // 4, or 'tab'

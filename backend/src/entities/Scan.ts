@@ -1,5 +1,9 @@
 import { Field, ObjectType } from 'type-graphql'
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Frequency } from './Frequency'
+import { Tag } from './Tag'
+import { User } from './User'
+import { ScanHistory } from './ScanHistory'
 
 @ObjectType()
 @Entity()
@@ -36,6 +40,27 @@ export class Scan extends BaseEntity {
     @Column()
     isOnline: boolean
 
+    // Relation Many-to-One avec Frequency
+    // nullable true a frequency pour les test, a enlever après
+    @Field(() => Frequency)
+    @ManyToOne(() => Frequency, frequency => frequency.scans, { nullable: true, eager: true })
+    frequency: Frequency | null
+
+    // Relation Many-to-Many avec Tag
+    @Field(() => [Tag])
+    @ManyToMany(() => Tag, tag => tag.scans, { nullable: true, eager: true })
+    @JoinTable()
+    tags: Tag[]
+
+    @Field(() => [ScanHistory])
+    @OneToMany(() => ScanHistory, history => history.scan)
+    history: [ScanHistory]
+
+    // Relation Many-to-One avec Scan
+    @Field(() => User)
+    @ManyToOne(() => User, user => user.scans, { nullable: true, onDelete: 'CASCADE', eager: true })
+    user: User
+
     @Field()
     @CreateDateColumn()
     createdAt: Date
@@ -43,4 +68,12 @@ export class Scan extends BaseEntity {
     @Field()
     @UpdateDateColumn()
     updatedAt: Date
+
+    @Field(() => Date, { nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
+    lastScannedAt: Date | null
+
+    @Field(() => Date, { nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
+    nextScanAt: Date | null
 }

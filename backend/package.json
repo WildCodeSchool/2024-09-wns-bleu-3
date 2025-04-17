@@ -7,30 +7,45 @@
     "keywords": [],
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "ts-node-dev ./src/index.ts",
+        "start": "ts-node-dev  ./src/index.ts",
         "lint": "eslint .",
-        "lint:fix": "eslint . --fix"
+        "lint:fix": "eslint . --fix",
+        "test": "vitest",
+        "test:coverage": "vitest --coverage",
+        "test:watch": "vitest --watch",
+        "build": "tsc",
+        "startprod": "node ./dist/src/index.js"
     },
     "dependencies": {
         "@apollo/server": "^4.11.3",
         "@types/cors": "^2.8.17",
+        "@types/jsonwebtoken": "^9.0.9",
         "@types/node": "^22.13.2",
+        "@types/node-cron": "^3.0.11",
         "@types/pg": "^8.11.11",
+        "argon2": "^0.41.1",
+        "axios": "^1.7.9",
         "class-validator": "^0.14.1",
+        "cookie": "^1.0.2",
         "dotenv": "^16.4.7",
         "graphql": "^16.10.0",
+        "jsonwebtoken": "^9.0.2",
+        "node-cron": "^3.0.3",
         "pg": "^8.13.3",
         "reflect-metadata": "^0.2.2",
+        "resend": "^4.1.2",
         "ts-node-dev": "^2.0.0",
         "type-graphql": "^2.0.0-rc.2",
         "typeorm": "^0.3.20",
         "typeorm-naming-strategies": "^4.1.0",
         "typescript": "^5.7.3",
-        "uuid": "^11.0.5"
+        "uuid": "^11.0.5",
+        "zod": "^3.24.2"
     },
     "devDependencies": {
         "@antfu/eslint-config": "^4.2.0",
-        "eslint": "^9.20.1"
+        "@faker-js/faker": "^9.6.0",
+        "eslint": "^9.20.1",
+        "vitest": "^3.1.1"
     }
 }
