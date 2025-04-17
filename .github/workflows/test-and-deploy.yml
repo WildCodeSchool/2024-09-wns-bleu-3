@@ -1,4 +1,4 @@
-# This workflow is responsible for testing and deploying the application
+# This workflow is responsible for testing and deploying the application.
 name: Test and Deploy
 
 on: push
