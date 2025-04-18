@@ -1,4 +1,7 @@
+import * as dotenv from 'dotenv'
 import {test as base } from '@playwright/test';
+
+dotenv.config({path: '.env'})
 
 type MyFixtures = {
     exceptionLogger: void;

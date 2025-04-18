@@ -7,7 +7,11 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "codegen": "playwright codegen",
+    "test:debug": "playwright test --headed --debug",
+    "test:report": "playwright show-report"
   },
   "keywords": [],
   "author": "",

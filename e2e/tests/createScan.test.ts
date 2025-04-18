@@ -1,4 +1,4 @@
-import { test, expect} from './base'
+import { test, expect} from './setup/base'
 
 test.describe('Create Scan', () => {
 

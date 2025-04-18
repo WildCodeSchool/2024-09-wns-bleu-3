@@ -76,11 +76,6 @@ export async function seedDatabase() {
         // Create some fake users
         const users = userRepo.create([
             {
-                email: 'f.rumigny@gmail.com',
-                password: 'password',
-                username: 'frumigny',
-            },
-            {
                 email: 'umu@test.com',
                 password: 'password',
                 username: 'umu',

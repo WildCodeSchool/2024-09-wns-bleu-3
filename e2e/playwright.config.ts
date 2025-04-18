@@ -1,6 +1,6 @@
+
 import type { PlaywrightTestConfig } from "@playwright/test";
 import { devices } from "@playwright/test";
-
 
  
  /**
@@ -47,26 +47,28 @@ import { devices } from "@playwright/test";
  
    /* Configure projects for major browsers */
    projects: [
-     {
-       name: "chromium",
-       use: {
-         ...devices["Desktop Chrome"],
-       },
-     },
- 
-     {
-       name: "firefox",
-       use: {
-         ...devices["Desktop Firefox"],
-       },
-     },
- 
-     {
-       name: "webkit",
-       use: {
-         ...devices["Desktop Safari"],
-       },
-     },
+    {
+      name: "unauthenticated",
+      testMatch: /.*\.test\.ts/,
+      testIgnore: /auth\/.*\.test\.ts/,
+      use : {
+        storageState: undefined,
+      },
+    },
+    {
+      name: "setup",
+      testMatch: /setup\/.*\.setup\.ts$/,
+      dependencies: ["unauthenticated"],
+    },
+    {
+      name: "authenticated",
+      testMatch: /auth\/.*\.test\.ts/,
+      use: {
+        storageState: "./.auth/user.json",
+      },
+      dependencies: ["setup", "unauthenticated"],
+    },
+
    ],
  
  };

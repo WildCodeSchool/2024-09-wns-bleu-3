@@ -1,4 +1,4 @@
-import { test, expect} from './base'
+import { test, expect} from './setup/base'
  
 test.describe("Basic test", () => {
    //accèder à la page d'accueil

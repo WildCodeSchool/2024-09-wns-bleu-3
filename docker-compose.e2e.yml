@@ -69,6 +69,8 @@ services:
       - ./playwright-report:/app/playwright-report
     depends_on:
       - api_gateway
+    env_file:
+      - .env
     environment:
       - NODE_ENV=development
       - PLAYWRIGHT_BASE_URL=http://api_gateway
