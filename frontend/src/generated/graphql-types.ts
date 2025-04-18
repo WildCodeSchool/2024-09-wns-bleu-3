@@ -360,6 +360,14 @@ export type GetUserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetUserInfoQuery = { __typename?: 'Query', getUserInfo?: { __typename?: 'UserInfo', id: number, isLoggedIn: boolean, email: string, username: string } | null };
 
+export type GetScanHistoryQueryVariables = Exact<{
+  scanId: Scalars['Float']['input'];
+  limit?: InputMaybe<Scalars['Float']['input']>;
+}>;
+
+
+export type GetScanHistoryQuery = { __typename?: 'Query', getScanHistory: Array<{ __typename?: 'ScanHistory', id: number, url: string, statusCode: number, statusMessage: string, responseTime: number, isOnline: boolean, createdAt: any }> };
+
 
 export const CreateNewScanDocument = gql`
     mutation CreateNewScan($data: ScanInput!) {
@@ -880,3 +888,50 @@ export type GetUserInfoQueryHookResult = ReturnType<typeof useGetUserInfoQuery>;
 export type GetUserInfoLazyQueryHookResult = ReturnType<typeof useGetUserInfoLazyQuery>;
 export type GetUserInfoSuspenseQueryHookResult = ReturnType<typeof useGetUserInfoSuspenseQuery>;
 export type GetUserInfoQueryResult = Apollo.QueryResult<GetUserInfoQuery, GetUserInfoQueryVariables>;
+export const GetScanHistoryDocument = gql`
+    query GetScanHistory($scanId: Float!, $limit: Float) {
+  getScanHistory(scanId: $scanId, limit: $limit) {
+    id
+    url
+    statusCode
+    statusMessage
+    responseTime
+    isOnline
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useGetScanHistoryQuery__
+ *
+ * To run a query within a React component, call `useGetScanHistoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetScanHistoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetScanHistoryQuery({
+ *   variables: {
+ *      scanId: // value for 'scanId'
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useGetScanHistoryQuery(baseOptions: Apollo.QueryHookOptions<GetScanHistoryQuery, GetScanHistoryQueryVariables> & ({ variables: GetScanHistoryQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetScanHistoryQuery, GetScanHistoryQueryVariables>(GetScanHistoryDocument, options);
+      }
+export function useGetScanHistoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetScanHistoryQuery, GetScanHistoryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetScanHistoryQuery, GetScanHistoryQueryVariables>(GetScanHistoryDocument, options);
+        }
+export function useGetScanHistorySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetScanHistoryQuery, GetScanHistoryQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetScanHistoryQuery, GetScanHistoryQueryVariables>(GetScanHistoryDocument, options);
+        }
+export type GetScanHistoryQueryHookResult = ReturnType<typeof useGetScanHistoryQuery>;
+export type GetScanHistoryLazyQueryHookResult = ReturnType<typeof useGetScanHistoryLazyQuery>;
+export type GetScanHistorySuspenseQueryHookResult = ReturnType<typeof useGetScanHistorySuspenseQuery>;
+export type GetScanHistoryQueryResult = Apollo.QueryResult<GetScanHistoryQuery, GetScanHistoryQueryVariables>;
