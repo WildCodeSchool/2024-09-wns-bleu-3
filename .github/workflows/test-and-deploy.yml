@@ -1,3 +1,4 @@
+# This workflow file is used to define a GitHub Actions workflow for testing and deploying a project.
 name: Test and Deploy
 
 on: push
