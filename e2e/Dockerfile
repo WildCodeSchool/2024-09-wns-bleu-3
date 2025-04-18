@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.51.0-noble
+FROM mcr.microsoft.com/playwright:v1.52.0-noble
 
 WORKDIR /app
 
@@ -10,4 +10,4 @@ COPY playwright.config.ts /app/playwright.config.ts
 
 COPY tests/ /app/tests/
 
-CMD npx playwright test
+CMD ["npx", "playwright", "test"]
