@@ -55,7 +55,7 @@ export default function LoginPage() {
                     <h1 className="text-3xl font-bold text-white">Se connecter à Sonar</h1>
                 </div>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" aria-label="login-form">
                         <FormField
                             control={form.control}
                             name="email"

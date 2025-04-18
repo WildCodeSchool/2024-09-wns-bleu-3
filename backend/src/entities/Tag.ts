@@ -5,15 +5,15 @@ import { Scan } from './Scan'
 @ObjectType()
 @Entity()
 export class Tag extends BaseEntity {
-    @Field()
+    @Field(() => Number)
     @PrimaryGeneratedColumn()
     id: number
 
-    @Field()
-    @Column({ unique: true, nullable: false })
+    @Field(() => String)
+    @Column({ type: 'varchar', unique: true, nullable: false })
     name: string
 
-    @Field()
+    @Field(() => String)
     @Column({ type: 'varchar', length: 7, nullable: false })
     color: string
 
