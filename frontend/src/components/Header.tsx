@@ -74,7 +74,7 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <div className="cursor-pointer hover:opacity-80 transition">
 
-                  <Avatar name={avatars[selectedAvatar]} size={40} variant="beam" colors={colorPalette} />
+                  <Avatar name={avatars[selectedAvatar]} size={40} variant="beam" colors={colorPalette} aria-label="avatar" />
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -82,7 +82,7 @@ const Header = () => {
                 className="w-56 bg-[#0a2540] shadow-lg rounded-lg border border-[#0c2d4d] text-white"
               >
                 <DropdownMenuItem className="hover:bg-[#0c2d4d] cursor-pointer p-4 flex items-start gap-3">
-                  <Avatar name={avatars[selectedAvatar]} size={40} variant="beam" colors={colorPalette} />
+                  <Avatar name={avatars[selectedAvatar]} size={40} variant="beam" colors={colorPalette} aria-label="avatar" />
                   <div className="flex flex-col flex-1">
                     <div className="font-semibold">{username}</div>
                     <div className="text-sm text-gray-400">{mail}</div>
@@ -145,7 +145,7 @@ const Header = () => {
               {isLoggedIn ? (
                 <>
                   <div className="flex items-center gap-3 py-3 px-4 disab">
-                    <Avatar name={avatars[selectedAvatar]} size={40} variant="beam" colors={colorPalette} />
+                    <Avatar name={avatars[selectedAvatar]} size={40} variant="beam" colors={colorPalette} aria-label="avatar" />
                     <div>
                       <div className="font-semibold">{username}</div>
                       <div className="text-sm text-gray-400">{mail}</div>
