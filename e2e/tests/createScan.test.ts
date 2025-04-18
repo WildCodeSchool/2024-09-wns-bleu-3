@@ -1,31 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { Client } from 'pg';
-
-let errors: Error[] = [];     
+import { test, expect} from './base'
 
 test.describe('Create Scan', () => {
 
     test.beforeEach(async ({ page }) => {
-
-        // push errors if there is any
-        page.on('pageerror', (error: Error) => {
-            errors.push(error);
-        })
-
-        page.on('console', msg => {
-            if (msg.type() === 'error') {
-                console.error('Console error:', msg.text());
-                errors.push(new Error(`Console error: ${msg.text()}`));
-            }
-        });
-        
         // Navigate to the home page
         await page.goto('/');
-    });
-
-    test.afterEach(() => {
-        // Expect to have 0 errors after each test
-        expect(errors).toHaveLength(0);
     });
 
     // Je veux aller sur la page / créer un scan
