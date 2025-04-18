@@ -70,3 +70,17 @@ export const GET_USER_INFO = gql`
     }
   }
 `;
+
+export const GET_SCAN_HISTORY = gql`
+  query GetScanHistory($scanId: Float!, $limit: Float) {
+    getScanHistory(scanId: $scanId, limit: $limit) {
+      id
+      url
+      statusCode
+      statusMessage
+      responseTime
+      isOnline
+      createdAt
+    }
+  }
+`;

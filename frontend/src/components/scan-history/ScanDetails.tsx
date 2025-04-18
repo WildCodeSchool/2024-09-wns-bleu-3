@@ -3,7 +3,9 @@ import { Clock, Globe, AlertCircle } from "lucide-react"
 import type { ScanItem } from "./types"
 import { getStatusStyle } from "./utils"
 import { StatusIndicator } from "./StatusIndicator"
-// import { ScanChart } from "./ScanChart"
+import { GET_SCAN_HISTORY } from "@/graphql/queries";
+import { ScanChart } from "./ScanChart"
+import { useQuery } from "@apollo/client";
 
 // Format date for display
 const formatDate = (date: string) => {
@@ -20,6 +22,14 @@ interface ScanDetailsProps {
 }
 
 export function ScanDetails({ scan }: ScanDetailsProps) {
+
+  const { data: historyData, loading: historyLoading } = useQuery(GET_SCAN_HISTORY, {
+    variables: { scanId: scan?.id },
+    skip: !scan?.id,
+  });
+
+  const scanHistory = historyData?.getScanHistory || [];
+
   if (!scan) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -65,7 +75,14 @@ export function ScanDetails({ scan }: ScanDetailsProps) {
       <StatusIndicator scan={scan} />
 
       {/* Chart */}
-      {/* <ScanChart history={scan.history} /> */}
+      {/* Graph */}
+      {historyLoading ? (
+        <div className="flex justify-center items-center h-40">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        </div>
+      ) : (
+        <ScanChart history={scanHistory} />
+      )}
     </div>
   )
 }

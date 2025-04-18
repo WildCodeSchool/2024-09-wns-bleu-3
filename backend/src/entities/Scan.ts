@@ -1,8 +1,9 @@
 import { Field, ObjectType } from 'type-graphql'
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Frequency } from './Frequency'
 import { Tag } from './Tag'
 import { User } from './User'
+import { ScanHistory } from './ScanHistory'
 
 @ObjectType()
 @Entity()
@@ -50,6 +51,10 @@ export class Scan extends BaseEntity {
     @ManyToMany(() => Tag, tag => tag.scans, { nullable: true, eager: true })
     @JoinTable()
     tags: Tag[]
+
+    @Field(() => [ScanHistory])
+    @OneToMany(() => ScanHistory, history => history.scan)
+    history: [ScanHistory]
 
     // Relation Many-to-One avec Scan
     @Field(() => User)

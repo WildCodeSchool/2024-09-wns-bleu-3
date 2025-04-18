@@ -138,6 +138,7 @@ export type Query = {
   getAllTags: Array<Tag>;
   getFrequenceById: Frequency;
   getScanById: Scan;
+  getScanHistory: Array<ScanHistory>;
   getTagById: Tag;
   getUserInfo?: Maybe<UserInfo>;
 };
@@ -153,6 +154,12 @@ export type QueryGetScanByIdArgs = {
 };
 
 
+export type QueryGetScanHistoryArgs = {
+  limit?: InputMaybe<Scalars['Float']['input']>;
+  scanId: Scalars['Float']['input'];
+};
+
+
 export type QueryGetTagByIdArgs = {
   id: Scalars['Float']['input'];
 };
@@ -161,6 +168,7 @@ export type Scan = {
   __typename?: 'Scan';
   createdAt: Scalars['DateTimeISO']['output'];
   frequency: Frequency;
+  history: Array<ScanHistory>;
   id: Scalars['Float']['output'];
   isOnline: Scalars['Boolean']['output'];
   lastScannedAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -174,6 +182,19 @@ export type Scan = {
   updatedAt: Scalars['DateTimeISO']['output'];
   url: Scalars['String']['output'];
   user: User;
+};
+
+export type ScanHistory = {
+  __typename?: 'ScanHistory';
+  createdAt: Scalars['DateTimeISO']['output'];
+  id: Scalars['Float']['output'];
+  isOnline: Scalars['Boolean']['output'];
+  responseTime: Scalars['Float']['output'];
+  scan: Scan;
+  sslCertificate: Scalars['String']['output'];
+  statusCode: Scalars['Float']['output'];
+  statusMessage: Scalars['String']['output'];
+  url: Scalars['String']['output'];
 };
 
 export type ScanInput = {

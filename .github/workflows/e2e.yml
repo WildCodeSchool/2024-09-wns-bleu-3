@@ -1,5 +1,10 @@
 name: test-e2e-workflow
-on: push
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
 jobs:
     test-e2e:
         runs-on: ubuntu-latest

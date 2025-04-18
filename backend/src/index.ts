@@ -13,6 +13,7 @@ import { seedDatabase } from '../scripts/seed'
 import { initCronJobs } from './cron'
 import { ContextSchema, ContextType } from './schema/context'
 import { JwtPayload } from './@types/payload'
+import ScanHistoryResolver from './resolver/ScanHistoryResolver'
 
 async function start() {
     if (!process.env.JWT_SECRET_KEY) {
@@ -25,7 +26,7 @@ async function start() {
     }
 
     const schema = await buildSchema({
-        resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver],
+        resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver, ScanHistoryResolver],
         authChecker: ({ context }) => {
             return !!context.email // Retourne true si l'email existe, sinon false
         },
@@ -33,6 +34,7 @@ async function start() {
 
     const server = new ApolloServer({
         schema,
+        introspection: true,
     })
 
     /**

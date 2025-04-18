@@ -139,7 +139,7 @@ export default function ProfilePage() {
                         <div className="flex gap-4 items-center">
                             {/* Avatar Section */}
                             <div className="flex-shrink-0">
-                                <Avatar name={avatars[selectedAvatar]} size={80} variant="beam" colors={bluePalette} />
+                                <Avatar name={avatars[selectedAvatar]} size={80} variant="beam" aria-label="avatar" colors={bluePalette} />
                             </div>
 
                             {/* Username and Email Section */}
@@ -153,11 +153,11 @@ export default function ProfilePage() {
                                                 onChange={(e) => setNewUsername(e.target.value)}
                                                 className="w-[250px]  border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-300 focus:outline-none"
                                             />
-                                            <Button variant="lightBlue" onClick={saveUsername} className="gap-1 cursor-pointer">
-                                                <Check className="h-4 w-4" /> Save
+                                            <Button variant="lightBlue" onClick={saveUsername} className="gap-1 cursor-pointer" aria-label="save username">
+                                                <Check className="h-4 w-4" aria-hidden="true" /> Save
                                             </Button>
-                                            <Button variant="outline" onClick={cancelEditing} className="gap-1 cursor-pointer border-gray-200 text-gray-500">
-                                                <X className="h-4 w-4" /> Cancel
+                                            <Button variant="outline" onClick={cancelEditing} className="gap-1 cursor-pointer border-gray-200 text-gray-500" aria-label="cancel">
+                                                <X className="h-4 w-4" aria-hidden="true" /> Cancel
                                             </Button>
                                         </div>
                                     ) : (
@@ -168,8 +168,9 @@ export default function ProfilePage() {
                                                 variant="ghost"
                                                 onClick={() => setIsEditingUsername(true)}
                                                 className="h-8 w-8 p-0 cursor-pointer"
+                                                aria-label="Edit Username"
                                             >
-                                                <Edit2 className="h-4 w-4 " />
+                                                <Edit2 className="h-4 w-4" aria-label="pen icon" />
                                             </Button>
                                         </div>
                                     )}
@@ -191,12 +192,13 @@ export default function ProfilePage() {
                             <div className="flex flex-wrap gap-3 mb-4">
                                 {avatars.map((avatar, index) => (
                                     <button
+                                        aria-label="select avatar"
                                         key={index}
                                         className={`relative p-2 rounded-md cursor-pointer ${tempSelectedAvatar === index ? "bg-gray-100 ring-2 ring-blue-500" : "hover:bg-gray-50"
                                             } transition-colors`}
                                         onClick={() => handleAvatarSelect(index)}
                                     >
-                                        <Avatar size={40} variant="beam" name={avatar} colors={bluePalette} />
+                                        <Avatar size={40} variant="beam" name={avatar} colors={bluePalette} aria-label={`Avatar of ${avatar}`} />
                                     </button>
                                 ))}
                             </div>
@@ -207,8 +209,9 @@ export default function ProfilePage() {
                                         onClick={saveAvatar}
                                         variant="lightBlue"
                                         className="gap-2 cursor-pointer"
+                                        aria-label="save avatar"
                                     >
-                                        <Save className="h-4 w-4" /> Apply Avatar
+                                        <Save className="h-4 w-4" aria-label="save" /> Apply Avatar
                                     </Button>
                                     <Button
                                         onClick={() => {
@@ -217,8 +220,9 @@ export default function ProfilePage() {
                                         }}
                                         variant="outline"
                                         className="gap-2 cursor-pointer border-gray-200 text-gray-500"
+                                        aria-label="cancel avatar"
                                     >
-                                        <X className="h-4 w-4 " /> Cancel
+                                        <X className="h-4 w-4 " aria-label="cancel" /> Cancel
                                     </Button>
                                 </div>
                             )}
@@ -235,8 +239,8 @@ export default function ProfilePage() {
 
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button variant="destructive" className="gap-2 text-white bg-red-600 cursor-pointer hover:opacity-60">
-                                    <Trash2 className="h-4 w-4" /> Delete Account
+                                <Button variant="destructive" className="gap-2 text-white bg-red-600 cursor-pointer hover:opacity-60" aria-label="delete account">
+                                    <Trash2 className="h-4 w-4" aria-label="delete" /> Delete Account
                                 </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
