@@ -1,40 +1,47 @@
 import { Field, ObjectType } from 'type-graphql'
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+} from 'typeorm'
 import { Scan } from './Scan'
 
 @ObjectType()
 @Entity()
 export class ScanHistory extends BaseEntity {
-    @Field()
+    @Field(() => Number)
     @PrimaryGeneratedColumn()
     id: number
 
-    @Field()
-    @Column()
+    @Field(() => String)
+    @Column({ type: 'varchar' })
     url: string
 
-    @Field()
-    @Column()
+    @Field(() => Number)
+    @Column({ type: 'int' })
     statusCode: number
 
-    @Field()
-    @Column()
+    @Field(() => String)
+    @Column({ type: 'varchar' })
     statusMessage: string
 
-    @Field()
-    @Column()
+    @Field(() => Number)
+    @Column({ type: 'int' })
     responseTime: number
 
-    @Field()
-    @Column()
+    @Field(() => String)
+    @Column({ type: 'varchar' })
     sslCertificate: string
 
-    @Field()
-    @Column()
+    @Field(() => Boolean)
+    @Column({ type: 'boolean' })
     isOnline: boolean
 
-    @Field()
-    @CreateDateColumn()
+    @Field(() => Date)
+    @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date
 
     @Field(() => Scan)
