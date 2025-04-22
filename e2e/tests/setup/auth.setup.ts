@@ -30,12 +30,8 @@ setup.describe('Auth setup', () => {
 
       await page.getByRole('button', { name: 'Se connecter' }).click();
       await expect(page).toHaveURL('/')
-
-      // const storageFilePath = path.resolve(__dirname, '../../playwright/.auth/storageState.json');
   
-      await page.context().storageState({path: storageFilePath});
-      // console.log(`✅ Auth storage state saved to ${storageFilePath}`);
-  
+      await page.context().storageState({path: storageFilePath});  
   
   })
 })

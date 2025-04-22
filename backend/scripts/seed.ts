@@ -4,6 +4,7 @@ import { Scan } from '../src/entities/Scan'
 import { Tag } from '../src/entities/Tag'
 import { User } from '../src/entities/User'
 import { faker } from '@faker-js/faker'
+import * as argon2 from 'argon2' // pense à importer argon2
 
 // Ton type pour un scan
 interface ScanData {
@@ -73,12 +74,14 @@ export async function seedDatabase() {
         await frequencyRepo.delete({})
         console.log('Deleted all data')
 
+        const hashedPassword = await argon2.hash('#f#hvHLZtyD@n6i')
+
         // Create some fake users
         const users = userRepo.create([
             {
-                email: 'umu@test.com',
-                password: 'password',
-                username: 'umu',
+                email: 'f.rumigny@gmail.com',
+                password: hashedPassword,
+                username: 'florian',
             },
         ])
         await userRepo.save(users)
