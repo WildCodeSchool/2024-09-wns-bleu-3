@@ -42,7 +42,6 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
       - VITE_BACKEND_URL=http://api_gateway/api
-
     depends_on:
       backend:
         condition: service_healthy
@@ -67,6 +66,7 @@ services:
     build: ./e2e
     volumes:
       - ./playwright-report:/app/playwright-report
+      
     depends_on:
       - api_gateway
     env_file:
@@ -74,8 +74,7 @@ services:
     environment:
       - NODE_ENV=development
       - PLAYWRIGHT_BASE_URL=http://api_gateway
-      - BACKEND_URL=http://api_gateway/api
-  
+      - BACKEND_URL=http://api_gateway/api  
 
 volumes:
   postgres_data:

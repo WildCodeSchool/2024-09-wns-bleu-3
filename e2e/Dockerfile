@@ -10,6 +10,5 @@ COPY playwright.config.ts /app/playwright.config.ts
 COPY tests/ /app/tests/
 
 COPY tsconfig.json /app/tsconfig.json
-COPY .auth/storageState.json /app/.auth/storageState.json
 
-CMD ["npx", "playwright", "test"]
+CMD ["npx", "playwright", "test"]   

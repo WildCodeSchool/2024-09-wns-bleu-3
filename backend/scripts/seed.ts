@@ -74,7 +74,7 @@ export async function seedDatabase() {
         await frequencyRepo.delete({})
         console.log('Deleted all data')
 
-        const hashedPassword = await argon2.hash('#f#hvHLZtyD@n6i')
+        const hashedPassword = await argon2.hash(process.env.LOGIN_TEST_PWD as string)
 
         // Create some fake users
         const users = userRepo.create([

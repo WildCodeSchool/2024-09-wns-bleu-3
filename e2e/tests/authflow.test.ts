@@ -2,29 +2,31 @@ import {test, expect} from './setup/base'
 
 test.describe('Authentication flow', () => {
 
-    test.beforeAll(async ({page}) => {
+    test('User should be able to sign up', async ({page}) => {
             await page.goto('/signup')
       
             // Username sign up
             await page.getByRole('textbox', { name: 'Username' }).click();
-            await page.getByRole('textbox', { name: 'Username' }).fill(process.env.LOGIN_TEST_USERNAME as string);
+            await page.getByRole('textbox', { name: 'Username' }).fill(process.env.SIGN_IN_TEST_USERNAME as string);
         
             // Email sign up
         
             await page.getByRole('textbox', { name: 'Email address' }).click();
-          await page.getByRole('textbox', { name: 'Email address' }).fill(process.env.LOGIN_TEST_EMAIL as string);
+          await page.getByRole('textbox', { name: 'Email address' }).fill(process.env.SIGN_IN_TEST_EMAIL as string);
       
             // Password sign up
         
             await page.getByRole('textbox', { name: 'Password' }).click();
-            await page.getByRole('textbox', { name: 'Password' }).fill(process.env.LOGIN_TEST_PWD as string);
+            await page.getByRole('textbox', { name: 'Password' }).fill(process.env.SIGN_IN_TEST_PWD as string);
         
             await page.getByRole('button', { name: 'Create Account' }).click();
         
-            await page.waitForURL('/')
+            const toastSuccess = page.getByText('You’ve successfully signed up');
+
+            await expect(toastSuccess).toBeVisible();
             await expect(page).toHaveURL('/')
     })
-    
+
     test('User should be able to login', async ({page}) => {
         await page.goto('/login')
         //Email login

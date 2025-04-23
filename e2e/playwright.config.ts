@@ -66,7 +66,7 @@ import { devices } from "@playwright/test";
       use: {
         storageState: "./.auth/user.json",
       },
-      dependencies: ["setup", "unauthenticated"],
+      dependencies: ["setup"],
     },
 
    ],

@@ -22,6 +22,9 @@ test:
 	docker compose -f docker-compose.e2e.yml up --build --abort-on-container-exit
 	docker compose -f docker-compose.e2e.yml down
 
+test-stop:
+	docker compose -f docker-compose.e2e.yml down
+
 # Purge Docker system: remove unused containers, volumes, networks, and dangling images
 clean:
 	docker system prune -f --volumes
