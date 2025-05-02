@@ -25,3 +25,8 @@ test:
 # Purge Docker system: remove unused containers, volumes, networks, and dangling images
 clean:
 	docker system prune -f --volumes
+
+start-preprod:
+	docker compose -f docker-compose.testprod.yml up --build
+stop-preprod:
+	docker compose -f docker-compose.testprod.yml down
