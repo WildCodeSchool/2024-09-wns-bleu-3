@@ -2,10 +2,10 @@ import { Field, InputType } from 'type-graphql'
 
 @InputType()
 export class UserLoginInput {
-    @Field()
+    @Field(() => String)
     email: string
 
-    @Field()
+    @Field(() => String)
     password: string
 }
 

@@ -1,17 +1,18 @@
+// src/inputs/UserInfo.ts
 import { Field, ObjectType } from 'type-graphql'
 
 @ObjectType()
 class UserInfo {
-    @Field()
+    @Field(() => Number)
     id: number
 
-    @Field()
+    @Field(() => String)
     username: string
 
-    @Field()
+    @Field(() => Boolean)
     isLoggedIn: boolean
 
-    @Field()
+    @Field(() => String)
     email: string
 }
 

@@ -6,30 +6,30 @@ import { MinLength } from 'class-validator'
 @ObjectType()
 @Entity()
 export class User extends BaseEntity {
-    @Field()
+    @Field(() => Number)
     @PrimaryGeneratedColumn()
     id: number
 
-    @Field()
-    @Column({ unique: true, nullable: false })
+    @Field(() => String)
+    @Column({ type: 'varchar', unique: true, nullable: false })
     email: string
 
-    @Field()
+    @Field(() => String)
     @MinLength(8)
-    @Column({ nullable: false })
+    @Column({ type: 'varchar', nullable: false })
     password: string
 
-    @Field()
+    @Field(() => String)
     @MinLength(4)
-    @Column({ nullable: false })
+    @Column({ type: 'varchar', nullable: false })
     username: string
 
-    @Field()
-    @CreateDateColumn()
+    @Field(() => Date)
+    @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date
 
-    @Field()
-    @UpdateDateColumn()
+    @Field(() => Date)
+    @UpdateDateColumn({ type: 'timestamp' })
     updatedAt: Date
 
     // Relation One-to-Many avec scan

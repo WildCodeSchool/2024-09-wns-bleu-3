@@ -3,12 +3,12 @@ import { Field, InputType } from 'type-graphql'
 
 @InputType()
 export class UserInput implements Partial<User> {
-    @Field()
+    @Field(() => String)
     username: string
 
-    @Field()
+    @Field(() => String)
     email: string
 
-    @Field()
+    @Field(() => String)
     password: string
 }
