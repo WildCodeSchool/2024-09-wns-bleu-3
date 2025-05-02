@@ -35,7 +35,8 @@ export async function scanUrl(url: string): Promise<scanUrlResponse | { error: s
         let expireTime = ''
         try {
             expireTime = await getSSLCertificateExpireTime(url)
-        } catch (error) {
+        }
+        catch (error) {
             console.error({ 'An error occured in getSSLCertificateExpireTime': error })
             expireTime = 'Error retrieving SSL expiry'
         }

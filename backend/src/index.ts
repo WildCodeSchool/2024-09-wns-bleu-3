@@ -1,83 +1,110 @@
 import 'dotenv/config'
-import { ApolloServer } from '@apollo/server'
-import { startStandaloneServer } from '@apollo/server/standalone'
+import express from 'express'
+import type { NextFunction, Request, Response } from 'express'
+import { createYoga } from 'graphql-yoga'
 import { buildSchema } from 'type-graphql'
 import { dataHealthCheck } from './config/db'
 import ScanResolver from './resolver/ScanResolver'
 import FrequenceResolver from './resolver/FrequenceResolver'
 import TagResolver from './resolver/TagResolver'
 import UserResolver from './resolver/UserResolver'
-import jwt, { Secret } from 'jsonwebtoken'
 import * as cookie from 'cookie'
+import jwt from 'jsonwebtoken'
+import { JwtPayload } from './@types/payload'
+import { ContextSchema } from './schema/context'
 import { seedDatabase } from '../scripts/seed'
 import { initCronJobs } from './cron'
-import { ContextSchema, ContextType } from './schema/context'
-import { JwtPayload } from './@types/payload'
+import { pubSub } from './utils/pubSub'
 import ScanHistoryResolver from './resolver/ScanHistoryResolver'
 
+const PORT = 4000
+
 async function start() {
-    if (!process.env.JWT_SECRET_KEY) {
-        throw new Error('no jwt secret')
-    }
-    await dataHealthCheck.initialize()
+    try {
+    // Validate environment
+        if (!process.env.JWT_SECRET_KEY) {
+            throw new Error('JWT_SECRET_KEY environment variable is required')
+        }
 
-    if (process.env.NODE_ENV === 'development') {
-        await seedDatabase()
-    }
+        // Initialize database
+        await dataHealthCheck.initialize()
+        console.log('✅ Database connection established')
 
-    const schema = await buildSchema({
-        resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver, ScanHistoryResolver],
-        authChecker: ({ context }) => {
-            return !!context.email // Retourne true si l'email existe, sinon false
-        },
-    })
+        // Seed database in development
+        if (process.env.NODE_ENV === 'development') {
+            await seedDatabase()
+            console.log('✅ Database seeded successfully')
+        }
 
-    const server = new ApolloServer({
-        schema,
-        introspection: true,
-    })
+        // Build GraphQL schema with TypeGraphQL
+        const schema = await buildSchema({
+            resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver, ScanHistoryResolver],
+            pubSub,
+            // authChecker: ({ context }) => !!context.email,
+        })
 
-    /**
-     * Initialise CRON
-     */
+        // Setup Express app
+        const app = express()
 
-    initCronJobs()
+        // Setup Yoga Server
+        const yoga = createYoga({
+            schema,
+            graphqlEndpoint: '/graphql',
+            graphiql: true,
+            logging: true,
+            context: async ({ request }) => {
+                let email: string | undefined
 
-    const { url } = await startStandaloneServer(server, {
-        listen: { port: 4000 },
-        context: async ({ req, res }): Promise<ContextType> => {
-            if (req.headers.cookie) {
-                const cookies = cookie.parse(req.headers.cookie as string)
-                // console.log('Headers ===> ', req.headers)
-                // console.log('Cookies in Headers ===> ', cookies)
+                try {
+                    const rawCookies = request.headers.get('cookie') || ''
+                    const cookies = cookie.parse(rawCookies)
 
-                if (cookies.token !== undefined && cookies.token !== '') {
-                    try {
-                        const payload: JwtPayload = jwt.verify(
-                            cookies.token,
-                            process.env.JWT_SECRET_KEY as Secret,
-                        ) as JwtPayload
-                        // Validate the payload using Zod
+                    if (cookies.token) {
+                        const payload = jwt.verify(cookies.token, process.env.JWT_SECRET_KEY as string) as JwtPayload
                         const parsedPayload = ContextSchema.safeParse({ email: payload.email })
 
-                        if (!parsedPayload.success) {
-                            console.error('Invalid JWT payload:', parsedPayload.error)
-                            return { res }
+                        if (parsedPayload.success) {
+                            email = payload.email
                         }
-
-                        console.log('payload was found and returned to resolver')
-                        return { email: payload.email, res }
-                    }
-                    catch (error) {
-                        console.error('JWT verification failed: ', error)
+                        else {
+                            console.error('Invalid JWT payload:', parsedPayload.error)
+                        }
                     }
                 }
-            }
-            return { res }
-        },
-    })
+                catch (error) {
+                    console.error('Invalid JWT payload:', error)
+                }
 
-    console.log(`🚀 Server ready at ${url}`)
+                return {
+                    email,
+                }
+            },
+        })
+
+        app.use(yoga.graphqlEndpoint, yoga)
+
+        // Error Middleware to trace errors
+        app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+            console.error('Unhandled error:', err.stack || err)
+            res.status(err.status || 500).json({
+                error: err.message || 'Internal Server Error',
+            })
+        })
+
+        // Start server
+
+        app.listen(PORT, () => {
+            console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`)
+        })
+
+        // Initialize CRON jobs
+        initCronJobs()
+        console.log('⏰ CRON jobs initialized')
+    }
+    catch (error) {
+        console.error('Failed to start server:', error)
+        process.exit(1)
+    }
 }
 
 start()

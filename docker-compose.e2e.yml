@@ -24,7 +24,7 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - NODE_ENV=development
     healthcheck:
-      test: 'curl --fail --request POST --header ''content-type: application/json'' --url ''http://localhost:4000'' --data ''{"query":"query { __typename }"}'' || exit 1'
+      test: 'curl --fail --request GET --url "http://localhost:4000/graphql/health" || exit 1'
       interval: 1s
       timeout: 2s
       retries: 100
@@ -41,6 +41,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - VITE_BACKEND_URL=http://api_gateway/api
     depends_on:
       backend:
         condition: service_healthy
@@ -65,11 +66,15 @@ services:
     build: ./e2e
     volumes:
       - ./playwright-report:/app/playwright-report
+      
     depends_on:
       - api_gateway
+    env_file:
+      - .env
     environment:
       - NODE_ENV=development
-  
+      - PLAYWRIGHT_BASE_URL=http://api_gateway
+      - BACKEND_URL=http://api_gateway/api  
 
 volumes:
   postgres_data:

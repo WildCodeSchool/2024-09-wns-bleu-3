@@ -11,6 +11,8 @@ import { useState } from "react";
 import { useGetAllFrequencesQuery } from "@/generated/graphql-types";
 import { Loader2 } from "lucide-react";
 import { scanFormSchema, Frequency, Tag } from "@/schema/FormAddScanSchema";
+import { toast } from "sonner";
+
 
 
 
@@ -23,15 +25,15 @@ export default function ScanForm() {
     const [createScan] = useCreateNewScanMutation();
 
     // Récupérer les tags disponibles
-    const { data: tagsData, loading: tagsLoading, error: tagsError } = useGetAllTagsQuery();
+    const { data: tagsData } = useGetAllTagsQuery();
     // Récupérer les fréquences disponibles
-    const { data: frequenciesData, loading: frequenciesLoading, error: frequenciesError } = useGetAllFrequencesQuery();
+    const { data: frequenciesData } = useGetAllFrequencesQuery();
 
     const form = useForm<ScanFormValues>({
         resolver: zodResolver(scanFormSchema),
         defaultValues: {
-            title: "Vitest Website Monitor",
-            url: "https://vitest.dev/",
+            title: "",
+            url: "",
             frequencyId: "",
             unit: "minutes",
             tagIds: []
@@ -59,25 +61,27 @@ export default function ScanForm() {
                 console.log(result);
                 setIsLoading(false);
                 form.reset();
+                toast.success(`Your scan [${result.createNewScan.title}] has been created successfully!`);
+
+                // Redirect to the block scan history
+
+                const scanHistoryElement = document.getElementById("scan-history");
+                if (scanHistoryElement) {
+                    scanHistoryElement.scrollIntoView({ behavior: "smooth" });
+                }
+
             },
             onError: (error) => {
                 console.log(error);
                 setIsLoading(false);
+                toast.error(`An error occured while creating the scan. Try again`)
             }
         });
     }
 
-    if (tagsLoading || frequenciesLoading) {
-        return <p>Loading...</p>;
-    }
-
-    if (tagsError || frequenciesError) {
-        return <p>Error</p>;
-    }
-
     if (frequenciesData && tagsData) {
         return (
-            <div className="max-w-md mx-auto bg-[#0a2540] rounded-xl shadow-lg border border-[#0c2d4d] p-6">
+            <div className="max-w-md mx-auto bg-[#0a2540] rounded-xl shadow-lg border border-[#0c2d4d] p-6 mb-5">
                 <h2 className="text-xl font-semibold mb-4 text-white">Start Scanning</h2>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -118,14 +122,14 @@ export default function ScanForm() {
                                     <Select
                                         name="frequency"
                                         onValueChange={field.onChange}
-                                        defaultValue={field.value}
+                                        value={field.value}
                                     >
-                                        <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" data-testid="freqSelectButton">
+                                        <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" name="frequency-combobox">
                                             <SelectValue placeholder="Select a frequency" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             {frequenciesData?.getAllFrequences?.map((frequency: Frequency) => (
-                                                <SelectItem key={frequency.id} value={frequency.id.toString()} data-testid="freqSelect">
+                                                <SelectItem key={frequency.id} value={frequency.id.toString()}>
                                                     {frequency.name}
                                                 </SelectItem>
                                             ))}
@@ -145,9 +149,9 @@ export default function ScanForm() {
                                     <Select
                                         name="tag"
                                         onValueChange={(value) => field.onChange([parseInt(value)])}
-                                        defaultValue={field.value?.length ? field.value[0].toString() : undefined}
+                                        value={field.value?.length ? field.value[0].toString() : ""}
                                     >
-                                        <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" data-testid="tagSelectButton">
+                                        <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" name="tag-combobox">
                                             <SelectValue placeholder="Select a tag" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -188,6 +192,7 @@ export default function ScanForm() {
                                     type="submit"
                                     variant="lightBlue"
                                     className="w-full"
+                                    id="createScanButton"
 
                                 >
                                     Start Scanning

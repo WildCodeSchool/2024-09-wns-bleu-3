@@ -10,7 +10,16 @@ const isDev = import.meta.env.DEV;
 
 // createScanMock qui imite l'appel API pour créer un scan
 const createScanMock = vi.fn(({ onCompleted }) => {
-  if (onCompleted) onCompleted();
+  const mockResult = {
+    createNewScan: {
+      title: "youtube",
+      id: 1,
+      url: "https://youtube.com",
+      // ajoute ici d'autres champs si ton composant les utilise
+    },
+  };
+
+  if (onCompleted) onCompleted(mockResult);
   return { loading: false };
 });
 
@@ -33,8 +42,6 @@ vi.mock("../generated/graphql-types", () => ({
 }));
 
 describe.runIf(isDev)("ScanForm", () => {
-
-
 
   // Test de soumission du formulaire
   test("Create a scan", async () => {

@@ -18,7 +18,7 @@ const scanFormSchema = z.object({
 
   password: z.string()
     .min(8, "Le mot de passe doit contenir au moins 8 caractères")
-    .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/, 
+    .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/,
       "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&)"),
 
   username: z.string()
@@ -34,25 +34,25 @@ const SignupPage = () => {
   const [registerMutation] = useMutation(REGISTER, {
     onCompleted: (data) => {
       console.log("Inscription réussie :", data);
-      toast.success("🚀 Inscription réussi, Bienvenu sur s0nar!.")
+      toast.success("You’ve successfully signed up! Welcome to s0nar!.")
       navigate("/");
 
     },
     onError: (err) => {
-      console.error("Erreur lors de l'inscription :", err);
+      console.error("An error occurred. Please check your details.", err);
       const errorMessage = err.message
       toast.error(errorMessage);
     }
   });
 
   const form = useForm({
-     resolver: zodResolver(scanFormSchema),
+    resolver: zodResolver(scanFormSchema),
     defaultValues: {
       username: "",
       email: "",
       password: "",
     },
-    mode:"onChange"
+    mode: "onChange"
   });
 
   const onSubmit = (data: ScanFormValues) => {
