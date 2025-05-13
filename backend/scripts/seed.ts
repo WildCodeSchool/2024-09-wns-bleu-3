@@ -1,3 +1,4 @@
+import { IsNull, Not } from 'typeorm'
 import { dataHealthCheck } from '../src/config/db'
 import { Frequency } from '../src/entities/Frequency'
 import { Scan } from '../src/entities/Scan'
@@ -68,10 +69,10 @@ export async function seedDatabase() {
         const tagRepo = dataHealthCheck.getRepository(Tag)
         const frequencyRepo = dataHealthCheck.getRepository(Frequency)
 
-        await userRepo.delete({})
-        await scanRepo.delete({})
-        await tagRepo.delete({})
-        await frequencyRepo.delete({})
+        await scanRepo.delete({ id: Not(IsNull()) })
+        await tagRepo.delete({ id: Not(IsNull()) })
+        await frequencyRepo.delete({ id: Not(IsNull()) })
+        await userRepo.delete({ id: Not(IsNull()) })
         console.log('Deleted all data')
 
         const hashedPassword = await argon2.hash(process.env.LOGIN_TEST_PWD as string)
