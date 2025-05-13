@@ -1,6 +1,7 @@
 import { scanUrl } from 'src/utils/scanUrl'
 import axios from 'axios'
 import { getSSLCertificateExpireTime } from 'src/utils/getSSLCertificateExpiration'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('axios')
 vi.mock('src/utils/getSSLCertificateExpiration')

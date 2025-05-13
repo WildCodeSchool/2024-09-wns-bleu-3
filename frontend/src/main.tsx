@@ -1,15 +1,32 @@
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, split } from '@apollo/client';
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router';
 import './index.css';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { sseLink } from './lib/linkSSE.ts';
 
+//  To create the HTTP Link
+const httpLink = createHttpLink({
+  uri: '/api',
+  credentials: 'include',
+})
+
+
+const splitLink = split(
+  ({ query }) => {
+    const def = getMainDefinition(query)
+    return def.kind === 'OperationDefinition' && def.operation === 'subscription'
+  },
+  sseLink,
+  httpLink,
+)
 
 const client = new ApolloClient({
-  uri: "/api",
+  link: splitLink,
   cache: new InMemoryCache(),
-  credentials: "include", 
 });
 
 createRoot(document.getElementById("root")!).render(
