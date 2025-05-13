@@ -1,12 +1,17 @@
-import { test, expect } from "@playwright/test";
+import { test, expect} from './setup/base'
  
-test("Go to home page", async ({ page }) => {
+test.describe("Basic test", () => {
    //accèder à la page d'accueil
-   await page.goto("http://api_gateway:80/");
-  
-  //attendre que la page soit complètement chargée
-   await page.waitForLoadState("networkidle");
+
+       test.beforeEach(async ({ page }) => {
+           // Navigate to the home page
+           await page.goto('/');
+       });
+
+       test('user can see the title of the page', async ({ page} ) => {
+          await expect(page.getByRole("link", { name: "See all my scans" })).toBeVisible();
+
+       })
   
   //vérifier que le lien 'See all my scans'
-  await expect(page.getByRole("link", { name: "See all my scans" })).toBeVisible();
  });

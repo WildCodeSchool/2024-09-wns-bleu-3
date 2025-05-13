@@ -10,4 +10,4 @@ COPY src src
 COPY tsconfig.json tsconfig.json
 COPY eslint.config.mjs eslint.config.mjs
 # Commande à exécuter pour démarrer le backend
-CMD npm start
+CMD ["npm", "start"]
