@@ -85,23 +85,23 @@ export const GET_SCAN_HISTORY = gql`
   }
 `
 
-/******* DASHBOARD *********/
-export const GET_DASHBOARD_DATA = gql`
-  query GetUserDashboardData {
-    getUserDashboardData {
-      scans {
-        id
-        url
-        isOnline
-        statusCode
-        statusMessage
-        createdAt
-      }
-      user {
-        id
-        email
-        username
-      }
-    }
-  }
-`;
+// /******* DASHBOARD *********/
+// export const GET_DASHBOARD_DATA = gql`
+//   query GetUserDashboardData {
+//     getUserDashboardData {
+//       scans {
+//         id
+//         url
+//         isOnline
+//         statusCode
+//         statusMessage
+//         createdAt
+//       }
+//       user {
+//         id
+//         email
+//         username
+//       }
+//     }
+//   }
+// `;
