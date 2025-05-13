@@ -113,7 +113,7 @@ export async function seedDatabase() {
             color: '#FF00FF',
         }, {
             name: 'Autre',
-            color: '#FFFFFF',
+            color: '#FFFFFE',
         }])
         await tagRepo.save(tags)
 
