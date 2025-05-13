@@ -123,7 +123,7 @@ export default function ScanForm() {
                                     onValueChange={field.onChange}
                                     value={field.value}
                                 >
-                                    <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" name="frequency-combobox" data-testid="freqSelectButton">
+                                    <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" name="frequency-combobox" data-testid="freqSelectButton" aria-label="Select frequency">
                                         <SelectValue placeholder="Select a frequency" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -150,7 +150,7 @@ export default function ScanForm() {
                                     onValueChange={(value) => field.onChange([parseInt(value)])}
                                     value={field.value?.length ? field.value[0].toString() : ""}
                                 >
-                                    <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" name="tag-combobox" data-testid="tagSelectButton">
+                                    <SelectTrigger className="w-full mt-1 bg-[#0c2d4d] border-[#0e3359] text-white" name="tag-combobox" data-testid="tagSelectButton" aria-label="Select Tags">
                                         <SelectValue placeholder="Select a tag" />
                                     </SelectTrigger>
                                     <SelectContent>
