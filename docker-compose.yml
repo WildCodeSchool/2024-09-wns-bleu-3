@@ -41,7 +41,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
-      - VITE_NODE_ENV=development
+      - VITE_BACKEND_URL=http:localhost:3030/api
     depends_on:
       backend:
         condition: service_healthy

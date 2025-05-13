@@ -42,7 +42,6 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
       - VITE_BACKEND_URL=http://api_gateway/api
-      - VITE_NODE_ENV=testing
     depends_on:
       backend:
         condition: service_healthy
