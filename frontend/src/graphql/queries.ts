@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 /******* SCAN *********/
-  
+
 export const GET_ALL_SCANS = gql`
 query GetAllScans {
   getAllScans {
@@ -37,7 +37,7 @@ query Query($getScanByIdId: Float!) {
 }`
 
 
-  /******* FREQUENCE *********/
+/******* FREQUENCE *********/
 export const GET_ALL_FREQUENCIES = gql`
 query GetAllFrequences {
   getAllFrequences {
@@ -48,7 +48,7 @@ query GetAllFrequences {
 }`
 
 
-  /******* TAG *********/
+/******* TAG *********/
 export const GET_ALL_TAGS = gql`
 query GetAllTags {
   getAllTags {
@@ -59,7 +59,7 @@ query GetAllTags {
 }`
 
 
-  /******* USER *********/
+/******* USER *********/
 export const GET_USER_INFO = gql`
   query GetUserInfo {
     getUserInfo {
@@ -81,6 +81,27 @@ export const GET_SCAN_HISTORY = gql`
       responseTime
       isOnline
       createdAt
+    }
+  }
+`
+
+/******* DASHBOARD *********/
+export const GET_DASHBOARD_DATA = gql`
+  query GetUserDashboardData {
+    getUserDashboardData {
+      scans {
+        id
+        url
+        isOnline
+        statusCode
+        statusMessage
+        createdAt
+      }
+      user {
+        id
+        email
+        username
+      }
     }
   }
 `;
