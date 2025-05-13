@@ -116,7 +116,10 @@ class UserResolver {
                 { email: user.email },
                 process.env.JWT_SECRET_KEY as Secret,
             )
-            context.res.setHeader('Set-Cookie', `token=${token}; Secure; HttpOnly`)
+            context.res.setHeader(
+                'Set-Cookie',
+                `token=${token}; HttpOnly; Path=/; SameSite=Lax${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`,
+            )
 
             return 'login ok'
         }
@@ -129,7 +132,7 @@ class UserResolver {
     async logout(@Ctx() context: any) {
         context.res.setHeader(
             'Set-Cookie',
-            `token=; Secure; HttpOnly;expires=${new Date(Date.now()).toUTCString()}`,
+            `token=; Path=/; HttpOnly; SameSite=Lax; expires=${new Date(0).toUTCString()}${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`,
         )
         return 'logged out'
     }
@@ -149,7 +152,10 @@ class UserResolver {
 
             // clear le cookie si le user était connecté
             if (isCurrentUser) {
-                context.res.setHeader('Set-Cookie', `token=; Path=/; Secure; HttpOnly; expires=${new Date(0).toUTCString()}`)
+                context.res.setHeader(
+                    'Set-Cookie',
+                    `token=; Path=/; HttpOnly; SameSite=Lax; expires=${new Date(0).toUTCString()}${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`,
+                )
             }
 
             if (result.affected === 1) {
