@@ -9,6 +9,8 @@ COPY scripts scripts
 COPY src src
 COPY tsconfig.json tsconfig.json
 
+ENV VITE_BACKEND_URL=https://staging.092024-bleu-3.wns.wilders.dev/api
+
 RUN npm run build
 
 # COPY dist dist
