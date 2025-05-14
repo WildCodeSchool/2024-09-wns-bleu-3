@@ -14,6 +14,8 @@ COPY tsconfig.json tsconfig.json
 COPY tsconfig.node.json tsconfig.node.json
 COPY vite.config.ts vite.config.ts
 
+ENV VITE_BACKEND_URL=/api
+
 RUN npm run build
 
 FROM nginx:1.27.4-alpine-slim as runner

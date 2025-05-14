@@ -32,7 +32,7 @@ import {
   }
   
   export const sseLink = new SSELink({
-    url: `${import.meta.env.VITE_BACKEND_URL}/api`,
+    url: import.meta.env.VITE_BACKEND_URL,
     headers: async () => {
       // Add any auth here if needed
       return {
