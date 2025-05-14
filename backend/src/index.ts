@@ -12,7 +12,7 @@ import * as cookie from 'cookie'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from './@types/payload'
 import { ContextSchema } from './schema/context'
-import { seedDatabase } from '../scripts/seed'
+// import { seedDatabase } from '../scripts/seed'
 import { initCronJobs } from './cron'
 import { pubSub } from './utils/pubSub'
 import ScanHistoryResolver from './resolver/ScanHistoryResolver'
@@ -30,16 +30,16 @@ async function start() {
         await dataHealthCheck.initialize()
         console.log('✅ Database connection established')
 
-        // Seed database in development
-        if (process.env.NODE_ENV === 'development') {
-            try {
-                await seedDatabase()
-                console.log('✅ Database seeded successfully')
-            }
-            catch (error) {
-                console.error('❌ Failed to seed database:', error)
-            }
-        }
+        // // Seed database in development
+        // if (process.env.NODE_ENV === 'development') {
+        //     try {
+        //         await seedDatabase()
+        //         console.log('✅ Database seeded successfully')
+        //     }
+        //     catch (error) {
+        //         console.error('❌ Failed to seed database:', error)
+        //     }
+        // }
 
         // Build GraphQL schema with TypeGraphQL
         const schema = await buildSchema({
@@ -59,6 +59,7 @@ async function start() {
             logging: true,
             context: async ({ request }) => {
                 let email: string | undefined
+                let id: number | undefined
 
                 try {
                     const rawCookies = request.headers.get('cookie') || ''
@@ -66,10 +67,13 @@ async function start() {
 
                     if (cookies.token) {
                         const payload = jwt.verify(cookies.token, process.env.JWT_SECRET_KEY as string) as JwtPayload
-                        const parsedPayload = ContextSchema.safeParse({ email: payload.email })
+                        const parsedPayload = ContextSchema.safeParse({ email: payload.email, id: payload.userId })
+
+                        console.log('Parsed JWT payload:', parsedPayload)
 
                         if (parsedPayload.success) {
                             email = payload.email
+                            id = payload.userId
                         }
                         else {
                             console.error('Invalid JWT payload:', parsedPayload.error)
@@ -82,6 +86,7 @@ async function start() {
 
                 return {
                     email,
+                    id,
                 }
             },
         })

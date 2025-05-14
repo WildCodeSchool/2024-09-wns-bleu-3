@@ -135,12 +135,18 @@ export type Query = {
   __typename?: 'Query';
   getAllFrequences: Array<Frequency>;
   getAllScans: Array<Scan>;
+  getAllScansByUserId: Array<Scan>;
   getAllTags: Array<Tag>;
   getFrequenceById: Frequency;
   getScanById: Scan;
   getScanHistory: Array<ScanHistory>;
   getTagById: Tag;
   getUserInfo?: Maybe<UserInfo>;
+};
+
+
+export type QueryGetAllScansByUserIdArgs = {
+  id: Scalars['Float']['input'];
 };
 
 

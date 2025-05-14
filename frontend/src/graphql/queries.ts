@@ -85,22 +85,14 @@ export const GET_SCAN_HISTORY = gql`
   }
 `
 
-// /******* DASHBOARD *********/
-// export const GET_DASHBOARD_DATA = gql`
-//   query GetUserDashboardData {
-//     getUserDashboardData {
-//       scans {
+/******* DASHBOARD *********/
+// export const GET_ALL_SCANS_BY_USER = gql`
+//   query GetAllScansByUser($id: Float!) {
+//     getAllScansById(id: $id) {
 //         id
-//         url
-//         isOnline
-//         statusCode
-//         statusMessage
-//         createdAt
-//       }
-//       user {
-//         id
-//         email
+//         scans
 //         username
+//         totalScans
 //       }
 //     }
 //   }
