@@ -12,7 +12,7 @@ import * as cookie from 'cookie'
 import jwt from 'jsonwebtoken'
 import { JwtPayload } from './@types/payload'
 import { ContextSchema } from './schema/context'
-// import { seedDatabase } from '../scripts/seed'
+import { seedDatabase } from '../scripts/seed'
 import { initCronJobs } from './cron'
 import { pubSub } from './utils/pubSub'
 import ScanHistoryResolver from './resolver/ScanHistoryResolver'
@@ -30,16 +30,16 @@ async function start() {
         await dataHealthCheck.initialize()
         console.log('✅ Database connection established')
 
-        // // Seed database in development
-        // if (process.env.NODE_ENV === 'development') {
-        //     try {
-        //         await seedDatabase()
-        //         console.log('✅ Database seeded successfully')
-        //     }
-        //     catch (error) {
-        //         console.error('❌ Failed to seed database:', error)
-        //     }
-        // }
+        // Seed database in development
+        if (process.env.NODE_ENV === 'development') {
+            try {
+                await seedDatabase()
+                console.log('✅ Database seeded successfully')
+            }
+            catch (error) {
+                console.error('❌ Failed to seed database:', error)
+            }
+        }
 
         // Build GraphQL schema with TypeGraphQL
         const schema = await buildSchema({

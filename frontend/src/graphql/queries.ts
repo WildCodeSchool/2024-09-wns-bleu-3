@@ -86,14 +86,34 @@ export const GET_SCAN_HISTORY = gql`
 `
 
 /******* DASHBOARD *********/
-// export const GET_ALL_SCANS_BY_USER = gql`
-//   query GetAllScansByUser($id: Float!) {
-//     getAllScansById(id: $id) {
-//         id
-//         scans
-//         username
-//         totalScans
-//       }
-//     }
-//   }
-// `;
+export const GET_DASHBOARD_USER_DATA = gql`
+  query GetAllScansByUserId($id: Float!) {
+    getAllScansByUserId(id: $id) {
+      scans {
+        id
+        url
+        title
+        statusCode
+        statusMessage
+        responseTime
+        sslCertificate
+        isOnline
+        createdAt
+        updatedAt
+        lastScannedAt
+        frequency {
+          id
+          intervalMinutes
+          name
+      }
+        tags {
+          id
+          name
+          color
+        }
+      }
+      totalScans
+      username
+    }
+  }
+`;

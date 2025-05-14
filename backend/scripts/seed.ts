@@ -20,6 +20,7 @@ interface ScanData {
     frequencyId: null | number
     lastScannedAt: Date | null
     nextScanAt: Date | null
+    user: { id: number }
 }
 
 // Create a mock scan object
@@ -45,6 +46,7 @@ async function mockScanUrl(frequency: Frequency): Promise<ScanData> {
         frequencyId: frequency.id, // Optional frequency
         lastScannedAt: null,
         nextScanAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
+        user: { id: 1 }, // Assuming user ID 1 exists
     }
 }
 
@@ -80,6 +82,7 @@ export async function seedDatabase() {
         // Create some fake users
         const users = userRepo.create([
             {
+                id: 1,
                 email: 'f.rumigny@gmail.com',
                 password: hashedPassword,
                 username: 'florian',
