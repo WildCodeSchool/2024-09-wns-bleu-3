@@ -11,6 +11,8 @@ import SignupPage from './pages/SignUpPage';
 // import SettingsPage from './pages/ProfilePage';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import PrivateRoute from './components/PrivateRoute';
+import OnlyGuestRoute from './components/OnlyGuestRoute';
 
 function App() {
   const { loading, error, data } = useQuery(GET_ALL_SCANS);
@@ -25,12 +27,15 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="signup" element={<SignupPage />} />
-          <Route path="reset-password" element={<ForgotPasswordPage />} />
-          <Route path="profile" element={<ProfilePage />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="profile" element={<ProfilePage />} />
+          </Route>
+          <Route element={<OnlyGuestRoute />}>
+            <Route path="login" element={<LoginPage />} />
+            <Route path="signup" element={<SignupPage />} />
+            <Route path="reset-password" element={<ForgotPasswordPage />} />
+          </Route>
         </Route>
-
       </Routes>
     </>
   )
