@@ -9,6 +9,8 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import PrivateRoute from './components/PrivateRoute';
+import OnlyGuestRoute from './components/OnlyGuestRoute';
 import DashboardPage from './pages/DashboardPage';
 
 function App() {
@@ -24,14 +26,17 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="signup" element={<SignupPage />} />
-          <Route path="reset-password" element={<ForgotPasswordPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-        </Route>
-
-      </Routes>
+          <Route element={<PrivateRoute />}>
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="dashboard" element={<DashboardPage />} />
+          </Route>
+          <Route element={<OnlyGuestRoute />}>
+            <Route path="login" element={<LoginPage />} />
+            <Route path="signup" element={<SignupPage />} />
+            <Route path="reset-password" element={<ForgotPasswordPage />} />
+          </Route>
+        </Route >
+      </Routes >
     </>
   )
 }
