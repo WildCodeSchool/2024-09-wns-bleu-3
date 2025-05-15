@@ -4,8 +4,12 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
+import ActiveIssues from "../components/ActiveIssues";
+import { useState } from "react";
 
 const DashboardPage = () => {
+
+    const [resolvedIssues, setResolvedIssues] = useState<string[]>([])
 
     // ID variable not necessary, ID check by context
     const { data, loading, error } = useGetAllScansByUserIdQuery({})
@@ -27,14 +31,21 @@ const DashboardPage = () => {
     else if (healthyPercentage >= 50) healthColor = 'text-yellow-500'
     else healthColor = 'text-red-500'
 
+    const allIssues = data?.getAllScansByUserId.issues ?? []
+    const activeIssues = allIssues.filter(issue => !resolvedIssues.includes(issue.id))
+
+    const activeIssueCount = activeIssues.length
+
+
+
     if (loading) return <p>Loading...</p>
     if (error) return <p>Error</p>
 
     return (
-        <div className="container p-8">
+        <div className="container p-8 w-screen mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800">Welcome, {capitalizeFirstLetter(data?.getAllScansByUserId.username ?? '')} </h1>
+                    <h1 className="text-3xl font-bold text-gray-800 text-left">Welcome, {capitalizeFirstLetter(data?.getAllScansByUserId.username ?? '')} </h1>
                     <p className="text-gray-600">Here's an overview of your URL monitoring</p>
                 </div>
 
@@ -98,7 +109,7 @@ const DashboardPage = () => {
                     <CardContent>
                         <div className="flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                            <div className="text-2xl font-bold">{data?.getAllScansByUserId.totalIssues}</div>
+                            <div className="text-2xl font-bold">{activeIssueCount}</div>
                         </div>
                         <div className="mt-2 text-sm text-gray-500">
                             <span className="text-yellow-600">Needs attention</span>
@@ -106,6 +117,7 @@ const DashboardPage = () => {
                     </CardContent>
                 </Card>
             </div>
+            <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} />
         </div >
     );
 };

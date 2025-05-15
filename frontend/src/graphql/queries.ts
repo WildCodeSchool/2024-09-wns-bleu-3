@@ -90,6 +90,7 @@ export const GET_DASHBOARD_USER_DATA = gql`
   query GetAllScansByUserId {
     getAllScansByUserId {
       issues {
+        id
         scanId
         issueType
         issue
