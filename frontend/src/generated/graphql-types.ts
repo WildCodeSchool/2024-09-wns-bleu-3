@@ -145,11 +145,6 @@ export type Query = {
 };
 
 
-export type QueryGetAllScansByUserIdArgs = {
-  id: Scalars['Float']['input'];
-};
-
-
 export type QueryGetFrequenceByIdArgs = {
   id: Scalars['Float']['input'];
 };
@@ -386,9 +381,7 @@ export type GetScanHistoryQueryVariables = Exact<{
 
 export type GetScanHistoryQuery = { __typename?: 'Query', getScanHistory: Array<{ __typename?: 'ScanHistory', id: number, url: string, statusCode: number, statusMessage: string, responseTime: number, isOnline: boolean, createdAt: any }> };
 
-export type GetAllScansByUserIdQueryVariables = Exact<{
-  id: Scalars['Float']['input'];
-}>;
+export type GetAllScansByUserIdQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'ScanByUserId', totalScans: number, username?: string | null, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
@@ -966,8 +959,8 @@ export type GetScanHistoryLazyQueryHookResult = ReturnType<typeof useGetScanHist
 export type GetScanHistorySuspenseQueryHookResult = ReturnType<typeof useGetScanHistorySuspenseQuery>;
 export type GetScanHistoryQueryResult = Apollo.QueryResult<GetScanHistoryQuery, GetScanHistoryQueryVariables>;
 export const GetAllScansByUserIdDocument = gql`
-    query GetAllScansByUserId($id: Float!) {
-  getAllScansByUserId(id: $id) {
+    query GetAllScansByUserId {
+  getAllScansByUserId {
     scans {
       id
       url
@@ -1009,11 +1002,10 @@ export const GetAllScansByUserIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllScansByUserIdQuery({
  *   variables: {
- *      id: // value for 'id'
  *   },
  * });
  */
-export function useGetAllScansByUserIdQuery(baseOptions: Apollo.QueryHookOptions<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables> & ({ variables: GetAllScansByUserIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetAllScansByUserIdQuery(baseOptions?: Apollo.QueryHookOptions<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables>(GetAllScansByUserIdDocument, options);
       }

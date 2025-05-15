@@ -87,8 +87,8 @@ export const GET_SCAN_HISTORY = gql`
 
 /******* DASHBOARD *********/
 export const GET_DASHBOARD_USER_DATA = gql`
-  query GetAllScansByUserId($id: Float!) {
-    getAllScansByUserId(id: $id) {
+  query GetAllScansByUserId {
+    getAllScansByUserId {
       scans {
         id
         url

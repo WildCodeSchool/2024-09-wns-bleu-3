@@ -8,6 +8,7 @@ import { Frequency } from '../entities/Frequency'
 import { pubSub } from '../utils/pubSub'
 import { ScanByUserId } from '../inputs/ScanById'
 import { User } from '../entities/User'
+import { ContextType } from '../schema/context'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -28,13 +29,14 @@ class ScanResolver {
     }
 
     @Query(() => ScanByUserId)
-    async getAllScansByUserId(@Ctx() context: any, @Arg('id') id: number) {
-        try {
-            const userId = context.id
+    async getAllScansByUserId(@Ctx() context: ContextType) {
+        const userId = context.id
 
-            if (!context?.id || userId !== id) {
-                throw new Error('You are not authorized to view this user\'s scans')
-            }
+        if (!userId) {
+            throw new Error('You are not authorized to view this user\'s scans')
+        }
+        try {
+            const user = await User.findOneByOrFail({ id: userId })
 
             const scans = await Scan.find({
                 where: { user: { id: userId } },
@@ -43,12 +45,6 @@ class ScanResolver {
                 },
                 relations: ['user'],
             })
-
-            const user = await User.findOne({ where: { id: userId } })
-
-            if (!user) {
-                throw new Error('User not found')
-            }
 
             return {
                 scans,
