@@ -31,6 +31,13 @@ export type FrequencyInput = {
   name: Scalars['String']['input'];
 };
 
+export type Issue = {
+  __typename?: 'Issue';
+  issue: Scalars['String']['output'];
+  issueType: Scalars['String']['output'];
+  scanId: Scalars['Int']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   changePassword: Scalars['String']['output'];
@@ -187,8 +194,10 @@ export type Scan = {
 
 export type ScanByUserId = {
   __typename?: 'ScanByUserId';
+  issues: Array<Issue>;
   scans: Array<Scan>;
-  totalScans: Scalars['Float']['output'];
+  totalIssues: Scalars['Int']['output'];
+  totalScans: Scalars['Int']['output'];
   username?: Maybe<Scalars['String']['output']>;
 };
 
@@ -384,7 +393,7 @@ export type GetScanHistoryQuery = { __typename?: 'Query', getScanHistory: Array<
 export type GetAllScansByUserIdQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'ScanByUserId', totalScans: number, username?: string | null, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
+export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'ScanByUserId', totalIssues: number, totalScans: number, username?: string | null, issues: Array<{ __typename?: 'Issue', scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
 
 export type ScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -961,6 +970,12 @@ export type GetScanHistoryQueryResult = Apollo.QueryResult<GetScanHistoryQuery, 
 export const GetAllScansByUserIdDocument = gql`
     query GetAllScansByUserId {
   getAllScansByUserId {
+    issues {
+      scanId
+      issueType
+      issue
+    }
+    totalIssues
     scans {
       id
       url

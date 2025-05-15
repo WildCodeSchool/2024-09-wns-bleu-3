@@ -10,6 +10,23 @@ const DashboardPage = () => {
     // ID variable not necessary, ID check by context
     const { data, loading, error } = useGetAllScansByUserIdQuery({})
 
+    const scans = data?.getAllScansByUserId.scans ?? []
+    const totalScans = data?.getAllScansByUserId.totalScans ?? 0
+
+    const activeScans = scans.filter(
+        (scan) => scan.statusCode >= 200 && scan.statusCode < 300
+    ).length
+
+
+    const healthyPercentage = totalScans > 0
+        ? Math.round((activeScans / totalScans) * 100)
+        : 0
+
+    let healthColor = 'text-gray-500'
+    if (healthyPercentage >= 80) healthColor = 'text-green-600'
+    else if (healthyPercentage >= 50) healthColor = 'text-yellow-500'
+    else healthColor = 'text-red-500'
+
     if (loading) return <p>Loading...</p>
     if (error) return <p>Error</p>
 
@@ -63,11 +80,12 @@ const DashboardPage = () => {
                     <CardContent>
                         <div className="flex items-center gap-2">
                             <CheckCircle className="h-5 w-5 text-green-500" />
-                            <div className="text-2xl font-bold">0</div>
+                            <div className="text-2xl font-bold">{activeScans}</div>
                         </div>
                         <div className="mt-2 text-sm text-gray-500">
-                            <span className="text-green-600">
-                                {/* {Math.round((activeScans / totalScans) * 100)}% healthy */}
+                            <span className={`${healthColor}`}>
+                                {data?.getAllScansByUserId.totalScans ? `${healthyPercentage}% healthy`
+                                    : 'No data'}
                             </span>
                         </div>
                     </CardContent>
@@ -80,15 +98,15 @@ const DashboardPage = () => {
                     <CardContent>
                         <div className="flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                            <div className="text-2xl font-bold">0</div>
+                            <div className="text-2xl font-bold">{data?.getAllScansByUserId.totalIssues}</div>
                         </div>
-                        {/* <div className="mt-2 text-sm text-gray-500">
+                        <div className="mt-2 text-sm text-gray-500">
                             <span className="text-yellow-600">Needs attention</span>
-                        </div> */}
+                        </div>
                     </CardContent>
                 </Card>
             </div>
-        </div>
+        </div >
     );
 };
 

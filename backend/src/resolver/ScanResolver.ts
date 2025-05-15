@@ -9,6 +9,7 @@ import { pubSub } from '../utils/pubSub'
 import { ScanByUserId } from '../inputs/ScanById'
 import { User } from '../entities/User'
 import { ContextType } from '../schema/context'
+import { issuesArray } from '../utils/issuesArray'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -43,11 +44,14 @@ class ScanResolver {
                 order: {
                     id: 'DESC',
                 },
-                relations: ['user'],
             })
+
+            const issues = issuesArray(scans)
 
             return {
                 scans,
+                issues,
+                totalIssues: issues.length,
                 totalScans: scans.length,
                 username: user?.username ?? null,
             }

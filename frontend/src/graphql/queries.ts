@@ -89,6 +89,12 @@ export const GET_SCAN_HISTORY = gql`
 export const GET_DASHBOARD_USER_DATA = gql`
   query GetAllScansByUserId {
     getAllScansByUserId {
+      issues {
+        scanId
+        issueType
+        issue
+      }
+      totalIssues
       scans {
         id
         url
