@@ -41,6 +41,7 @@ services:
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
+      - VITE_BACKEND_URL=https://staging.092024-bleu-3.wns.wilders.dev
     depends_on:
       backend:
         condition: service_healthy
