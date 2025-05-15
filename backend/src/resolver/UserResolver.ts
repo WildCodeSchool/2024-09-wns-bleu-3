@@ -113,7 +113,7 @@ class UserResolver {
         // if user identified : generate token
         if (isPasswordCorrect === true && user !== null) {
             const token = jwt.sign(
-                { email: user.email },
+                { email: user.email, userId: user.id },
                 process.env.JWT_SECRET_KEY as Secret,
             )
             context.res.setHeader(
@@ -121,7 +121,7 @@ class UserResolver {
                 `token=${token}; HttpOnly; Path=/; SameSite=Lax${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`,
             )
 
-            return 'login ok'
+            return token
         }
         else {
             throw new Error('Identifiants incorrects')

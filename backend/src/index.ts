@@ -59,6 +59,7 @@ async function start() {
             logging: true,
             context: async ({ request }) => {
                 let email: string | undefined
+                let id: number | undefined
 
                 try {
                     const rawCookies = request.headers.get('cookie') || ''
@@ -66,10 +67,13 @@ async function start() {
 
                     if (cookies.token) {
                         const payload = jwt.verify(cookies.token, process.env.JWT_SECRET_KEY as string) as JwtPayload
-                        const parsedPayload = ContextSchema.safeParse({ email: payload.email })
+                        const parsedPayload = ContextSchema.safeParse({ email: payload.email, id: payload.userId })
+
+                        console.log('Parsed JWT payload:', parsedPayload)
 
                         if (parsedPayload.success) {
                             email = payload.email
+                            id = payload.userId
                         }
                         else {
                             console.error('Invalid JWT payload:', parsedPayload.error)
@@ -82,6 +86,7 @@ async function start() {
 
                 return {
                     email,
+                    id,
                 }
             },
         })

@@ -17,9 +17,10 @@ interface ScanData {
     sslCertificate: '15 days' | '500 days' | 'Expired'
     isOnline: boolean
     tagIds: string[]
-    frequencyId: null | number
+    frequency: Frequency
     lastScannedAt: Date | null
     nextScanAt: Date | null
+    user: { id: number }
 }
 
 // Create a mock scan object
@@ -42,9 +43,10 @@ async function mockScanUrl(frequency: Frequency): Promise<ScanData> {
         sslCertificate: faker.helpers.arrayElement(['15 days', '500 days', 'Expired']),
         isOnline: faker.datatype.boolean(),
         tagIds: [], // Optional tags
-        frequencyId: frequency.id, // Optional frequency
+        frequency, // Optional frequency
         lastScannedAt: null,
         nextScanAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
+        user: { id: 1 }, // Assuming user ID 1 exists
     }
 }
 
@@ -80,6 +82,7 @@ export async function seedDatabase() {
         // Create some fake users
         const users = userRepo.create([
             {
+                id: 1,
                 email: 'f.rumigny@gmail.com',
                 password: hashedPassword,
                 username: 'florian',
