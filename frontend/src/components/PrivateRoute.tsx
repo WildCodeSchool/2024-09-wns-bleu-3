@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 function PrivateRoute() {
     const { loading, isLoggedIn } = useAuth();
 
-    if (loading) return <p>Chargement…</p>;
+    if (loading) return <p>Loading...</p>;
 
     if (!isLoggedIn) {
         return <Navigate to="/" replace />;
