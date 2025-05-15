@@ -20,6 +20,7 @@ interface ScanData {
     frequencyId: null | number
     lastScannedAt: Date | null
     nextScanAt: Date | null
+    isPause: boolean
 }
 
 // Create a mock scan object
@@ -45,6 +46,7 @@ async function mockScanUrl(frequency: Frequency): Promise<ScanData> {
         frequencyId: frequency.id, // Optional frequency
         lastScannedAt: null,
         nextScanAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
+        isPause: false
     }
 }
 
