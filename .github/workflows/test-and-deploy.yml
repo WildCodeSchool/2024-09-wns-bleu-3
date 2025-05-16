@@ -98,7 +98,7 @@ jobs:
         with:
           target: 'https://staging.092024-bleu-3.wns.wilders.dev/'
           fail_action: true
-          artifact_name: zap-report
+          artifact_name: zap_report
 
   deploy-main:
     runs-on: ubuntu-latest
