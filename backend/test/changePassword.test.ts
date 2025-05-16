@@ -4,6 +4,7 @@ import { ForgotPassword } from "src/entities/ForgotPassword";
 import { User } from "src/entities/User";
 import * as argon2 from "argon2";
 import UserResolver from "src/resolver/UserResolver";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 // Mock argon2 at the module level (safe approach)
 vi.mock("argon2", () => ({
