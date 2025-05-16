@@ -9,7 +9,7 @@ vi.mock('uuid', () => {
     }
 })
 
-describe.only('issuesArray', () => {
+describe('issuesArray', () => {
     it('should return an empty array when no scans are provided', async () => { 
         const result = issuesArray([])
 
