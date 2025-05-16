@@ -20,6 +20,7 @@ interface ScanData {
     frequency: Frequency
     lastScannedAt: Date | null
     nextScanAt: Date | null
+    isPause: boolean
     user: { id: number }
 }
 
@@ -46,6 +47,7 @@ async function mockScanUrl(frequency: Frequency): Promise<ScanData> {
         frequency, // Optional frequency
         lastScannedAt: null,
         nextScanAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
+        isPause: false,
         user: { id: 1 }, // Assuming user ID 1 exists
     }
 }
