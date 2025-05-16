@@ -4,26 +4,92 @@ name: Test and Deploy
 on: push
 
 jobs:
-    test-server:
-        if: github.ref != 'refs/heads/main'
-        uses: ./.github/workflows/test-server.yml
-        with:
-            ref: ${{ github.ref }}
-    test-client:
-        if: github.ref != 'refs/heads/main'
-        uses: ./.github/workflows/test-client.yml
-        with:
-            ref: ${{ github.ref }}
+  test-server:
+    if: github.ref != 'refs/heads/main'
+    uses: ./.github/workflows/test-server.yml
+    with:
+      ref: ${{ github.ref }}
 
-    test-e2e:
-        if: github.ref != 'refs/heads/main'
-        needs: [ test-server, test-client ]
-        uses: ./.github/workflows/e2e.yml
-        with:
-            ref: ${{ github.ref }}
+  test-client:
+    if: github.ref != 'refs/heads/main'
+    uses: ./.github/workflows/test-client.yml
+    with:
+      ref: ${{ github.ref }}
 
-    zap-scan:
-    needs: [ test-e2e ]
+  test-e2e:
+    if: github.ref != 'refs/heads/main'
+    needs: [test-server, test-client]
+    uses: ./.github/workflows/e2e.yml
+    with:
+      ref: ${{ github.ref }}
+
+  deploy-server:
+    needs: [test-e2e]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set short git commit SHA
+        id: vars
+        run: |
+          calculatedSha=$(git rev-parse --short ${{ github.sha }})
+          echo "COMMIT_SHORT_SHA=$calculatedSha" >> $GITHUB_ENV
+
+      - uses: docker/login-action@v1
+        name: Login to Docker Hub
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v1
+        name: Set up Docker Buildx
+
+      - uses: docker/build-push-action@v2
+        name: Build and push
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
+
+  deploy-client:
+    needs: [test-e2e]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set short git commit SHA
+        id: vars
+        run: |
+          calculatedSha=$(git rev-parse --short ${{ github.sha }})
+          echo "COMMIT_SHORT_SHA=$calculatedSha" >> $GITHUB_ENV
+
+      - uses: docker/login-action@v1
+        name: Login to Docker Hub
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v1
+        name: Set up Docker Buildx
+
+      - uses: docker/build-push-action@v2
+        name: Build and push
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
+
+  zap-scan:
+    needs: [deploy-server, deploy-client]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/staging'
     steps:
@@ -32,92 +98,11 @@ jobs:
         with:
           target: 'https://staging.092024-bleu-3.wns.wilders.dev/'
           fail_action: true
-          artifact_name: zap-report    
+          artifact_name: zap-report
 
-    deploy-server:
-        needs: [ test-e2e ]
-        runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/staging'
-    
-        # Steps represent a sequence of tasks that will be executed as part of the job
-        steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-          - uses: actions/checkout@v2
-    
-          - name: Set short git commit SHA
-            id: vars
-            run: |
-              calculatedSha=$(git rev-parse --short ${{ github.sha }})
-              echo "COMMIT_SHORT_SHA=$calculatedSha" >> $GITHUB_ENV
-    
-          # login with Docker
-          - uses: docker/login-action@v1
-            name: Login to Docker Hub
-            with:
-              # generate some credentials from Dockerhub and store them into the repo secrets
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
-          # prepare buildx for docker
-          - uses: docker/setup-buildx-action@v1
-            name: Set up Docker Buildx
-    
-          # build an push the newly created image
-          - uses: docker/build-push-action@v2
-            name: Build and push
-            with:
-              context: ./backend
-              file: ./backend/Dockerfile.prod
-              push: true
-              tags: |
-                ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}:latest
-                ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
-
-    deploy-client:
-        needs: [ test-e2e ]
-        runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/staging'
-
-    
-        # Steps represent a sequence of tasks that will be executed as part of the job
-        steps:
-          # Checks-out your repository under $GITHUB_WORKSPACE, so yor job can access
-          - name: Check out code
-            uses: actions/checkout@v2
-    
-          - name: Set short git commit SHA
-            id: vars
-            run: |
-              calculatedSha=$(git rev-parse --short ${{ github.sha }})
-              echo "COMMIT_SHORT_SHA=$calculatedSha" >> $GITHUB_ENV
-              
-          # login with Docker
-          - uses: docker/login-action@v1
-            name: Login to Docker Hub
-            with:
-              # generate some credentials from Dockerhub and store them into the repo secret
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
-          # prepare buildx for docker
-          - uses: docker/setup-buildx-action@v1
-            name: Set up Docker Buildx
-    
-          # build an push the newly created image
-          - uses: docker/build-push-action@v2
-            name: Build and push
-            with:
-              context: ./frontend
-              file: ./frontend/Dockerfile.prod
-              push: true
-              tags: |
-                ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:latest
-                ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
-    
-    deploy-main:
-        runs-on: ubuntu-latest
-        if: github.ref == 'refs/heads/main'
-        
-        steps:
-            - name: Call production webhook
-              run: curl -X POST https://ops.092024-bleu-3.wns.wilders.dev/hooks/${{secrets.WEBHOOK_ID}}
+  deploy-main:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Call production webhook
+        run: curl -X POST https://ops.092024-bleu-3.wns.wilders.dev/hooks/${{ secrets.WEBHOOK_ID }}
