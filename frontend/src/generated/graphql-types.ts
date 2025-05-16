@@ -52,6 +52,7 @@ export type Mutation = {
   forgotPassword: Scalars['String']['output'];
   login: Scalars['String']['output'];
   logout: Scalars['String']['output'];
+  pauseOrRestartScan: Scan;
   register: Scalars['String']['output'];
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
@@ -109,6 +110,11 @@ export type MutationForgotPasswordArgs = {
 
 export type MutationLoginArgs = {
   data: UserLoginInput;
+};
+
+
+export type MutationPauseOrRestartScanArgs = {
+  id: Scalars['Float']['input'];
 };
 
 
@@ -171,6 +177,11 @@ export type QueryGetScanHistoryArgs = {
 
 export type QueryGetTagByIdArgs = {
   id: Scalars['Float']['input'];
+};
+
+export type Role = {
+  __typename?: 'Role';
+  users: Array<User>;
 };
 
 export type Scan = {
@@ -269,6 +280,7 @@ export type User = {
   email: Scalars['String']['output'];
   id: Scalars['Float']['output'];
   password: Scalars['String']['output'];
+  role: Role;
   scans: Array<Scan>;
   updatedAt: Scalars['DateTimeISO']['output'];
   username: Scalars['String']['output'];
