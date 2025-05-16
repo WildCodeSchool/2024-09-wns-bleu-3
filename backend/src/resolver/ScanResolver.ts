@@ -1,4 +1,4 @@
-import { Arg, Mutation, Query, Resolver, Root, Subscription } from 'type-graphql'
+import { Arg, Ctx, Mutation, Query, Resolver, Root, Subscription } from 'type-graphql'
 import { Scan } from '../entities/Scan'
 import { ScanInput } from '../inputs/ScanInput'
 import { UpdateScanInput } from '../inputs/UpdateScanInput'
@@ -6,6 +6,10 @@ import { Tag } from '../entities/Tag'
 import { scanUrl } from '../utils/scanUrl'
 import { Frequency } from '../entities/Frequency'
 import { pubSub } from '../utils/pubSub'
+import { ScanByUserId } from '../inputs/ScanById'
+import { User } from '../entities/User'
+import { ContextType } from '../schema/context'
+import { issuesArray } from '../utils/issuesArray'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -21,6 +25,39 @@ class ScanResolver {
         }
         catch (error) {
             console.error({ 'Error getting all scans': error })
+            throw new Error('Something wrong happened')
+        }
+    }
+
+    @Query(() => ScanByUserId)
+    async getAllScansByUserId(@Ctx() context: ContextType) {
+        const userId = context.id
+
+        if (!userId) {
+            throw new Error('You are not authorized to view this user\'s scans')
+        }
+        try {
+            const user = await User.findOneByOrFail({ id: userId })
+
+            const scans = await Scan.find({
+                where: { user: { id: userId } },
+                order: {
+                    id: 'DESC',
+                },
+            })
+
+            const issues = issuesArray(scans)
+
+            return {
+                scans,
+                issues,
+                totalIssues: issues.length,
+                totalScans: scans.length,
+                username: user?.username ?? null,
+            }
+        }
+        catch (error) {
+            console.error({ 'Error getting all scans by user ID': error })
             throw new Error('Something wrong happened')
         }
     }
