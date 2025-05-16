@@ -1,6 +1,6 @@
 import { runScheduledScans } from '../src/utils/scheduledScans';
 import { LessThan } from 'typeorm';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Scan } from '../src/entities/Scan';
 import { scanUrl } from '../src/utils/scanUrl';
 
@@ -18,7 +18,8 @@ const mockScanHistoryInstance = {
     statusMessage: '',
     responseTime: 0,
     sslCertificate: '',
-    isOnline: false
+    isOnline: false,
+    isPause: false
 };
 
 vi.mock('../src/entities/ScanHistory', () => {
@@ -50,6 +51,7 @@ describe('runScheduledScans', () => {
         sslCertificate: '',
         isOnline: false,
         lastScannedAt: null,
+        isPause: false,
     };
 
     beforeEach(() => {
@@ -70,6 +72,7 @@ describe('runScheduledScans', () => {
             relations: ['frequency'],
             where: {
                 nextScanAt: LessThan(fixedDate),
+                isPause: false,
             },
         });
     });

@@ -85,23 +85,42 @@ export const GET_SCAN_HISTORY = gql`
   }
 `
 
-// /******* DASHBOARD *********/
-// export const GET_DASHBOARD_DATA = gql`
-//   query GetUserDashboardData {
-//     getUserDashboardData {
-//       scans {
-//         id
-//         url
-//         isOnline
-//         statusCode
-//         statusMessage
-//         createdAt
-//       }
-//       user {
-//         id
-//         email
-//         username
-//       }
-//     }
-//   }
-// `;
+/******* DASHBOARD *********/
+export const GET_DASHBOARD_USER_DATA = gql`
+  query GetAllScansByUserId {
+    getAllScansByUserId {
+      issues {
+        id
+        scanId
+        issueType
+        issue
+      }
+      totalIssues
+      scans {
+        id
+        url
+        title
+        statusCode
+        statusMessage
+        responseTime
+        sslCertificate
+        isOnline
+        createdAt
+        updatedAt
+        lastScannedAt
+        frequency {
+          id
+          intervalMinutes
+          name
+      }
+        tags {
+          id
+          name
+          color
+        }
+      }
+      totalScans
+      username
+    }
+  }
+`;

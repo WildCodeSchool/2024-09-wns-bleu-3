@@ -27,5 +27,14 @@ test.describe('Profile Page', () => {
 
         const nameProfilUpdated = page.getByText('florianr', { exact: true });
         await expect(nameProfilUpdated).toBeVisible()
+
+        await page.locator('div').filter({ hasText: /^Usernameflorianr$/ }).getByRole('button').click();
+        await page.getByRole('textbox').click();
+        await page.getByRole('textbox').fill('florian');
+        await page.getByRole('button', { name: 'Save' }).click();
+
+        const nameReUpdated = page.getByText('florian', { exact: true });
+        await expect(nameReUpdated).toBeVisible()
+
     })
 })

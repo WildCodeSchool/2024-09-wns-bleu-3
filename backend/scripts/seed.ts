@@ -17,13 +17,15 @@ interface ScanData {
     sslCertificate: '15 days' | '500 days' | 'Expired'
     isOnline: boolean
     tagIds: string[]
-    frequencyId: null | number
+    frequency: Frequency
     lastScannedAt: Date | null
     nextScanAt: Date | null
+    isPause: boolean
+    user: User
 }
 
 // Create a mock scan object
-async function mockScanUrl(frequency: Frequency): Promise<ScanData> {
+async function mockScanUrl(frequency: Frequency, user: User): Promise<ScanData> {
     // Mocking a scan URL
     const urls = [
         'http://vitest.dev/',
@@ -42,18 +44,20 @@ async function mockScanUrl(frequency: Frequency): Promise<ScanData> {
         sslCertificate: faker.helpers.arrayElement(['15 days', '500 days', 'Expired']),
         isOnline: faker.datatype.boolean(),
         tagIds: [], // Optional tags
-        frequencyId: frequency.id, // Optional frequency
+        frequency, // Optional frequency
         lastScannedAt: null,
         nextScanAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
+        isPause: false,
+        user, // Assuming user ID 1 exists
     }
 }
 
 // Create a certain number of fake scans
-async function createFakeScans(count: number, frequency: Frequency): Promise<ScanData[]> {
+async function createFakeScans(count: number, frequency: Frequency, user: User): Promise<ScanData[]> {
     const fakeScans: ScanData[] = []
 
     for (let i = 0; i < count; i++) {
-        const scanData = await mockScanUrl(frequency)
+        const scanData = await mockScanUrl(frequency, user)
         fakeScans.push(scanData)
     }
 
@@ -133,7 +137,11 @@ export async function seedDatabase() {
         }])
         await frequencyRepo.save(frequencies)
 
-        const fakeScans = await createFakeScans(10, frequencies[0])
+        const user = await userRepo.findOneByOrFail({email: 'f.rumigny@gmail.com'})
+        if (!user) {
+            throw new Error('User not found')
+        }
+        const fakeScans = await createFakeScans(10, frequencies[0], user)
         const scans = scanRepo.create(fakeScans)
         await scanRepo.save(scans)
 
