@@ -40,6 +40,10 @@ export class Scan extends BaseEntity {
     @Column({ type: 'boolean' })
     isOnline: boolean
 
+    @Field(() => Boolean)
+    @Column({ type: 'boolean', default: false })
+    isPause: boolean
+
     // Relation Many-to-One avec Frequency
     // nullable true a frequency pour les test, a enlever après
     @Field(() => Frequency)

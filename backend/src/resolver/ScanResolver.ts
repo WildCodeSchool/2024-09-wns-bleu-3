@@ -153,6 +153,22 @@ class ScanResolver {
         return scan
     }
 
+    @Mutation(() => Scan)
+    async pauseOrRestartScan(@Arg('id') id: number) {
+        const scan = await Scan.findOne({
+            where: { id },
+        })
+
+        if (!scan) {
+            return null
+        }
+        scan.isPause = scan?.isPause === true ? false : true
+
+        await scan.save()
+
+        return scan
+    }
+
     @Mutation(() => String)
     async updateScan(@Arg('data') updateScanData: UpdateScanInput) {
         try {

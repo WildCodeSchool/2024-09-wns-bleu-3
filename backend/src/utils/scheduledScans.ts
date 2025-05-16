@@ -16,7 +16,8 @@ export async function runScheduledScans() {
             relations: ['frequency'],
             where: {
                 // scan + intervalle < maintenant
-                nextScanAt: LessThan(now)
+                nextScanAt: LessThan(now),
+                isPause: false
             }
         });
 

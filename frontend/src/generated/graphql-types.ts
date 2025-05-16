@@ -180,6 +180,7 @@ export type Scan = {
   history: Array<ScanHistory>;
   id: Scalars['Float']['output'];
   isOnline: Scalars['Boolean']['output'];
+  isPause: Scalars['Boolean']['output'];
   lastScannedAt?: Maybe<Scalars['DateTimeISO']['output']>;
   nextScanAt?: Maybe<Scalars['DateTimeISO']['output']>;
   responseTime: Scalars['Float']['output'];
