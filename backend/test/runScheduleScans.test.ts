@@ -1,6 +1,6 @@
 import { runScheduledScans } from '../src/utils/scheduledScans';
 import { LessThan } from 'typeorm';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Scan } from '../src/entities/Scan';
 import { scanUrl } from '../src/utils/scanUrl';
 
