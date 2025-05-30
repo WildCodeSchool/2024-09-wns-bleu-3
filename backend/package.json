@@ -11,7 +11,7 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "test": "vitest",
-        "test:coverage": "vitest --coverage",
+        "test:coverage": "vitest run --coverage",
         "test:watch": "vitest --watch",
         "build": "tsc",
         "startprod": "node ./dist/src/index.js"
@@ -54,6 +54,7 @@
         "@types/node": "^22.14.1",
         "@types/node-cron": "^3.0.11",
         "@types/pg": "^8.11.12",
+        "@vitest/coverage-v8": "^3.1.1",
         "eslint": "^9.20.1",
         "vitest": "^3.1.1"
     }

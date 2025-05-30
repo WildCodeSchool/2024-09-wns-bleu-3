@@ -52,6 +52,7 @@ export type Mutation = {
   forgotPassword: Scalars['String']['output'];
   login: Scalars['String']['output'];
   logout: Scalars['String']['output'];
+  pauseOrRestartScan: Scan;
   register: Scalars['String']['output'];
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
@@ -109,6 +110,11 @@ export type MutationForgotPasswordArgs = {
 
 export type MutationLoginArgs = {
   data: UserLoginInput;
+};
+
+
+export type MutationPauseOrRestartScanArgs = {
+  id: Scalars['Float']['input'];
 };
 
 

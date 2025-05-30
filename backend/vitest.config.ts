@@ -8,5 +8,8 @@ export default defineConfig({
         alias: {
             src: resolve(__dirname, 'src'),
         },
+        coverage: {
+            provider: 'v8'
+        }
     },
 })

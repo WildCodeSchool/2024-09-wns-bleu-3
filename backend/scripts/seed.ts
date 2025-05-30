@@ -137,7 +137,7 @@ export async function seedDatabase() {
         }])
         await frequencyRepo.save(frequencies)
 
-        const user = await userRepo.findOneByOrFail({email: 'f.rumigny@gmail.com'})
+        const user = await userRepo.findOneByOrFail({ email: 'f.rumigny@gmail.com' })
         if (!user) {
             throw new Error('User not found')
         }
