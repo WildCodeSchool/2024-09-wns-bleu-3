@@ -9,7 +9,7 @@ export default defineConfig({
             src: resolve(__dirname, 'src'),
         },
         coverage: {
-            provider: 'v8'
-        }
+            provider: 'v8',
+        },
     },
 })

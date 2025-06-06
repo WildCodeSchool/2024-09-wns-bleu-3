@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Respect the existing folder structure and architectural choices defined in [architecture.md](mdc:.cursor/architecture.md) 
