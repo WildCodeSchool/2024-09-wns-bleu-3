@@ -17,6 +17,43 @@ The backend is built with the following technologies:
 -   **ORM**: [TypeORM](mdc:https:/typeorm.io)
 -   **Language**: [TypeScript](mdc:https:/www.typescriptlang.org)
 
+## Development Setup
+
+### Starting the Backend Server
+
+The backend runs in Docker containers and **cannot be started directly** from the repository. Use the following commands from the **project root** (not the backend directory):
+
+```bash
+# Start all services (backend + database)
+make start
+
+# Stop all services
+make stop
+
+# View logs
+make logs
+
+# Restart services
+make restart
+```
+
+### Accessing Services
+
+Once started with `make start`:
+- **GraphQL Playground**: http://localhost:4000/graphql
+- **Backend API**: http://localhost:4000
+- **Database**: localhost:5432 (PostgreSQL)
+
+### Running Tests
+
+Tests should be run from within the backend directory:
+
+```bash
+cd backend
+npm test                    # Run all tests
+npm test filename.test.ts   # Run specific test file
+```
+
 ## Project Structure
 
 The backend source code is located in the `backend/src/` directory. The structure is organized as follows:
@@ -44,4 +81,4 @@ To maintain code quality and consistency, please adhere to the following best pr
 4.  **Database Migrations**: Never modify the database schema directly. Use TypeORM's migration commands to generate and apply schema changes. This ensures a consistent database state across all environments.
 5.  **Environment Configuration**: Manage environment-specific configurations using `.env` files. The configuration should be loaded in the `backend/src/config` module.
 6.  **Dependency Injection**: Use a dependency injection framework like `TypeDI` to manage dependencies between different parts of the application, especially for injecting services and repositories into resolvers.
-7.  Use Context7 for documentation
+7.  Always use Context7 tool for documentation

@@ -26,13 +26,13 @@
 - **Framework**: React 19
 - **Build Tool**: Vite (`vite.config.ts`)
 - **Styling**:
-  - Tailwind CSS (`tailwind.config.js`, `postcss.config.js`)
-  - Radix UI (headless UI components for accessibility)
+  - Tailwind CSS v4 (`tailwind.config.js`, `postcss.config.js`)
+  - **ShadCN UI** components for building interfaces.
   - `clsx`, `tailwind-merge` for class name utilities
   - `lucide-react` for icons
   - `next-themes` for theme management
 - **GraphQL Client**: Apollo Client (`@apollo/client`, `graphql-ws`, `graphql-sse`)
-- **Routing**: React Router (`react-router`)
+- **Routing**: React Router (`react-router`) - latest version
 - **Forms**: React Hook Form (`react-hook-form`) with Zod (`zod`) for validation.
 - **UI Primitives**: `components.json` suggests a setup similar to Shadcn UI.
 - **State Management**: Primarily component state, React Context, and Apollo Client cache.
@@ -44,6 +44,16 @@
 - **Framework**: Playwright
 - **Configuration**: `playwright.config.ts`
 - **Authentication**: Handles authenticated and unauthenticated states.
+- - **Custom Fixture**:
+  - The project uses a custom test fixture defined in `e2e/tests/setup/base.ts`
+  - All tests must extend this fixture instead of using Playwright’s default `test`.
+  - This fixture includes common logic like login helpers, session setup, and environment configuration.
+- **Test Syntax**: Always import the extended fixture, e.g.:
+
+  ```ts
+  import {test, expect} from './setup/base'
+  ```
+
 - **Reporting**: `playwright-report/`
 
 ## 5. Infrastructure & Deployment
@@ -64,11 +74,17 @@
 
 ## 7. Key Shared Configuration & Scripts
 
-- `Makefile`: Root level for common project commands.
+- `Makefile`: Root level for common project commands. You can use it for starting the project / e2e testing in isolation with a special docker container / or clean docker
 - `.env`, `.env.example`: Environment variable management.
-- `package.json`: In `backend/` and `frontend/` for managing dependencies and scripts.
+- `package.json`: In `backend/`, `frontend/` and `e2e/` for managing dependencies and scripts.
 
 ## 8. Development Practices
 
-- **Linting**: ESLint (e.g., `frontend/eslint.config.js`).
+- **Linting is mandatory**: all code must follow the rules defined by ESLint.
+- Use the appropriate ESLint config based on the context:
+  - Frontend: `frontend/eslint.config.js`
+  - Backend: `backend/eslint.config.mjs`
+- Never ignore linting errors.
+- When generating new files or modifying existing code, ensure the result is lint-compliant.
+- Do not override existing ESLint rules unless explicitly told.
 - **Static Typing**: TypeScript across frontend and backend.

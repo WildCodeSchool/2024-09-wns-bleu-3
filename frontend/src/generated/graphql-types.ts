@@ -89,7 +89,7 @@ export type MutationDeleteFrequenceArgs = {
 
 
 export type MutationDeleteScanArgs = {
-  id: Scalars['Float']['input'];
+  id: Scalars['Int']['input'];
 };
 
 
@@ -114,7 +114,7 @@ export type MutationLoginArgs = {
 
 
 export type MutationPauseOrRestartScanArgs = {
-  id: Scalars['Float']['input'];
+  id: Scalars['Int']['input'];
 };
 
 
@@ -156,6 +156,7 @@ export type Query = {
   getScanHistory: Array<ScanHistory>;
   getTagById: Tag;
   getUserInfo?: Maybe<UserInfo>;
+  previewScan: ScanPreview;
 };
 
 
@@ -165,7 +166,7 @@ export type QueryGetFrequenceByIdArgs = {
 
 
 export type QueryGetScanByIdArgs = {
-  id: Scalars['Float']['input'];
+  id: Scalars['Int']['input'];
 };
 
 
@@ -177,6 +178,11 @@ export type QueryGetScanHistoryArgs = {
 
 export type QueryGetTagByIdArgs = {
   id: Scalars['Float']['input'];
+};
+
+
+export type QueryPreviewScanArgs = {
+  url: Scalars['String']['input'];
 };
 
 export type Scan = {
@@ -229,6 +235,16 @@ export type ScanInput = {
   url: Scalars['String']['input'];
 };
 
+export type ScanPreview = {
+  __typename?: 'ScanPreview';
+  isOnline: Scalars['Boolean']['output'];
+  responseTime: Scalars['Int']['output'];
+  sslCertificate: Scalars['String']['output'];
+  statusCode: Scalars['Int']['output'];
+  statusMessage: Scalars['String']['output'];
+  url: Scalars['String']['output'];
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   newScan: Scan;
@@ -255,7 +271,7 @@ export type UpdateFrequencyInput = {
 
 export type UpdateScanInput = {
   frequencyId?: InputMaybe<Scalars['Int']['input']>;
-  id: Scalars['Float']['input'];
+  id: Scalars['Int']['input'];
   tagIds?: InputMaybe<Array<Scalars['Float']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
@@ -307,7 +323,7 @@ export type CreateNewScanMutationVariables = Exact<{
 export type CreateNewScanMutation = { __typename?: 'Mutation', createNewScan: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any } };
 
 export type DeleteScanMutationVariables = Exact<{
-  deleteScanId: Scalars['Float']['input'];
+  deleteScanId: Scalars['Int']['input'];
 }>;
 
 
@@ -369,7 +385,7 @@ export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetAllScansQuery = { __typename?: 'Query', getAllScans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null }> };
 
 export type QueryQueryVariables = Exact<{
-  getScanByIdId: Scalars['Float']['input'];
+  getScanByIdId: Scalars['Int']['input'];
 }>;
 
 
@@ -452,7 +468,7 @@ export type CreateNewScanMutationHookResult = ReturnType<typeof useCreateNewScan
 export type CreateNewScanMutationResult = Apollo.MutationResult<CreateNewScanMutation>;
 export type CreateNewScanMutationOptions = Apollo.BaseMutationOptions<CreateNewScanMutation, CreateNewScanMutationVariables>;
 export const DeleteScanDocument = gql`
-    mutation DeleteScan($deleteScanId: Float!) {
+    mutation DeleteScan($deleteScanId: Int!) {
   deleteScan(id: $deleteScanId)
 }
     `;
@@ -755,7 +771,7 @@ export type GetAllScansLazyQueryHookResult = ReturnType<typeof useGetAllScansLaz
 export type GetAllScansSuspenseQueryHookResult = ReturnType<typeof useGetAllScansSuspenseQuery>;
 export type GetAllScansQueryResult = Apollo.QueryResult<GetAllScansQuery, GetAllScansQueryVariables>;
 export const QueryDocument = gql`
-    query Query($getScanByIdId: Float!) {
+    query Query($getScanByIdId: Int!) {
   getScanById(id: $getScanByIdId) {
     id
     url

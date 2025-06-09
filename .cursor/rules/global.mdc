@@ -1,0 +1,86 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 🧭 Development Conventions
+
+These rules ensure consistency across the monorepoorators (including AI) write predictable, maintainable code.
+
+---
+
+## 📁 Folder & Project Structure
+
+### ✅ Follow the Architecture
+
+- Alolder organization and architectural decisions documented in [architecture.md](mdc:.cursor/architecture.md).
+- Do **NOT** create new folders or layers unless explicitly approved or documented.
+- When unsure, refer to the tree reference in [tree-structure.md](mdc:.cursor/tree-structure.md).
+
+### 📦 Monorepo Guidelines
+
+- This is a **monorepo**.
+- Never install dependencies in the root folder.
+- Each workspace (e.g., `/backend`, `/frontend`) must manage its own `package.json` and dependencies.
+- If you need a dependency:
+  - Navigate to the relevant folder (e.g., `/backend`)
+  - Run: `npm install [package]` inside that workspace only.
+
+---
+
+## 🧠 AI Collaboration Guidelines
+
+- This is not "vibe-coding" — it's **pair programming**.
+- I want to **learn** and **understand** every part of the implementation.
+- Don't change code randomly, ask if you're not sure
+- Whenever you write code, you must:
+  1. Explain what you're doing and **why** you're doing it.
+  2. Use clear reasoning and reference project structure or patterns when helpful.
+  3. Avoid shortcuts or magic – clarity is more important than cleverness.
+
+---
+
+## ✅ Import Guidelines
+
+### 🔄 Avoid Redundant Imports
+
+- Do **not** re-import something that's already present in the file or clearly available from context.
+- **Prefer named imports** for clarity.
+
+### 📌 Use Correct Import Paths
+
+- Use **relative** paths within the same module/folder.
+- Use **absolute paths or aliases** when crossing boundaries (if supported).
+- Do **not** hardcode paths or use inconsistent styles.
+
+#### ✅ Good Examples:
+
+```ts
+// ✅ Named and scoped import
+import { formatDate } from '@/utils/date';
+
+// ✅ Relative import inside same module
+import { buildQuery } from './queryBuilder';
+
+// ✅ Avoids unused import
+import React, { useState } from 'react';
+❌ Bad Examples:
+ts
+Copier
+Modifier
+// ❌ Unused import
+import lodash from 'lodash';
+
+// ❌ Unnecessary absolute import for local file
+import { buildQuery } from 'src/utils/scan/queryBuilder'; // should be './queryBuilder'
+
+// ❌ Duplicate imports
+import { buildQuery } from './queryBuilder';
+import { buildQuery } from './queryBuilder'; // repeated
+🧪 File Naming & Placement
+Follow file naming conventions shown in @tree-structure.md.
+
+Do not invent new levels of nesting.
+
+Tests must live in the corresponding test/ folder and use .test.ts or .test.tsx suffix.
+
