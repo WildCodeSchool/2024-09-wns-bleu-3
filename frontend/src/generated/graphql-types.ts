@@ -297,6 +297,7 @@ export type UserInfo = {
 export type UserInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+  roleId?: InputMaybe<Scalars['String']['input']>;
   username: Scalars['String']['input'];
 };
 

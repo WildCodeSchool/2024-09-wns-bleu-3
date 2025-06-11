@@ -16,12 +16,13 @@ import { seedDatabase } from '../scripts/seed'
 import { initCronJobs } from './cron'
 import { pubSub } from './utils/pubSub'
 import ScanHistoryResolver from './resolver/ScanHistoryResolver'
+import { authChecker } from './utils/authChecker'
 
 const PORT = 4000
 
 async function start() {
     try {
-    // Validate environment
+        // Validate environment
         if (!process.env.JWT_SECRET_KEY) {
             throw new Error('JWT_SECRET_KEY environment variable is required')
         }
@@ -45,7 +46,7 @@ async function start() {
         const schema = await buildSchema({
             resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver, ScanHistoryResolver],
             pubSub,
-            // authChecker: ({ context }) => !!context.email,
+            authChecker,
         })
 
         // Setup Express app
@@ -60,6 +61,7 @@ async function start() {
             context: async ({ request }) => {
                 let email: string | undefined
                 let id: number | undefined
+                let role: string | undefined
 
                 try {
                     const rawCookies = request.headers.get('cookie') || ''
@@ -67,13 +69,14 @@ async function start() {
 
                     if (cookies.token) {
                         const payload = jwt.verify(cookies.token, process.env.JWT_SECRET_KEY as string) as JwtPayload
-                        const parsedPayload = ContextSchema.safeParse({ email: payload.email, id: payload.userId })
+                        const parsedPayload = ContextSchema.safeParse({ email: payload.email, id: payload.userId, role: payload.role })
 
                         console.log('Parsed JWT payload:', parsedPayload)
 
                         if (parsedPayload.success) {
                             email = payload.email
                             id = payload.userId
+                            role = payload.role
                         }
                         else {
                             console.error('Invalid JWT payload:', parsedPayload.error)
@@ -87,6 +90,7 @@ async function start() {
                 return {
                     email,
                     id,
+                    role,
                 }
             },
         })

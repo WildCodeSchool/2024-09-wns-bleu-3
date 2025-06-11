@@ -2,6 +2,7 @@ import { User } from '../entities/User'
 import { UserInput } from '../inputs/UserInput'
 import {
     Arg,
+    Authorized,
     Ctx,
     Mutation,
     Query,
@@ -76,6 +77,7 @@ class UserResolver {
         return 'User successfully created'
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async updateUser(@Arg('id', () => Number) id: number, @Arg('data', () => UpdateUserInput) updateUserData: UpdateUserInput) {
         const userToUpdate = await User.findOne({
@@ -113,8 +115,9 @@ class UserResolver {
         // if user identified : generate token
         if (isPasswordCorrect === true && user !== null) {
             const token = jwt.sign(
-                { email: user.email, userId: user.id },
+                { email: user.email, userId: user.id, role: user.role.name },
                 process.env.JWT_SECRET_KEY as Secret,
+                { expiresIn: '1h' }
             )
             context.res.setHeader(
                 'Set-Cookie',
@@ -137,6 +140,7 @@ class UserResolver {
         return 'logged out'
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async deleteUser(@Arg('id', () => Number) id: number, @Ctx() context: any) {
         try {
