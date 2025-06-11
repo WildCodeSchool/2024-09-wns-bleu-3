@@ -6,6 +6,7 @@ import { useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import ActiveIssues from "../components/ActiveIssues";
 import { useState } from "react";
+import ScanListHistory from "@/components/ScanListHistory";
 
 const DashboardPage = () => {
 
@@ -37,12 +38,14 @@ const DashboardPage = () => {
     const activeIssueCount = activeIssues.length
 
 
+    console.log("all scan =>",scans)
 
     if (loading) return <p>Loading...</p>
     if (error) return <p>Error</p>
 
     return (
         <div className="container p-8 w-screen mx-auto">
+             {/* welcome */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800 text-left">Welcome, {capitalizeFirstLetter(data?.getAllScansByUserId.username ?? '')} </h1>
@@ -117,7 +120,12 @@ const DashboardPage = () => {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* ActiveIssues */}
             <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} />
+            
+            {/* Scans list */}
+            <ScanListHistory/>
         </div >
     );
 };

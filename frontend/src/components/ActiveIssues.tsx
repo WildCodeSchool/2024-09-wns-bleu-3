@@ -21,7 +21,7 @@ export default function ActiveIssues({ issues, scans, setResolvedIssues }: Activ
     const activeIssueCount = issues.length
 
     return (
-        <div className="bg-white rounded-xl border shadow-sm p-6 border-gray-200">
+        <div className="bg-white rounded-xl border shadow-sm p-6 border-gray-200 mb-8">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Active Issues</h2>
                 <Badge variant="outline" className="bg-red-50 text-red-700">
