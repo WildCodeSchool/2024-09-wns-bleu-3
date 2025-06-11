@@ -37,6 +37,7 @@ These rules ensure consistency across the monorepoorators (including AI) write p
   1. Explain what you're doing and **why** you're doing it.
   2. Use clear reasoning and reference project structure or patterns when helpful.
   3. Avoid shortcuts or magic – clarity is more important than cleverness.
+- You can use the github tool MCP to commit each task, but never push without my authorization
 
 ---
 

@@ -2,6 +2,19 @@ import { gql } from "@apollo/client";
 
 /******* SCAN *********/
 
+// Preview scan query for unauthenticated users
+export const PREVIEW_SCAN = gql`
+query PreviewScan($url: String!) {
+  previewScan(url: $url) {
+    url
+    statusCode
+    statusMessage
+    responseTime
+    sslCertificate
+    isOnline
+  }
+}`
+
 export const GET_ALL_SCANS = gql`
 query GetAllScans {
   getAllScans {

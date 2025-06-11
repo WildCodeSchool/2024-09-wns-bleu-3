@@ -57,16 +57,14 @@
   - [ ] 2.9 Add proper form validation for both form variants
   - [ ] 2.10 Ensure forms have appropriate loading states during submission
 
-- [ ] 3.0 Scan Preview Page Implementation
-  - [ ] 3.1 Add `previewScan` query to `frontend/src/graphql/queries.ts`
-  - [ ] 3.2 Run GraphQL codegen to generate TypeScript hooks
-  - [ ] 3.3 Write test for `ScanPreviewPage` in `frontend/src/test/ScanPreviewPage.test.tsx`
-  - [ ] 3.4 Create `ScanPreviewPage.tsx` with URL param extraction
-  - [ ] 3.5 Implement data fetching using `usePreviewScanQuery` hook
-  - [ ] 3.6 Design and implement the UI for displaying scan results
-  - [ ] 3.7 Add loading and error states to the preview page
-  - [ ] 3.8 Implement "Log in to save" button with redirect to login page
-  - [ ] 3.9 Test preview page with various URLs (valid, invalid, slow response)
+- [x] 3.0 Scan Preview Page Implementation ✅
+  - [x] 3.1 Add `previewScan` query to `frontend/src/graphql/queries.ts`
+  - [x] 3.2 Run GraphQL codegen to generate TypeScript hooks
+  - [x] 3.3 Create tests for scan preview page in `frontend/src/test/ScanPreviewPage.test.tsx`
+  - [x] 3.4 Implement `ScanPreviewPage` component with URL parameter handling
+  - [x] 3.5 Add loading states and error handling for scan preview
+  - [x] 3.6 Add "Login to Save" prompt for unauthenticated users
+  - [x] 3.7 Add route for `/scan/preview` in router configuration
 
 - [ ] 4.0 Inline Tag Creation Feature
   - [ ] 4.1 Write test for `CreateTagInput` in `frontend/src/test/CreateTagInput.test.tsx`

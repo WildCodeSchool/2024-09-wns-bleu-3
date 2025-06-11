@@ -379,6 +379,13 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: string };
 
+export type PreviewScanQueryVariables = Exact<{
+  url: Scalars['String']['input'];
+}>;
+
+
+export type PreviewScanQuery = { __typename?: 'Query', previewScan: { __typename?: 'ScanPreview', url: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean } };
+
 export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -721,6 +728,51 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const PreviewScanDocument = gql`
+    query PreviewScan($url: String!) {
+  previewScan(url: $url) {
+    url
+    statusCode
+    statusMessage
+    responseTime
+    sslCertificate
+    isOnline
+  }
+}
+    `;
+
+/**
+ * __usePreviewScanQuery__
+ *
+ * To run a query within a React component, call `usePreviewScanQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePreviewScanQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePreviewScanQuery({
+ *   variables: {
+ *      url: // value for 'url'
+ *   },
+ * });
+ */
+export function usePreviewScanQuery(baseOptions: Apollo.QueryHookOptions<PreviewScanQuery, PreviewScanQueryVariables> & ({ variables: PreviewScanQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PreviewScanQuery, PreviewScanQueryVariables>(PreviewScanDocument, options);
+      }
+export function usePreviewScanLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PreviewScanQuery, PreviewScanQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PreviewScanQuery, PreviewScanQueryVariables>(PreviewScanDocument, options);
+        }
+export function usePreviewScanSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<PreviewScanQuery, PreviewScanQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PreviewScanQuery, PreviewScanQueryVariables>(PreviewScanDocument, options);
+        }
+export type PreviewScanQueryHookResult = ReturnType<typeof usePreviewScanQuery>;
+export type PreviewScanLazyQueryHookResult = ReturnType<typeof usePreviewScanLazyQuery>;
+export type PreviewScanSuspenseQueryHookResult = ReturnType<typeof usePreviewScanSuspenseQuery>;
+export type PreviewScanQueryResult = Apollo.QueryResult<PreviewScanQuery, PreviewScanQueryVariables>;
 export const GetAllScansDocument = gql`
     query GetAllScans {
   getAllScans {
