@@ -6,12 +6,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
 import {
     BaseScanFormProps,
     ScanFormSubmissionData,
     baseScanFormSchema,
     fullScanFormSchema,
-    defaultFormValues,
+    getDefaultFormValues,
     validateScanForm
 } from "@/schema/ScanFormSchema";
 
@@ -24,6 +25,7 @@ import {
  * - Conditional field rendering based on props
  * - Theme support (light/dark variants)
  * - Loading states and error handling
+ * - Inline tag creation functionality
  * 
  * @param props - BaseScanFormProps interface
  */
@@ -37,8 +39,10 @@ function BaseScanForm({
     showFrequency = false,
     availableTags = [],
     availableFrequencies = [],
+    defaultFrequencyId,
     className,
-    variant = 'dark'
+    variant = 'dark',
+    fullContainer = false
 }: BaseScanFormProps) {
 
     // Choose validation schema based on which fields are shown
@@ -49,7 +53,7 @@ function BaseScanForm({
     // Initialize form with react-hook-form and Zod validation
     const form = useForm<ScanFormSubmissionData>({
         resolver: zodResolver(validationSchema),
-        defaultValues: defaultFormValues
+        defaultValues: getDefaultFormValues(defaultFrequencyId)
     });
 
     // Handle form submission with enhanced validation
@@ -115,10 +119,14 @@ function BaseScanForm({
     // Theme-based styling
     const isDark = variant === 'dark';
     const containerClasses = cn(
-        "max-w-md mx-auto rounded-xl shadow-lg border p-6",
-        isDark
+        fullContainer
+            ? "w-full h-full flex flex-col"
+            : "max-w-md mx-auto rounded-xl shadow-lg border p-6",
+        !fullContainer && isDark
             ? "bg-[#0a2540] border-[#0c2d4d]"
-            : "bg-white border-gray-200",
+            : !fullContainer
+                ? "bg-white border-gray-200"
+                : "",
         className
     );
 
@@ -146,7 +154,7 @@ function BaseScanForm({
             </h2>
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)} className={cn("space-y-4", className)} role="form">
+                <form onSubmit={form.handleSubmit(handleSubmit)} className={cn("space-y-4", fullContainer && "flex-1 flex flex-col", className)} role="form">
 
                     {/* Display root form errors */}
                     {form.formState.errors.root && (
@@ -238,7 +246,7 @@ function BaseScanForm({
                         />
                     )}
 
-                    {/* Tags selector - only shown for authenticated users */}
+                    {/* Tags selector with inline creation - only shown for authenticated users */}
                     {showTags && (
                         <FormField
                             control={form.control}
@@ -246,6 +254,7 @@ function BaseScanForm({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel className={labelClasses}>Tags</FormLabel>
+
                                     <Select
                                         onValueChange={(value) => field.onChange([parseInt(value)])}
                                         value={field.value?.length ? field.value[0].toString() : ""}
@@ -281,21 +290,23 @@ function BaseScanForm({
                     )}
 
                     {/* Submit button with loading state */}
-                    <Button
-                        type="submit"
-                        variant={isDark ? "lightBlue" : "blue"}
-                        className="w-full"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
-                            <>
-                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                {loadingText}
-                            </>
-                        ) : (
-                            submitButtonText
-                        )}
-                    </Button>
+                    <div className={fullContainer ? "mt-auto pt-4" : ""}>
+                        <Button
+                            type="submit"
+                            variant={isDark ? "lightBlue" : "blue"}
+                            className="w-full"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                    {loadingText}
+                                </>
+                            ) : (
+                                submitButtonText
+                            )}
+                        </Button>
+                    </div>
                 </form>
             </Form>
         </div>

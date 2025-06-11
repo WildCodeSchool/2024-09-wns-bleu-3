@@ -38,6 +38,7 @@ These rules ensure consistency across the monorepoorators (including AI) write p
   2. Use clear reasoning and reference project structure or patterns when helpful.
   3. Avoid shortcuts or magic – clarity is more important than cleverness.
 - You can use the github tool MCP to commit each task, but never push without my authorization
+- If you need to start the monorepo, `/backend` or `/frontend` for example, you need to start with the docker compose [docker-compose.yml](mdc:docker-compose.yml) with make start for example
 
 ---
 

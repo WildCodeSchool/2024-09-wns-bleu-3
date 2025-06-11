@@ -40,7 +40,7 @@ const DashboardPage = () => {
 
 
     if (loading) return <p>Loading...</p>
-    if (error) return <p>Error</p>
+    if (error) return <p>There is an error: {error.message}</p>
 
     return (
         <div className="container p-8 w-screen mx-auto">

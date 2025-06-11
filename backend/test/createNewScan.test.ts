@@ -238,3 +238,4 @@ describe('scanResolver - createNewScan', () => {
         expect(scanUrl).not.toHaveBeenCalled()
     })
 })
+ 

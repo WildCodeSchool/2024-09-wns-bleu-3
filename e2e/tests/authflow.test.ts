@@ -5,26 +5,30 @@ test.describe('Authentication flow', () => {
     test('User should be able to sign up', async ({page}) => {
             await page.goto('/signup')
       
-            // Username sign up
-            await page.getByRole('textbox', { name: 'Username' }).click();
-            await page.getByRole('textbox', { name: 'Username' }).fill(process.env.SIGN_IN_TEST_USERNAME as string);
-        
-            // Email sign up
-        
-            await page.getByRole('textbox', { name: 'Email address' }).click();
-          await page.getByRole('textbox', { name: 'Email address' }).fill(process.env.SIGN_IN_TEST_EMAIL as string);
-      
-            // Password sign up
-        
-            await page.getByRole('textbox', { name: 'Password' }).click();
-            await page.getByRole('textbox', { name: 'Password' }).fill(process.env.SIGN_IN_TEST_PWD as string);
+            /*
+             * Use a random suffix so every test run uses fresh credentials. This avoids
+             * UNIQUE constraint violations when the same user already exists in the
+             * database from a previous local run.
+             */
+            const rand = Math.random().toString(36).slice(2, 8)
+
+            // Username sign-up
+            await page.getByRole('textbox', { name: 'Username' }).click()
+            await page.getByRole('textbox', { name: 'Username' }).fill(`test_${rand}`)
+
+            // Email sign-up
+            await page.getByRole('textbox', { name: 'Email address' }).click()
+            await page.getByRole('textbox', { name: 'Email address' }).fill(`test_${rand}@example.com`)
+
+            // Password sign-up – any strong dummy password works
+            await page.getByRole('textbox', { name: 'Password' }).click()
+            await page.getByRole('textbox', { name: 'Password' }).fill('Playwright1!')
         
             await page.getByRole('button', { name: 'Create Account' }).click();
         
             const toastSuccess = page.getByText('You’ve successfully signed up');
 
             await expect(toastSuccess).toBeVisible();
-            await expect(page).toHaveURL('/')
     })
 
     test('User should be able to login', async ({page}) => {

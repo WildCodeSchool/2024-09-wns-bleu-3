@@ -98,8 +98,10 @@ export interface BaseScanFormProps {
     showFrequency?: boolean;
     availableTags?: Tag[];
     availableFrequencies?: Frequency[];
+    defaultFrequencyId?: number; // For preselecting default frequency
     className?: string;
     variant?: 'light' | 'dark'; // For theme support (homepage vs dashboard)
+    fullContainer?: boolean; // Whether to fill container (dashboard) or be standalone box (homepage)
 }
 
 // Validation helper functions with detailed error messages
@@ -236,4 +238,12 @@ export const defaultFormValues = {
     title: "",
     tagIds: [] as number[],
     frequencyId: undefined as number | undefined,
-}; 
+};
+
+// Function to get default form values with preselected frequency
+export const getDefaultFormValues = (defaultFrequencyId?: number) => ({
+    url: "",
+    title: "",
+    tagIds: [] as number[],
+    frequencyId: defaultFrequencyId,
+}); 

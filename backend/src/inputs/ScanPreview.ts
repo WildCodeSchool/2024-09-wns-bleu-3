@@ -21,3 +21,4 @@ export class ScanPreview {
     @Field(() => Boolean)
     isOnline: boolean
 }
+ 

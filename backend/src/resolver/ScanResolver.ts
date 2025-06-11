@@ -133,16 +133,29 @@ class ScanResolver {
                 newScanToSave.tags = tags
             }
 
+            // Handle frequency - if not provided, use default (60 minutes)
+            let frequency: Frequency
             if (newScanData.frequencyId) {
-                const frequency = await Frequency.findOne({ where: { id: newScanData.frequencyId } })
-                if (frequency) {
-                    newScanToSave.frequency = frequency
-                    // Initialize the next scan date
-                    const nextScanDate = new Date()
-                    nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
-                    newScanToSave.nextScanAt = nextScanDate
+                const foundFrequency = await Frequency.findOne({ where: { id: newScanData.frequencyId } })
+                if (!foundFrequency) {
+                    throw new Error('Invalid frequency selected')
                 }
+                frequency = foundFrequency
             }
+            else {
+                // Default to 60 minutes frequency if not specified
+                const defaultFrequency = await Frequency.findOne({ where: { intervalMinutes: 60 } })
+                if (!defaultFrequency) {
+                    throw new Error('Default frequency (60 minutes) not found in database')
+                }
+                frequency = defaultFrequency
+            }
+
+            newScanToSave.frequency = frequency
+            // Initialize the next scan date
+            const nextScanDate = new Date()
+            nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
+            newScanToSave.nextScanAt = nextScanDate
 
             const result = await newScanToSave.save()
 
@@ -229,19 +242,28 @@ class ScanResolver {
             await scanToUpdate.save()
 
             if (updateScanData.frequencyId !== undefined) {
-                const frequency = await Frequency.findOne({ where: { id: updateScanData.frequencyId } })
-                if (frequency) {
-                    scanToUpdate.frequency = frequency
-
-                    // Mettre à jour la date du prochain scan
-                    const nextScanDate = new Date()
-                    nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
-                    scanToUpdate.nextScanAt = nextScanDate
+                let frequency: Frequency
+                if (updateScanData.frequencyId) {
+                    const foundFrequency = await Frequency.findOne({ where: { id: updateScanData.frequencyId } })
+                    if (!foundFrequency) {
+                        throw new Error('Invalid frequency selected for update')
+                    }
+                    frequency = foundFrequency
                 }
                 else {
-                    scanToUpdate.frequency = null
-                    scanToUpdate.nextScanAt = null
+                    // Default to 60 minutes frequency if not specified
+                    const defaultFrequency = await Frequency.findOne({ where: { intervalMinutes: 60 } })
+                    if (!defaultFrequency) {
+                        throw new Error('Default frequency (60 minutes) not found in database')
+                    }
+                    frequency = defaultFrequency
                 }
+
+                scanToUpdate.frequency = frequency
+                // Update next scan date
+                const nextScanDate = new Date()
+                nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
+                scanToUpdate.nextScanAt = nextScanDate
             }
 
             return 'Scan has been updated'

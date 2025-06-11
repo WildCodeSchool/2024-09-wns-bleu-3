@@ -109,7 +109,7 @@ describe("PublicScanForm", () => {
     test("shows validation error when URL is empty", async () => {
         renderWithProviders(<PublicScanForm />);
 
-        const submitButton = screen.getByRole("button", { name: /preview scan/i });
+        const submitButton = screen.getByRole("button", { name: /scan your website/i });
 
         // Submit without URL
         fireEvent.click(submitButton);
@@ -297,6 +297,6 @@ describe("PublicScanForm", () => {
 
         // Form should still be functional
         expect(screen.getByLabelText(/URL to scan/i)).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /preview scan/i })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /scan your website/i })).toBeInTheDocument();
     });
 }); 

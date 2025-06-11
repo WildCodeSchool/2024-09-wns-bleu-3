@@ -329,6 +329,13 @@ export type DeleteScanMutationVariables = Exact<{
 
 export type DeleteScanMutation = { __typename?: 'Mutation', deleteScan: string };
 
+export type CreateNewTagMutationVariables = Exact<{
+  data: TagInput;
+}>;
+
+
+export type CreateNewTagMutation = { __typename?: 'Mutation', createNewTag: { __typename?: 'Tag', id: number, name: string, color: string } };
+
 export type RegisterMutationVariables = Exact<{
   data: UserInput;
 }>;
@@ -505,6 +512,41 @@ export function useDeleteScanMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteScanMutationHookResult = ReturnType<typeof useDeleteScanMutation>;
 export type DeleteScanMutationResult = Apollo.MutationResult<DeleteScanMutation>;
 export type DeleteScanMutationOptions = Apollo.BaseMutationOptions<DeleteScanMutation, DeleteScanMutationVariables>;
+export const CreateNewTagDocument = gql`
+    mutation CreateNewTag($data: TagInput!) {
+  createNewTag(data: $data) {
+    id
+    name
+    color
+  }
+}
+    `;
+export type CreateNewTagMutationFn = Apollo.MutationFunction<CreateNewTagMutation, CreateNewTagMutationVariables>;
+
+/**
+ * __useCreateNewTagMutation__
+ *
+ * To run a mutation, you first call `useCreateNewTagMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateNewTagMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createNewTagMutation, { data, loading, error }] = useCreateNewTagMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateNewTagMutation(baseOptions?: Apollo.MutationHookOptions<CreateNewTagMutation, CreateNewTagMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateNewTagMutation, CreateNewTagMutationVariables>(CreateNewTagDocument, options);
+      }
+export type CreateNewTagMutationHookResult = ReturnType<typeof useCreateNewTagMutation>;
+export type CreateNewTagMutationResult = Apollo.MutationResult<CreateNewTagMutation>;
+export type CreateNewTagMutationOptions = Apollo.BaseMutationOptions<CreateNewTagMutation, CreateNewTagMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($data: UserInput!) {
   register(data: $data)
