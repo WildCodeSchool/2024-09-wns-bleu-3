@@ -17,6 +17,7 @@ import { initCronJobs } from './cron'
 import { pubSub } from './utils/pubSub'
 import ScanHistoryResolver from './resolver/ScanHistoryResolver'
 import { authChecker } from './utils/authChecker'
+import RoleResolver from './resolver/RoleResolver'
 
 const PORT = 4000
 
@@ -44,7 +45,7 @@ async function start() {
 
         // Build GraphQL schema with TypeGraphQL
         const schema = await buildSchema({
-            resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver, ScanHistoryResolver],
+            resolvers: [RoleResolver, ScanResolver, FrequenceResolver, TagResolver, UserResolver, ScanHistoryResolver],
             pubSub,
             authChecker,
         })

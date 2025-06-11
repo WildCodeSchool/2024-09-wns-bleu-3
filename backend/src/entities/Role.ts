@@ -10,14 +10,14 @@ export class Role extends BaseEntity {
     id: number
 
     @Field(() => String)
-    @Column()
+    @Column({ unique: true, nullable: true })
     name: string
 
     @Field(() => Date)
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date
 
-    @Field(() => [User])
+    @Field(() => [User], { nullable: true })
     @OneToMany(() => User, user => user.role)
     users: User[]
 }

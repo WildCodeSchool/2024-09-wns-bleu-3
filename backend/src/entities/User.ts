@@ -15,6 +15,7 @@ export class User extends BaseEntity {
     @Column({ type: 'varchar', unique: true, nullable: false })
     email: string
 
+    @Field(() => String)
     @MinLength(8)
     @Column({ type: 'varchar', nullable: false })
     password: string
@@ -38,6 +39,6 @@ export class User extends BaseEntity {
     scans: Scan[]
 
     @Field(() => Role)
-    @ManyToOne(() => Role, role => role.users, { nullable: true, onDelete: 'CASCADE', eager: true })
+    @ManyToOne(() => Role, role => role.users, { nullable: true, onDelete: "SET NULL" })
     role: Role
 }

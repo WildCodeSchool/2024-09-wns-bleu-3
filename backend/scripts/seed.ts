@@ -79,18 +79,16 @@ export async function seedDatabase() {
         await tagRepo.delete({ id: Not(IsNull()) })
         await frequencyRepo.delete({ id: Not(IsNull()) })
         await userRepo.delete({ id: Not(IsNull()) })
+        await rolesRepo.delete({ id: Not(IsNull()) })
         console.log('Deleted all data')
 
         const hashedPassword = await argon2.hash(process.env.LOGIN_TEST_PWD as string)
 
         // Create fake roles
-        const roles = rolesRepo.create([{
-            name: 'Admin',
-        }, {
-            name: 'User',
-        }, {
-            name: 'Guest',
-        }])
+        const roles = rolesRepo.create([
+            { name: 'User' },
+            { name: 'Admin' }
+        ])
         await rolesRepo.save(roles)
 
         // Create some fake users
