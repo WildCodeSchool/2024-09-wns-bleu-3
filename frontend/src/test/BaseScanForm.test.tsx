@@ -76,7 +76,7 @@ describe("BaseScanForm", () => {
         fireEvent.click(submitButton);
 
         await waitFor(() => {
-            expect(screen.getByText(/enter a valid url/i)).toBeInTheDocument();
+            expect(screen.getByText(/url is required/i)).toBeInTheDocument();
         });
 
         expect(mockOnSubmit).not.toHaveBeenCalled();
@@ -185,7 +185,7 @@ describe("BaseScanForm", () => {
             />
         );
 
-        expect(screen.getByText(/frequency/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/frequency/i)).toBeInTheDocument();
     });
 
     // Test: Loading state

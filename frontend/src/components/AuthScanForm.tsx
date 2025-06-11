@@ -77,8 +77,27 @@ const AuthScanForm = () => {
             <div className="max-w-md mx-auto rounded-xl shadow-lg border p-6 bg-white border-gray-200" data-testid="base-scan-form">
                 <h2 className="text-xl font-semibold mb-4 text-gray-900">Create New Scan</h2>
                 <div className="space-y-4">
-                    <div>Loading tags...</div>
-                    <div>Loading frequencies...</div>
+                    <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+                        <span className="text-gray-600">
+                            {tagsLoading && frequenciesLoading
+                                ? "Loading form data..."
+                                : tagsLoading
+                                    ? "Loading tags..."
+                                    : "Loading frequencies..."
+                            }
+                        </span>
+                    </div>
+                    {/* Show skeleton form fields */}
+                    <div className="space-y-3">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="h-10 bg-gray-300 rounded animate-pulse"></div>
+                    </div>
                 </div>
             </div>
         );

@@ -119,22 +119,26 @@ const DashboardPage = () => {
                 </Card>
             </div>
 
-            {/* Add New Scan Section */}
-            <div className="mb-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
+            {/* Bottom Grid Row: Create New Scan + Active Issues */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 grid-rows-1">
+                {/* Create New Scan Section */}
+                <div className="lg:col-span-2 h-full">
+                    <div className="bg-white rounded-xl border shadow-sm p-6 border-gray-200 h-full flex flex-col">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                             <Plus className="h-5 w-5" />
                             Create New Scan
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <AuthScanForm />
-                    </CardContent>
-                </Card>
-            </div>
+                        </h2>
+                        <div className="flex-1">
+                            <AuthScanForm />
+                        </div>
+                    </div>
+                </div>
 
-            <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} />
+                {/* Active Issues Section */}
+                <div className="lg:col-span-3 h-full">
+                    <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} />
+                </div>
+            </div>
         </div >
     );
 };

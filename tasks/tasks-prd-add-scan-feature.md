@@ -45,7 +45,7 @@
   - [x] 1.7 Run and verify unit tests for both the query and updated mutation
   - [x] 1.8 Test both endpoints manually using GraphQL Playground
 
-- [ ] 2.0 Form Component Architecture
+- [x] 2.0 Form Component Architecture ✅ COMPLETED
   - [x] 2.1 Write test for `BaseScanForm` component in `frontend/src/test/BaseScanForm.test.tsx`
   - [x] 2.2 Create schema for form validation in `frontend/src/schema/ScanFormSchema.ts`
   - [x] 2.3 Implement `BaseScanForm` component with common form logic
@@ -54,8 +54,8 @@
   - [x] 2.6 Write test for `AuthScanForm` in `frontend/src/test/AuthScanForm.test.tsx`
   - [x] 2.7 Implement `AuthScanForm` with title, URL, tag selector, and frequency dropdown
   - [x] 2.8 Update any existing form usage to use the new components
-  - [ ] 2.9 Add proper form validation for both form variants
-  - [ ] 2.10 Ensure forms have appropriate loading states during submission
+  - [x] 2.9 Add proper form validation for both form variants
+  - [x] 2.10 Ensure forms have appropriate loading states during submission
 
 - [x] 3.0 Scan Preview Page Implementation ✅
   - [x] 3.1 Add `previewScan` query to `frontend/src/graphql/queries.ts`

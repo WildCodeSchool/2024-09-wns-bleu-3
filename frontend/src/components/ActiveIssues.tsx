@@ -21,14 +21,14 @@ export default function ActiveIssues({ issues, scans, setResolvedIssues }: Activ
     const activeIssueCount = issues.length
 
     return (
-        <div className="bg-white rounded-xl border shadow-sm p-6 border-gray-200">
+        <div className="bg-white rounded-xl border shadow-sm p-6 border-gray-200 h-full flex flex-col">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Active Issues</h2>
                 <Badge variant="outline" className="bg-red-50 text-red-700">
                     {activeIssueCount} Total Issues
                 </Badge>
             </div>
-            <div className="overflow-y-auto max-h-[400px]">
+            <div className="overflow-y-auto flex-1">
                 <Table>
                     <TableHeader className="sticky top-0 bg-white">
                         <TableRow className="border-gray-200">

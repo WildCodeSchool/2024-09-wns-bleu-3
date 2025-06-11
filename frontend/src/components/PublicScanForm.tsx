@@ -38,7 +38,7 @@ const PublicScanForm = () => {
             showTags={false}
             showFrequency={false}
             variant="dark"
-            submitButtonText="Preview Scan"
+            submitButtonText="Scan Your Website"
             loadingText="Checking..."
         />
     );

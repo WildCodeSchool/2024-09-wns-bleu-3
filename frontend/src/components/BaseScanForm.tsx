@@ -11,7 +11,8 @@ import {
     ScanFormSubmissionData,
     baseScanFormSchema,
     fullScanFormSchema,
-    defaultFormValues
+    defaultFormValues,
+    validateScanForm
 } from "@/schema/ScanFormSchema";
 
 /**
@@ -51,16 +52,34 @@ function BaseScanForm({
         defaultValues: defaultFormValues
     });
 
-    // Handle form submission
+    // Handle form submission with enhanced validation
     const handleSubmit = async (data: ScanFormSubmissionData) => {
         try {
             // Clean up data - only include fields that are actually shown
             const cleanedData: ScanFormSubmissionData = {
-                url: data.url,
-                ...(showTitle && data.title && { title: data.title }),
-                ...(showTags && data.tagIds && { tagIds: data.tagIds }),
+                url: data.url.trim(), // Trim whitespace from URL
+                ...(showTitle && data.title && { title: data.title.trim() }),
+                ...(showTags && data.tagIds && data.tagIds.length > 0 && { tagIds: data.tagIds }),
                 ...(showFrequency && data.frequencyId && { frequencyId: data.frequencyId })
             };
+
+            // Additional client-side validation before submission
+            const validationResult = validateScanForm(cleanedData, {
+                requireTitle: showTitle,
+                requireTags: false, // Tags are always optional
+                requireFrequency: false // Frequency is always optional
+            });
+
+            if (!validationResult.isValid) {
+                // Set form errors for any validation failures
+                Object.entries(validationResult.errors).forEach(([field, message]) => {
+                    form.setError(field as keyof ScanFormSubmissionData, {
+                        type: 'manual',
+                        message: message as string
+                    });
+                });
+                return;
+            }
 
             await onSubmit(cleanedData);
 
@@ -68,7 +87,28 @@ function BaseScanForm({
             form.reset();
         } catch (error) {
             console.error('Form submission error:', error);
-            // Error handling is delegated to the parent component
+
+            // Handle specific error types
+            if (error instanceof Error) {
+                // Check for network errors
+                if (error.message.includes('fetch') || error.message.includes('network')) {
+                    form.setError('url', {
+                        type: 'manual',
+                        message: 'Network error. Please check your connection and try again.'
+                    });
+                } else if (error.message.includes('timeout')) {
+                    form.setError('url', {
+                        type: 'manual',
+                        message: 'Request timed out. The URL might be slow to respond.'
+                    });
+                } else {
+                    // Generic error handling
+                    form.setError('root', {
+                        type: 'manual',
+                        message: error.message || 'An unexpected error occurred. Please try again.'
+                    });
+                }
+            }
         }
     };
 
@@ -108,6 +148,15 @@ function BaseScanForm({
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)} className={cn("space-y-4", className)} role="form">
 
+                    {/* Display root form errors */}
+                    {form.formState.errors.root && (
+                        <div className="p-3 rounded-md bg-red-50 border border-red-200">
+                            <p className="text-sm text-red-600">
+                                {form.formState.errors.root.message}
+                            </p>
+                        </div>
+                    )}
+
                     {/* Title field - only shown for authenticated users */}
                     {showTitle && (
                         <FormField
@@ -122,6 +171,7 @@ function BaseScanForm({
                                             placeholder="My Website Monitor"
                                             className={inputClasses}
                                             aria-label="Title"
+                                            disabled={isLoading}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -144,6 +194,7 @@ function BaseScanForm({
                                         className={inputClasses}
                                         aria-label="URL to scan"
                                         type="url"
+                                        disabled={isLoading}
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -162,6 +213,7 @@ function BaseScanForm({
                                     <Select
                                         onValueChange={(value) => field.onChange(parseInt(value))}
                                         value={field.value?.toString() || ""}
+                                        disabled={isLoading}
                                     >
                                         <SelectTrigger
                                             className={inputClasses}
@@ -197,6 +249,7 @@ function BaseScanForm({
                                     <Select
                                         onValueChange={(value) => field.onChange([parseInt(value)])}
                                         value={field.value?.length ? field.value[0].toString() : ""}
+                                        disabled={isLoading}
                                     >
                                         <SelectTrigger
                                             className={inputClasses}
@@ -230,7 +283,7 @@ function BaseScanForm({
                     {/* Submit button with loading state */}
                     <Button
                         type="submit"
-                        variant={isDark ? "lightBlue" : "default"}
+                        variant={isDark ? "lightBlue" : "blue"}
                         className="w-full"
                         disabled={isLoading}
                     >
