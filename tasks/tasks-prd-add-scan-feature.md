@@ -53,7 +53,7 @@
   - [x] 2.5 Implement `PublicScanForm` component with URL-only field
   - [x] 2.6 Write test for `AuthScanForm` in `frontend/src/test/AuthScanForm.test.tsx`
   - [x] 2.7 Implement `AuthScanForm` with title, URL, tag selector, and frequency dropdown
-  - [ ] 2.8 Update any existing form usage to use the new components
+  - [x] 2.8 Update any existing form usage to use the new components
   - [ ] 2.9 Add proper form validation for both form variants
   - [ ] 2.10 Ensure forms have appropriate loading states during submission
 

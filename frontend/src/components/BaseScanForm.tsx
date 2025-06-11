@@ -63,6 +63,9 @@ function BaseScanForm({
             };
 
             await onSubmit(cleanedData);
+
+            // Reset form after successful submission
+            form.reset();
         } catch (error) {
             console.error('Form submission error:', error);
             // Error handling is delegated to the parent component
@@ -103,7 +106,7 @@ function BaseScanForm({
             </h2>
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4" role="form">
+                <form onSubmit={form.handleSubmit(handleSubmit)} className={cn("space-y-4", className)} role="form">
 
                     {/* Title field - only shown for authenticated users */}
                     {showTitle && (

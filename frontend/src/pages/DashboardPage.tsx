@@ -1,10 +1,11 @@
 
-import { Bell, Settings, BarChart4, CheckCircle, AlertTriangle } from "lucide-react";
+import { Bell, Settings, BarChart4, CheckCircle, AlertTriangle, Plus } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import ActiveIssues from "../components/ActiveIssues";
+import AuthScanForm from "../components/AuthScanForm";
 import { useState } from "react";
 
 const DashboardPage = () => {
@@ -117,6 +118,22 @@ const DashboardPage = () => {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Add New Scan Section */}
+            <div className="mb-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Plus className="h-5 w-5" />
+                            Create New Scan
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <AuthScanForm />
+                    </CardContent>
+                </Card>
+            </div>
+
             <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} />
         </div >
     );
