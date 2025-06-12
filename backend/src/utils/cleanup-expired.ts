@@ -1,5 +1,5 @@
-import { dataHealthCheck } from "src/config/db";
-import { ForgotPassword } from "src/entities/ForgotPassword";
+import { dataHealthCheck } from "../config/db";
+import { ForgotPassword } from "../entities/ForgotPassword";
 
 export async function cleanupExpiredCodes() {
     try {
