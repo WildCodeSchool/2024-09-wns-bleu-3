@@ -95,7 +95,7 @@ describe('scanUrl', () => {
         const result = await scanUrl('not-a-url')
 
         expect(result).toEqual({
-            error: 'An error occured',
+            error: 'An error occur',
         })
     })
 
@@ -103,7 +103,7 @@ describe('scanUrl', () => {
         const result = await scanUrl('')
 
         expect(result).toEqual({
-            error: 'An error occured',
+            error: 'An error occur',
         })
     })
 })

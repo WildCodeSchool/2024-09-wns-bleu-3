@@ -1,14 +1,20 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import { vi, describe, it, expect } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import '@testing-library/jest-dom';
 import ScanPreviewPage from '../pages/ScanPreviewPage';
 import { PREVIEW_SCAN } from '../graphql/queries';
 
 // Mock react-router hooks
 const mockNavigate = vi.fn();
-const mockSearchParams = new URLSearchParams('url=https://example.com');
+const mockGet = vi.fn();
 const mockSetSearchParams = vi.fn();
+
+// Create a mock URLSearchParams that we can control
+const mockSearchParams = {
+    get: mockGet,
+};
 
 vi.mock('react-router', () => ({
     useNavigate: () => mockNavigate,
@@ -34,6 +40,13 @@ describe('ScanPreviewPage', () => {
         );
     };
 
+    beforeEach(() => {
+        // Reset all mocks before each test
+        vi.clearAllMocks();
+        // Set default URL parameter
+        mockGet.mockReturnValue('https://example.com');
+    });
+
     describe('URL Parameter Handling', () => {
         it('should render with URL from search parameters', () => {
             const MockProvider = createMockProvider();
@@ -44,16 +57,23 @@ describe('ScanPreviewPage', () => {
         });
 
         it('should handle missing URL parameter', () => {
-            // Override the mock for this test
-            vi.mocked(mockSearchParams.get).mockReturnValue(null);
+            // Override the mock for this test to return null
+            mockGet.mockReturnValue(null);
 
             const MockProvider = createMockProvider();
             render(<ScanPreviewPage />, { wrapper: MockProvider });
 
             expect(screen.getByText(/no url provided/i)).toBeInTheDocument();
+        });
 
-            // Reset the mock
-            vi.mocked(mockSearchParams.get).mockReturnValue('https://example.com');
+        it('should handle empty URL parameter', () => {
+            // Override the mock for this test to return empty string
+            mockGet.mockReturnValue('');
+
+            const MockProvider = createMockProvider();
+            render(<ScanPreviewPage />, { wrapper: MockProvider });
+
+            expect(screen.getByText(/no url provided/i)).toBeInTheDocument();
         });
     });
 
@@ -114,7 +134,7 @@ describe('ScanPreviewPage', () => {
             const MockProvider = createMockProvider([mockQuery]);
             render(<ScanPreviewPage />, { wrapper: MockProvider });
 
-            expect(screen.getByText(/scanning/i)).toBeInTheDocument();
+            expect(screen.getByText(/scanning url/i)).toBeInTheDocument();
             expect(screen.getByRole('progressbar')).toBeInTheDocument();
         });
     });

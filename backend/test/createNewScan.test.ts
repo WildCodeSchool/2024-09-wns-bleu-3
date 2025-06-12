@@ -54,6 +54,7 @@ describe('scanResolver - createNewScan', () => {
     it('should create scan successfully for authenticated user', async () => {
         // Arrange: Mock successful dependencies
         const mockUser = { id: 1, email: 'test@example.com' }
+        const mockDefaultFrequency = { id: 1, name: 'Hourly', intervalMinutes: 60 }
         const mockScanResult = {
             url: 'https://example.com',
             statusCode: 200,
@@ -67,6 +68,8 @@ describe('scanResolver - createNewScan', () => {
             title: 'Test Scan',
             ...mockScanResult,
             user: mockUser,
+            frequency: mockDefaultFrequency,
+            nextScanAt: expect.any(Date),
             save: vi.fn(),
         }
         // Set up the save mock to return the scan object
@@ -74,6 +77,7 @@ describe('scanResolver - createNewScan', () => {
 
         vi.mocked(User.findOneByOrFail).mockResolvedValue(mockUser as any)
         vi.mocked(scanUrl).mockResolvedValue(mockScanResult)
+        vi.mocked(Frequency.findOne).mockResolvedValue(mockDefaultFrequency as any)
         vi.mocked(Scan.create).mockReturnValue(mockSavedScan as any)
         vi.mocked(pubSub.publish).mockImplementation(() => {})
 
@@ -90,6 +94,7 @@ describe('scanResolver - createNewScan', () => {
         // Assert: Verify the scan was created correctly
         expect(User.findOneByOrFail).toHaveBeenCalledWith({ id: 1 })
         expect(scanUrl).toHaveBeenCalledWith('https://example.com')
+        expect(Frequency.findOne).toHaveBeenCalledWith({ where: { intervalMinutes: 60 } })
         expect(Scan.create).toHaveBeenCalledWith({
             title: 'Test Scan',
             url: 'https://example.com',
@@ -108,6 +113,7 @@ describe('scanResolver - createNewScan', () => {
     it('should handle tags when provided', async () => {
         // Arrange: Mock with tags
         const mockUser = { id: 1, email: 'test@example.com' }
+        const mockDefaultFrequency = { id: 1, name: 'Hourly', intervalMinutes: 60 }
         const mockTags = [{ id: 1, name: 'Production' }, { id: 2, name: 'API' }]
         const mockScanResult = {
             url: 'https://example.com',
@@ -123,6 +129,8 @@ describe('scanResolver - createNewScan', () => {
             ...mockScanResult,
             user: mockUser,
             tags: mockTags,
+            frequency: mockDefaultFrequency,
+            nextScanAt: expect.any(Date),
             save: vi.fn(),
         }
         // Set up the save mock to return the scan object
@@ -131,6 +139,7 @@ describe('scanResolver - createNewScan', () => {
         vi.mocked(User.findOneByOrFail).mockResolvedValue(mockUser as any)
         vi.mocked(scanUrl).mockResolvedValue(mockScanResult)
         vi.mocked(Tag.findByIds).mockResolvedValue(mockTags as any)
+        vi.mocked(Frequency.findOne).mockResolvedValue(mockDefaultFrequency as any)
         vi.mocked(Scan.create).mockReturnValue(mockSavedScan as any)
         vi.mocked(pubSub.publish).mockImplementation(() => {})
 
@@ -146,6 +155,7 @@ describe('scanResolver - createNewScan', () => {
 
         // Assert: Verify tags were handled
         expect(Tag.findByIds).toHaveBeenCalledWith([1, 2])
+        expect(Frequency.findOne).toHaveBeenCalledWith({ where: { intervalMinutes: 60 } })
         expect(mockSavedScan.tags).toEqual(mockTags)
     })
 
@@ -237,5 +247,37 @@ describe('scanResolver - createNewScan', () => {
         expect(User.findOneByOrFail).toHaveBeenCalledWith({ id: 1 })
         expect(scanUrl).not.toHaveBeenCalled()
     })
+
+    it('should throw error when default frequency is not found', async () => {
+        // Arrange: Mock default frequency not found
+        const mockUser = { id: 1, email: 'test@example.com' }
+        const mockScanResult = {
+            url: 'https://example.com',
+            statusCode: 200,
+            statusMessage: 'OK',
+            responseTime: 150,
+            sslCertificate: '30 days',
+            isOnline: true,
+        }
+
+        vi.mocked(User.findOneByOrFail).mockResolvedValue(mockUser as any)
+        vi.mocked(scanUrl).mockResolvedValue(mockScanResult)
+        vi.mocked(Frequency.findOne).mockResolvedValue(null)
+
+        const scanInput = {
+            title: 'Test Scan',
+            url: 'https://example.com',
+            tagIds: [],
+            frequencyId: undefined,
+        }
+
+        // Act & Assert: Expect default frequency error
+        await expect(
+            scanResolver.createNewScan(scanInput, mockContext),
+        ).rejects.toThrow('Default frequency (60 minutes) not found in database')
+
+        expect(User.findOneByOrFail).toHaveBeenCalledWith({ id: 1 })
+        expect(scanUrl).toHaveBeenCalledWith('https://example.com')
+        expect(Frequency.findOne).toHaveBeenCalledWith({ where: { intervalMinutes: 60 } })
+    })
 })
- 
