@@ -1,0 +1,800 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  Search,
+  Plus,
+  RefreshCw,
+  BarChart4,
+  Clock,
+  Activity,
+  Bell,
+  Settings,
+  PlusCircle,
+  Home,
+  Monitor,
+  TrendingUp,
+  Shield,
+  HelpCircle,
+  LogOut,
+  Zap,
+  Globe,
+  Eye,
+  ArrowUpRight,
+  Sparkles,
+} from "lucide-react"
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarFooter,
+} from "@/components/ui/sidebar"
+import ActiveIssues from "@/components/active-issues"
+
+// Dummy user data
+const userData = {
+  name: "Alex Johnson",
+  email: "alex@example.com",
+  plan: "Pro",
+  totalScans: 12,
+  activeScans: 8,
+  issueScans: 3,
+}
+
+// Dummy scan data
+const scans = [
+  {
+    id: "scan-1",
+    title: "Main Website",
+    url: "https://example.com",
+    status: 200,
+    responseTime: 245,
+    lastChecked: "2 mins ago",
+    frequency: "Every 5 minutes",
+    uptime: "99.8%",
+    tag: "Production",
+    history: [
+      { timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), status: 200, responseTime: 240 },
+      { timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), status: 200, responseTime: 245 },
+    ],
+  },
+  {
+    id: "scan-2",
+    title: "API Endpoint",
+    url: "https://api.example.com/v1/users",
+    status: 404,
+    responseTime: 189,
+    lastChecked: "15 mins ago",
+    frequency: "Every 10 minutes",
+    uptime: "95.2%",
+    tag: "API",
+    history: [
+      { timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), status: 404, responseTime: 190 },
+      { timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), status: 200, responseTime: 185 },
+    ],
+  },
+  {
+    id: "scan-3",
+    title: "Staging Environment",
+    url: "https://staging.example.com",
+    status: 500,
+    responseTime: 532,
+    lastChecked: "1 hour ago",
+    frequency: "Every 30 minutes",
+    uptime: "87.5%",
+    tag: "Staging",
+    history: [
+      { timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), status: 500, responseTime: 530 },
+      { timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), status: 500, responseTime: 535 },
+    ],
+  },
+  {
+    id: "scan-4",
+    title: "Documentation Site",
+    url: "https://docs.example.com",
+    status: 200,
+    responseTime: 312,
+    lastChecked: "5 mins ago",
+    frequency: "Every 15 minutes",
+    uptime: "99.9%",
+    tag: "Production",
+    history: [
+      { timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), status: 200, responseTime: 310 },
+      { timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), status: 200, responseTime: 315 },
+    ],
+  },
+  {
+    id: "scan-5",
+    title: "Authentication Service",
+    url: "https://auth.example.com",
+    status: 200,
+    responseTime: 178,
+    lastChecked: "8 mins ago",
+    frequency: "Every 5 minutes",
+    uptime: "99.7%",
+    tag: "Production",
+    history: [
+      { timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), status: 200, responseTime: 175 },
+      { timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), status: 200, responseTime: 180 },
+    ],
+  },
+  {
+    id: "scan-6",
+    title: "Payment Gateway",
+    url: "https://payment.example.com",
+    status: 500,
+    responseTime: 600,
+    lastChecked: "10 mins ago",
+    frequency: "Every 5 minutes",
+    uptime: "99.7%",
+    tag: "Production",
+    history: [
+      { timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), status: 500, responseTime: 600 },
+      { timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), status: 500, responseTime: 600 },
+    ],
+  },
+  {
+    id: "scan-8",
+    title: "Order Service",
+    url: "https://order.example.com",
+    status: 500,
+    responseTime: 700,
+    lastChecked: "10 mins ago",
+    frequency: "Every 5 minutes",
+    uptime: "99.7%",
+    tag: "Production",
+    history: [
+      { timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), status: 500, responseTime: 700 },
+      { timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), status: 500, responseTime: 700 },
+    ],
+  },
+  {
+    id: "scan-9",
+    title: "User Profile",
+    url: "https://profile.example.com",
+    status: 404,
+    responseTime: 800,
+    lastChecked: "10 mins ago",
+    frequency: "Every 5 minutes",
+    uptime: "99.7%",
+    tag: "Production",
+    history: [
+      { timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), status: 404, responseTime: 800 },
+      { timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), status: 404, responseTime: 800 },
+    ],
+  },
+  {
+    id: "scan-10",
+    title: "Inventory Service",
+    url: "https://inventory.example.com",
+    status: 404,
+    responseTime: 900,
+    lastChecked: "10 mins ago",
+    frequency: "Every 5 minutes",
+    uptime: "99.7%",
+    tag: "Production",
+    history: [
+      { timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), status: 404, responseTime: 900 },
+      { timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(), status: 404, responseTime: 900 },
+    ],
+  },
+]
+
+// Dummy issues data
+const issuesData = [
+  { issue: "Status code is 404", issueType: "STATUS_CODE", scanId: 10 },
+  { issue: "SSL certificate is expired", issueType: "SSL_CERTIFICATE", scanId: 10 },
+  { issue: "Status code is 404", issueType: "STATUS_CODE", scanId: 9 },
+  { issue: "Status code is 500", issueType: "STATUS_CODE", scanId: 8 },
+  { issue: "SSL certificate is expired", issueType: "SSL_CERTIFICATE", scanId: 8 },
+  { issue: "Status code is 500", issueType: "STATUS_CODE", scanId: 6 },
+  { issue: "SSL certificate is expired", issueType: "SSL_CERTIFICATE", scanId: 6 },
+  { issue: "Status code is 500", issueType: "STATUS_CODE", scanId: 5 },
+  { issue: "SSL certificate is expired", issueType: "SSL_CERTIFICATE", scanId: 5 },
+  { issue: "Status code is 500", issueType: "STATUS_CODE", scanId: 4 },
+  { issue: "SSL certificate is expired", issueType: "SSL_CERTIFICATE", scanId: 4 },
+  { issue: "SSL certificate is expired", issueType: "SSL_CERTIFICATE", scanId: 3 },
+  { issue: "Status code is 500", issueType: "STATUS_CODE", scanId: 2 },
+  { issue: "Status code is 404", issueType: "STATUS_CODE", scanId: 1 },
+]
+
+// Navigation items
+const navigationItems = [
+  { title: "Dashboard", icon: Home, href: "/dashboard", isActive: true },
+  { title: "Monitors", icon: Monitor, href: "/dashboard/monitors" },
+  { title: "Analytics", icon: TrendingUp, href: "/dashboard/analytics" },
+  { title: "Incidents", icon: Shield, href: "/dashboard/incidents" },
+  { title: "Settings", icon: Settings, href: "/dashboard/settings" },
+  { title: "Support", icon: HelpCircle, href: "/dashboard/support" },
+]
+
+function AppSidebar() {
+  return (
+    <Sidebar className="bg-white/10 backdrop-blur-xl border-r border-white/20 shadow-2xl">
+      <SidebarHeader className="p-6 border-b border-white/10">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/80 to-purple-600/80 backdrop-blur-sm shadow-lg shadow-blue-500/25">
+              <Zap className="h-6 w-6 text-white" />
+            </div>
+            <div className="absolute -top-1 -right-1 h-4 w-4 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full animate-pulse"></div>
+          </div>
+          <div>
+            <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Sonar
+            </h2>
+            <p className="text-xs text-slate-600 font-medium">Monitor & Protect</p>
+          </div>
+        </div>
+      </SidebarHeader>
+
+      <SidebarContent className="p-4">
+        <SidebarMenu>
+          {navigationItems.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton
+                asChild
+                isActive={item.isActive}
+                className={`w-full justify-start gap-3 px-4 py-3.5 text-sm font-medium rounded-2xl transition-all duration-300 ${item.isActive
+                    ? "bg-white/90 backdrop-blur-sm text-slate-900 shadow-lg shadow-slate-900/10 border border-white/50"
+                    : "text-slate-600 hover:text-slate-800 hover:bg-white/40 hover:backdrop-blur-sm"
+                  }`}
+              >
+                <Link href={item.href}>
+                  <item.icon className="h-4 w-4" />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+
+        {/* Upgrade Card */}
+        <div className="mt-8 p-5 rounded-3xl bg-gradient-to-br from-violet-500/20 via-purple-500/20 to-pink-500/20 backdrop-blur-sm border border-white/30 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-pink-500/10"></div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-6 w-6 bg-gradient-to-r from-violet-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <Sparkles className="h-3 w-3 text-white" />
+              </div>
+              <span className="text-xs font-bold text-violet-700 tracking-wider">PREMIUM</span>
+            </div>
+            <h3 className="text-sm font-bold text-slate-800 mb-1">Unlock Pro Features</h3>
+            <p className="text-xs text-slate-600 mb-4 leading-relaxed">
+              Advanced monitoring, custom alerts & priority support
+            </p>
+            <Button
+              size="sm"
+              className="w-full bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white border-0 shadow-lg font-medium"
+            >
+              Upgrade Now
+            </Button>
+          </div>
+          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-violet-400/20 to-pink-400/20 rounded-full blur-xl"></div>
+        </div>
+      </SidebarContent>
+
+      <SidebarFooter className="p-4 border-t border-white/10">
+        <div className="flex items-center gap-3 p-4 rounded-2xl bg-white/40 backdrop-blur-sm border border-white/30">
+          <Avatar className="h-10 w-10 ring-2 ring-white/50">
+            <AvatarImage src="/placeholder.svg?height=40&width=40" />
+            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm font-bold">
+              AJ
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-slate-800 truncate">{userData.name}</p>
+            <p className="text-xs text-slate-600 truncate">{userData.email}</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 text-slate-600 hover:text-slate-800 hover:bg-white/50 rounded-xl"
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
+        </div>
+      </SidebarFooter>
+    </Sidebar>
+  )
+}
+
+export default function DashboardPage() {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+
+  // Filter scans based on search query and status filter
+  const filteredScans = scans.filter((scan) => {
+    const matchesSearch =
+      scan.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      scan.url.toLowerCase().includes(searchQuery.toLowerCase())
+
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "200" && scan.status === 200) ||
+      (statusFilter === "404" && scan.status === 404) ||
+      (statusFilter === "500" && scan.status === 500)
+
+    return matchesSearch && matchesStatus
+  })
+
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen bg-gradient-to-br from-rose-50 via-blue-50 to-violet-50 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-r from-pink-400/20 to-violet-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-cyan-400/10 to-blue-400/10 rounded-full blur-2xl"></div>
+
+        <AppSidebar />
+
+        <main className="flex-1 overflow-auto relative z-10">
+          <div className="p-8">
+            {/* Header section */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 via-blue-700 to-purple-700 bg-clip-text text-transparent">
+                    Good morning, {userData.name.split(" ")[0]} ✨
+                  </h1>
+                </div>
+                <p className="text-slate-600 font-medium">
+                  Your infrastructure is running smoothly. Here's your overview.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 bg-white/60 backdrop-blur-sm border-white/50 hover:bg-white/80 shadow-lg"
+                >
+                  <Bell className="h-4 w-4" />
+                  <span className="hidden md:inline">Notifications</span>
+                  <Badge className="bg-red-500 text-white text-xs px-1.5 py-0.5 ml-1">3</Badge>
+                </Button>
+                <Button
+                  size="sm"
+                  className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl shadow-blue-500/25 backdrop-blur-sm"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Monitor
+                </Button>
+              </div>
+            </div>
+
+            {/* Stats cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card className="border-0 bg-white/60 backdrop-blur-xl shadow-xl border border-white/50 relative overflow-hidden">
+                <div className="absolute inset-0 bg-slate-900/2"></div>
+                <CardContent className="p-6 relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-600 mb-2">Total Monitors</p>
+                      <p className="text-3xl font-bold text-slate-900 mb-3">{userData.totalScans}</p>
+                      <Badge className="bg-slate-900 text-white border-0 shadow-lg font-medium px-3 py-1">
+                        {userData.plan} Plan
+                      </Badge>
+                    </div>
+                    <div className="h-16 w-16 bg-slate-900/80 rounded-3xl flex items-center justify-center shadow-xl backdrop-blur-sm">
+                      <BarChart4 className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                </CardContent>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-slate-900/5 rounded-full blur-2xl"></div>
+              </Card>
+
+              <Card className="border-0 bg-white/60 backdrop-blur-xl shadow-xl border border-white/50 relative overflow-hidden">
+                <div className="absolute inset-0 bg-emerald-900/2"></div>
+                <CardContent className="p-6 relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-600 mb-2">Healthy</p>
+                      <p className="text-3xl font-bold text-slate-900 mb-3">{userData.activeScans}</p>
+                      <p className="text-sm font-bold text-emerald-600">
+                        {Math.round((userData.activeScans / userData.totalScans) * 100)}% uptime
+                      </p>
+                    </div>
+                    <div className="h-16 w-16 bg-emerald-600/80 rounded-3xl flex items-center justify-center shadow-xl backdrop-blur-sm">
+                      <CheckCircle className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                </CardContent>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-900/5 rounded-full blur-2xl"></div>
+              </Card>
+
+              <Card className="border-0 bg-white/60 backdrop-blur-xl shadow-xl border border-white/50 relative overflow-hidden">
+                <div className="absolute inset-0 bg-red-900/2"></div>
+                <CardContent className="p-6 relative z-10">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-600 mb-2">Issues</p>
+                      <p className="text-3xl font-bold text-slate-900 mb-3">{userData.issueScans}</p>
+                      <p className="text-sm font-bold text-red-600">Need attention</p>
+                    </div>
+                    <div className="h-16 w-16 bg-red-600/80 rounded-3xl flex items-center justify-center shadow-xl backdrop-blur-sm">
+                      <AlertTriangle className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                </CardContent>
+                <div className="absolute top-0 right-0 w-24 h-24 bg-red-900/5 rounded-full blur-2xl"></div>
+              </Card>
+            </div>
+
+            {/* Quick add and issues */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              <Card className="border-0 bg-white/60 backdrop-blur-xl shadow-xl border border-white/50 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
+                <CardHeader className="pb-4 relative z-10">
+                  <CardTitle className="text-lg font-bold text-slate-900 flex items-center gap-3">
+                    <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                      <Globe className="h-4 w-4 text-white" />
+                    </div>
+                    Quick Add Monitor
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 relative z-10">
+                  <div>
+                    <label htmlFor="quick-title" className="text-sm font-bold text-slate-700 block mb-2">
+                      Title
+                    </label>
+                    <Input
+                      id="quick-title"
+                      placeholder="My Website"
+                      className="bg-white/80 backdrop-blur-sm border-white/50 focus:border-blue-500 focus:ring-blue-500/20 shadow-lg"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="quick-url" className="text-sm font-bold text-slate-700 block mb-2">
+                      URL
+                    </label>
+                    <Input
+                      id="quick-url"
+                      placeholder="https://example.com"
+                      className="bg-white/80 backdrop-blur-sm border-white/50 focus:border-blue-500 focus:ring-blue-500/20 shadow-lg"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="quick-frequency" className="text-sm font-bold text-slate-700 block mb-2">
+                      Check Frequency
+                    </label>
+                    <Select defaultValue="5">
+                      <SelectTrigger className="bg-white/80 backdrop-blur-sm border-white/50 focus:border-blue-500 focus:ring-blue-500/20 shadow-lg">
+                        <SelectValue placeholder="Select frequency" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white/95 backdrop-blur-xl border-white/50">
+                        <SelectItem value="1">Every 1 minute</SelectItem>
+                        <SelectItem value="5">Every 5 minutes</SelectItem>
+                        <SelectItem value="15">Every 15 minutes</SelectItem>
+                        <SelectItem value="30">Every 30 minutes</SelectItem>
+                        <SelectItem value="60">Every hour</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label htmlFor="quick-tag" className="text-sm font-bold text-slate-700 block mb-2">
+                      Tag
+                    </label>
+                    <Select>
+                      <SelectTrigger className="bg-white/80 backdrop-blur-sm border-white/50 focus:border-blue-500 focus:ring-blue-500/20 shadow-lg">
+                        <SelectValue placeholder="Select or create tag" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white/95 backdrop-blur-xl border-white/50">
+                        <SelectItem value="production">Production</SelectItem>
+                        <SelectItem value="staging">Staging</SelectItem>
+                        <SelectItem value="development">Development</SelectItem>
+                        <SelectItem value="api">API</SelectItem>
+                        <SelectItem value="website">Website</SelectItem>
+                        <SelectItem value="create">
+                          <span className="flex items-center">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Create new tag...
+                          </span>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl shadow-blue-500/25 backdrop-blur-sm font-medium">
+                    <Plus className="mr-2 h-4 w-4" /> Create Monitor
+                  </Button>
+                </CardContent>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full blur-2xl"></div>
+              </Card>
+
+              <div className="lg:col-span-2">
+                <ActiveIssues issues={issuesData} scans={scans} />
+              </div>
+            </div>
+
+            {/* Monitors list */}
+            <Card className="border-0 bg-white/60 backdrop-blur-xl shadow-xl border border-white/50 relative overflow-hidden">
+              <div className="absolute inset-0 bg-slate-900/2"></div>
+              <CardHeader className="pb-4 relative z-10">
+                <div className="flex flex-col md:flex-row justify-between gap-4">
+                  <CardTitle className="text-lg font-bold text-slate-900 flex items-center gap-3">
+                    <div className="h-8 w-8 bg-slate-900 rounded-xl flex items-center justify-center">
+                      <Eye className="h-4 w-4 text-white" />
+                    </div>
+                    Your Monitors
+                  </CardTitle>
+                  <div className="flex gap-3 flex-1 md:max-w-md">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                      <Input
+                        placeholder="Search monitors..."
+                        className="pl-9 bg-white/80 backdrop-blur-sm border-white/50 focus:border-slate-400 focus:ring-slate-400/20 shadow-lg"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </div>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-[140px] bg-white/80 backdrop-blur-sm border-white/50 focus:border-slate-400 focus:ring-slate-400/20 shadow-lg">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white/95 backdrop-blur-xl border-white/50">
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="200">Healthy</SelectItem>
+                        <SelectItem value="404">Warning</SelectItem>
+                        <SelectItem value="500">Error</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 bg-white/80 backdrop-blur-sm border-white/50 hover:bg-white/90 shadow-lg"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                <Tabs defaultValue="all" className="w-full">
+                  <TabsList className="mb-6 bg-white/50 backdrop-blur-sm p-1 border border-white/30 shadow-lg">
+                    <TabsTrigger
+                      value="all"
+                      className="data-[state=active]:bg-white/90 data-[state=active]:shadow-lg data-[state=active]:backdrop-blur-sm"
+                    >
+                      All Monitors
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="active"
+                      className="data-[state=active]:bg-white/90 data-[state=active]:shadow-lg data-[state=active]:backdrop-blur-sm"
+                    >
+                      Healthy
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="issues"
+                      className="data-[state=active]:bg-white/90 data-[state=active]:shadow-lg data-[state=active]:backdrop-blur-sm"
+                    >
+                      Issues
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="favorites"
+                      className="data-[state=active]:bg-white/90 data-[state=active]:shadow-lg data-[state=active]:backdrop-blur-sm"
+                    >
+                      Favorites
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="all" className="space-y-4">
+                    {filteredScans.length > 0 ? (
+                      filteredScans.map((scan) => (
+                        <Link href={`/dashboard/${scan.id}`} key={scan.id}>
+                          <Card className="border border-white/40 hover:border-white/60 hover:shadow-xl transition-all duration-300 cursor-pointer group bg-white/40 backdrop-blur-sm relative overflow-hidden">
+                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <CardContent className="p-6 relative z-10">
+                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                  <div
+                                    className={`flex h-14 w-14 items-center justify-center rounded-3xl shadow-xl transition-all duration-300 group-hover:scale-110
+                                    ${scan.status === 200
+                                        ? "bg-emerald-600/80 shadow-emerald-600/25"
+                                        : scan.status === 404
+                                          ? "bg-amber-600/80 shadow-amber-600/25"
+                                          : "bg-red-600/80 shadow-red-600/25"
+                                      }`}
+                                  >
+                                    {scan.status === 200 ? (
+                                      <CheckCircle className="h-7 w-7 text-white" />
+                                    ) : scan.status === 404 ? (
+                                      <AlertTriangle className="h-7 w-7 text-white" />
+                                    ) : (
+                                      <XCircle className="h-7 w-7 text-white" />
+                                    )}
+                                  </div>
+                                  <div>
+                                    <h3 className="font-bold text-slate-900 group-hover:text-slate-700 transition-colors text-lg">
+                                      {scan.title}
+                                    </h3>
+                                    <p className="text-sm text-slate-600 font-medium">{scan.url}</p>
+                                  </div>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-4 ml-18 md:ml-0">
+                                  <div className="flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/40 shadow-lg">
+                                    <Clock className="h-4 w-4 text-slate-500" />
+                                    <span className="text-sm font-bold text-slate-700">{scan.responseTime}ms</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/40 shadow-lg">
+                                    <Activity className="h-4 w-4 text-slate-500" />
+                                    <span className="text-sm font-bold text-slate-700">{scan.uptime}</span>
+                                  </div>
+                                  <Badge
+                                    className={`shadow-lg border-0 font-bold px-4 py-2 rounded-2xl text-white
+                                      ${scan.status === 200
+                                        ? "bg-emerald-600"
+                                        : scan.status === 404
+                                          ? "bg-amber-600"
+                                          : "bg-red-600"
+                                      }
+                                    `}
+                                  >
+                                    {scan.status}
+                                  </Badge>
+                                  <span className="text-sm text-slate-500 font-medium">{scan.lastChecked}</span>
+                                  <Badge className="bg-slate-700 text-white border-0 shadow-lg font-bold px-4 py-2 rounded-2xl">
+                                    {scan.tag}
+                                  </Badge>
+                                  <ArrowUpRight className="h-5 w-5 text-slate-400 group-hover:text-slate-600 transition-colors" />
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </Link>
+                      ))
+                    ) : (
+                      <div className="text-center py-16">
+                        <div className="h-20 w-20 bg-slate-200/80 rounded-3xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm shadow-xl">
+                          <Monitor className="h-10 w-10 text-slate-500" />
+                        </div>
+                        <p className="text-slate-500 mb-6 font-medium text-lg">
+                          No monitors found matching your criteria.
+                        </p>
+                        <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl shadow-blue-500/25 backdrop-blur-sm font-medium">
+                          <Plus className="mr-2 h-4 w-4" /> Add New Monitor
+                        </Button>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="active" className="space-y-4">
+                    {filteredScans
+                      .filter((scan) => scan.status === 200)
+                      .map((scan) => (
+                        <Link href={`/dashboard/${scan.id}`} key={scan.id}>
+                          <Card className="border border-white/40 hover:border-white/60 hover:shadow-xl transition-all duration-300 cursor-pointer group bg-white/40 backdrop-blur-sm relative overflow-hidden">
+                            <div className="absolute inset-0 bg-emerald-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <CardContent className="p-6 relative z-10">
+                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                  <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-emerald-600/80 shadow-xl shadow-emerald-600/25 transition-all duration-300 group-hover:scale-110">
+                                    <CheckCircle className="h-7 w-7 text-white" />
+                                  </div>
+                                  <div>
+                                    <h3 className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors text-lg">
+                                      {scan.title}
+                                    </h3>
+                                    <p className="text-sm text-slate-600 font-medium">{scan.url}</p>
+                                  </div>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-4 ml-18 md:ml-0">
+                                  <div className="flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/40 shadow-lg">
+                                    <Clock className="h-4 w-4 text-slate-500" />
+                                    <span className="text-sm font-bold text-slate-700">{scan.responseTime}ms</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/40 shadow-lg">
+                                    <Activity className="h-4 w-4 text-slate-500" />
+                                    <span className="text-sm font-bold text-slate-700">{scan.uptime}</span>
+                                  </div>
+                                  <Badge className="bg-emerald-600 text-white border-0 shadow-lg font-bold px-4 py-2 rounded-2xl">
+                                    {scan.status}
+                                  </Badge>
+                                  <span className="text-sm text-slate-500 font-medium">{scan.lastChecked}</span>
+                                  <Badge className="bg-slate-700 text-white border-0 shadow-lg font-bold px-4 py-2 rounded-2xl">
+                                    {scan.tag}
+                                  </Badge>
+                                  <ArrowUpRight className="h-5 w-5 text-slate-400 group-hover:text-emerald-600 transition-colors" />
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </Link>
+                      ))}
+                  </TabsContent>
+
+                  <TabsContent value="issues" className="space-y-4">
+                    {filteredScans
+                      .filter((scan) => scan.status !== 200)
+                      .map((scan) => (
+                        <Link href={`/dashboard/${scan.id}`} key={scan.id}>
+                          <Card className="border border-white/40 hover:border-white/60 hover:shadow-xl transition-all duration-300 cursor-pointer group bg-white/40 backdrop-blur-sm relative overflow-hidden">
+                            <div className="absolute inset-0 bg-red-50/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <CardContent className="p-6 relative z-10">
+                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                  <div
+                                    className={`flex h-14 w-14 items-center justify-center rounded-3xl shadow-xl transition-all duration-300 group-hover:scale-110
+                                    ${scan.status === 404
+                                        ? "bg-amber-600/80 shadow-amber-600/25"
+                                        : "bg-red-600/80 shadow-red-600/25"
+                                      }`}
+                                  >
+                                    {scan.status === 404 ? (
+                                      <AlertTriangle className="h-7 w-7 text-white" />
+                                    ) : (
+                                      <XCircle className="h-7 w-7 text-white" />
+                                    )}
+                                  </div>
+                                  <div>
+                                    <h3 className="font-bold text-slate-900 group-hover:text-red-700 transition-colors text-lg">
+                                      {scan.title}
+                                    </h3>
+                                    <p className="text-sm text-slate-600 font-medium">{scan.url}</p>
+                                  </div>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-4 ml-18 md:ml-0">
+                                  <div className="flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/40 shadow-lg">
+                                    <Clock className="h-4 w-4 text-slate-500" />
+                                    <span className="text-sm font-bold text-slate-700">{scan.responseTime}ms</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/40 shadow-lg">
+                                    <Activity className="h-4 w-4 text-slate-500" />
+                                    <span className="text-sm font-bold text-slate-700">{scan.uptime}</span>
+                                  </div>
+                                  <Badge
+                                    className={`shadow-lg border-0 font-bold px-4 py-2 rounded-2xl text-white
+                                      ${scan.status === 404 ? "bg-amber-600" : "bg-red-600"}
+                                    `}
+                                  >
+                                    {scan.status}
+                                  </Badge>
+                                  <span className="text-sm text-slate-500 font-medium">{scan.lastChecked}</span>
+                                  <Badge className="bg-slate-700 text-white border-0 shadow-lg font-bold px-4 py-2 rounded-2xl">
+                                    {scan.tag}
+                                  </Badge>
+                                  <ArrowUpRight className="h-5 w-5 text-slate-400 group-hover:text-red-600 transition-colors" />
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </Link>
+                      ))}
+                  </TabsContent>
+
+                  <TabsContent value="favorites">
+                    <div className="text-center py-16">
+                      <div className="h-20 w-20 bg-slate-200/80 rounded-3xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm shadow-xl">
+                        <Sparkles className="h-10 w-10 text-slate-500" />
+                      </div>
+                      <p className="text-slate-500 mb-4 font-medium text-lg">
+                        You haven't marked any monitors as favorites yet.
+                      </p>
+                      <p className="text-sm text-slate-400 font-medium">
+                        Star your most important monitors to see them here.
+                      </p>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+              <div className="absolute bottom-0 right-0 w-40 h-40 bg-slate-900/5 rounded-full blur-3xl"></div>
+            </Card>
+          </div>
+        </main>
+      </div>
+    </SidebarProvider>
+  )
+}

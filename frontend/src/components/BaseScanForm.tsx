@@ -116,69 +116,103 @@ function BaseScanForm({
         }
     };
 
-    // Theme-based styling
+    // Theme-based styling with glassmorphism design
     const isDark = variant === 'dark';
     const containerClasses = cn(
         fullContainer
             ? "w-full h-full flex flex-col"
-            : "max-w-md mx-auto rounded-xl shadow-lg border p-6",
+            : "max-w-md mx-auto rounded-xl shadow-xl border p-6 glass-card relative overflow-hidden",
         !fullContainer && isDark
             ? "bg-[#0a2540] border-[#0c2d4d]"
             : !fullContainer
-                ? "bg-white border-gray-200"
+                ? "bg-white/60 backdrop-blur-xl border-white/50"
                 : "",
         className
     );
 
     const inputClasses = cn(
-        "mt-1",
+        "mt-1 transition-dashboard",
         isDark
-            ? "bg-[#0c2d4d] border-[#0e3359] text-white"
-            : "bg-white border-gray-300 text-gray-900"
+            ? "bg-[#0c2d4d] border-[#0e3359] text-white focus:border-dashboard-blue-500"
+            : "bg-white/80 backdrop-blur-sm border-white/60 text-slate-700 focus:border-dashboard-blue-500 focus:ring-dashboard-blue-500/20"
     );
 
     const labelClasses = cn(
         "text-sm font-medium",
-        isDark ? "text-gray-300" : "text-gray-700"
+        isDark ? "text-gray-300" : "text-slate-600"
     );
 
     const titleClasses = cn(
-        "text-xl font-semibold mb-4",
-        isDark ? "text-white" : "text-gray-900"
+        "text-xl font-semibold mb-6 text-gradient-dashboard",
+        isDark ? "text-white" : ""
     );
 
     return (
         <div className={containerClasses} data-testid="base-scan-form">
-            <h2 className={titleClasses}>
-                {showTitle ? "Create New Scan" : "Quick URL Check"}
-            </h2>
+            {/* Glassmorphism background effects */}
+            {!fullContainer && !isDark && (
+                <>
+                    <div className="absolute inset-0 bg-slate-900/2"></div>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-dashboard-blue-500/10 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-dashboard-purple-500/10 rounded-full blur-2xl"></div>
+                </>
+            )}
 
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)} className={cn("space-y-4", fullContainer && "flex-1 flex flex-col", className)} role="form">
+            <div className="relative z-10">
+                <h2 className={titleClasses}>
+                    {showTitle ? "Create New Scan" : "Quick URL Check"}
+                </h2>
 
-                    {/* Display root form errors */}
-                    {form.formState.errors.root && (
-                        <div className="p-3 rounded-md bg-red-50 border border-red-200">
-                            <p className="text-sm text-red-600">
-                                {form.formState.errors.root.message}
-                            </p>
-                        </div>
-                    )}
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className={cn("space-y-5", fullContainer && "flex-1 flex flex-col", className)} role="form">
 
-                    {/* Title field - only shown for authenticated users */}
-                    {showTitle && (
+                        {/* Display root form errors */}
+                        {form.formState.errors.root && (
+                            <div className="p-4 rounded-lg bg-red-500/10 backdrop-blur-sm border border-red-500/20 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-red-900/5"></div>
+                                <p className="text-sm text-red-600 relative z-10">
+                                    {form.formState.errors.root.message}
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Title field - only shown for authenticated users */}
+                        {showTitle && (
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className={labelClasses}>Title</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                                placeholder="My Website Monitor"
+                                                className={inputClasses}
+                                                aria-label="Title"
+                                                disabled={isLoading}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+
+                        {/* URL field - always present */}
                         <FormField
                             control={form.control}
-                            name="title"
+                            name="url"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className={labelClasses}>Title</FormLabel>
+                                    <FormLabel className={labelClasses}>URL to scan</FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            placeholder="My Website Monitor"
+                                            placeholder="https://example.com"
                                             className={inputClasses}
-                                            aria-label="Title"
+                                            aria-label="URL to scan"
+                                            type="url"
                                             disabled={isLoading}
                                         />
                                     </FormControl>
@@ -186,129 +220,109 @@ function BaseScanForm({
                                 </FormItem>
                             )}
                         />
-                    )}
 
-                    {/* URL field - always present */}
-                    <FormField
-                        control={form.control}
-                        name="url"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className={labelClasses}>URL to scan</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        placeholder="https://example.com"
-                                        className={inputClasses}
-                                        aria-label="URL to scan"
-                                        type="url"
-                                        disabled={isLoading}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
+                        {/* Frequency selector - only shown for authenticated users */}
+                        {showFrequency && (
+                            <FormField
+                                control={form.control}
+                                name="frequencyId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className={labelClasses}>Frequency</FormLabel>
+                                        <Select
+                                            onValueChange={(value) => field.onChange(parseInt(value))}
+                                            value={field.value?.toString() || ""}
+                                            disabled={isLoading}
+                                        >
+                                            <SelectTrigger
+                                                className={cn(inputClasses, "hover:border-dashboard-blue-400")}
+                                                aria-label="Select frequency"
+                                            >
+                                                <SelectValue placeholder="Select scan frequency" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white/95 backdrop-blur-xl border-white/50 shadow-xl">
+                                                {availableFrequencies.map((frequency) => (
+                                                    <SelectItem
+                                                        key={frequency.id}
+                                                        value={frequency.id.toString()}
+                                                    >
+                                                        {frequency.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         )}
-                    />
 
-                    {/* Frequency selector - only shown for authenticated users */}
-                    {showFrequency && (
-                        <FormField
-                            control={form.control}
-                            name="frequencyId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className={labelClasses}>Frequency</FormLabel>
-                                    <Select
-                                        onValueChange={(value) => field.onChange(parseInt(value))}
-                                        value={field.value?.toString() || ""}
-                                        disabled={isLoading}
-                                    >
-                                        <SelectTrigger
-                                            className={inputClasses}
-                                            aria-label="Select frequency"
+                        {/* Tags selector with inline creation - only shown for authenticated users */}
+                        {showTags && (
+                            <FormField
+                                control={form.control}
+                                name="tagIds"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className={labelClasses}>Tags</FormLabel>
+
+                                        <Select
+                                            onValueChange={(value) => field.onChange([parseInt(value)])}
+                                            value={field.value?.length ? field.value[0].toString() : ""}
+                                            disabled={isLoading}
                                         >
-                                            <SelectValue placeholder="Select scan frequency" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {availableFrequencies.map((frequency) => (
-                                                <SelectItem
-                                                    key={frequency.id}
-                                                    value={frequency.id.toString()}
-                                                >
-                                                    {frequency.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    )}
+                                            <SelectTrigger
+                                                className={cn(inputClasses, "hover:border-dashboard-blue-400")}
+                                                aria-label="Select tags"
+                                            >
+                                                <SelectValue placeholder="Select a tag" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-white/95 backdrop-blur-xl border-white/50 shadow-xl">
+                                                {availableTags.map((tag) => (
+                                                    <SelectItem
+                                                        key={tag.id}
+                                                        value={tag.id.toString()}
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <div
+                                                                className="w-3 h-3 rounded-full"
+                                                                style={{ backgroundColor: tag.color }}
+                                                            />
+                                                            {tag.name}
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
 
-                    {/* Tags selector with inline creation - only shown for authenticated users */}
-                    {showTags && (
-                        <FormField
-                            control={form.control}
-                            name="tagIds"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className={labelClasses}>Tags</FormLabel>
-
-                                    <Select
-                                        onValueChange={(value) => field.onChange([parseInt(value)])}
-                                        value={field.value?.length ? field.value[0].toString() : ""}
-                                        disabled={isLoading}
-                                    >
-                                        <SelectTrigger
-                                            className={inputClasses}
-                                            aria-label="Select tags"
-                                        >
-                                            <SelectValue placeholder="Select a tag" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {availableTags.map((tag) => (
-                                                <SelectItem
-                                                    key={tag.id}
-                                                    value={tag.id.toString()}
-                                                >
-                                                    <div className="flex items-center gap-2">
-                                                        <div
-                                                            className="w-3 h-3 rounded-full"
-                                                            style={{ backgroundColor: tag.color }}
-                                                        />
-                                                        {tag.name}
-                                                    </div>
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    )}
-
-                    {/* Submit button with loading state */}
-                    <div className={fullContainer ? "mt-auto pt-4" : ""}>
-                        <Button
-                            type="submit"
-                            variant={isDark ? "lightBlue" : "blue"}
-                            className="w-full"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                    {loadingText}
-                                </>
-                            ) : (
-                                submitButtonText
-                            )}
-                        </Button>
-                    </div>
-                </form>
-            </Form>
+                        {/* Submit button with loading state */}
+                        <div className={fullContainer ? "mt-auto pt-6" : "pt-2"}>
+                            <Button
+                                type="submit"
+                                className={cn(
+                                    "w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl shadow-blue-500/25 backdrop-blur-sm text-white font-medium transition-dashboard hover-lift",
+                                    isDark && "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                                )}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                        {loadingText}
+                                    </>
+                                ) : (
+                                    submitButtonText
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
+            </div>
         </div>
     );
 }

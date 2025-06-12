@@ -66,10 +66,6 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-4">
-          <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-[#0a2540]" asChild>
-            <Link to="/scans">See all my scans</Link>
-          </Button>
-
           {isLoggedIn ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -136,13 +132,6 @@ const Header = () => {
           </SheetTrigger>
           <SheetContent side="right" className="bg-[#051525] text-white border-[#0a2540] p-0">
             <div className="flex flex-col gap-4 p-6">
-              <Link
-                to="/scans"
-                className="flex items-center py-3 px-4 rounded-md hover:bg-[#0a2540] transition-colors"
-              >
-                See all my scans
-              </Link>
-
               {isLoggedIn ? (
                 <>
                   <div className="flex items-center gap-3 py-3 px-4 disab">

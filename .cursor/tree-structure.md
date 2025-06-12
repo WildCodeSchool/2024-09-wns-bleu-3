@@ -14,7 +14,6 @@ Directory structure:
     │   ├── Dockerfile
     │   ├── Dockerfile.prod
     │   ├── eslint.config.mjs
-    │   ├── package-lock.json
     │   ├── package.json
     │   ├── tsconfig.json
     │   ├── vitest.config.ts
@@ -32,6 +31,7 @@ Directory structure:
     │   │   ├── entities/
     │   │   │   ├── ForgotPassword.ts
     │   │   │   ├── Frequency.ts
+    │   │   │   ├── Role.ts
     │   │   │   ├── Scan.ts
     │   │   │   ├── ScanHistory.ts
     │   │   │   ├── Tag.ts
@@ -40,8 +40,10 @@ Directory structure:
     │   │   ├── inputs/
     │   │   │   ├── FrequencyInput.ts
     │   │   │   ├── Issue.ts
+    │   │   │   ├── RoleInputs.ts
     │   │   │   ├── ScanById.ts
     │   │   │   ├── ScanInput.ts
+    │   │   │   ├── ScanPreview.ts
     │   │   │   ├── TagInput.ts
     │   │   │   ├── UpdateFrequencyInput.ts
     │   │   │   ├── UpdateScanInput.ts
@@ -52,6 +54,7 @@ Directory structure:
     │   │   │   └── UserLoginInput.ts
     │   │   ├── resolver/
     │   │   │   ├── FrequenceResolver.ts
+    │   │   │   ├── RoleResolver.ts
     │   │   │   ├── ScanHistoryResolver.ts
     │   │   │   ├── ScanResolver.ts
     │   │   │   ├── TagResolver.ts
@@ -60,6 +63,7 @@ Directory structure:
     │   │   │   ├── context.ts
     │   │   │   └── scanSchema.ts
     │   │   └── utils/
+    │   │       ├── authChecker.ts
     │   │       ├── getSSLCertificateExpiration.ts
     │   │       ├── isPasswordValid.ts
     │   │       ├── issuesArray.ts
@@ -69,13 +73,20 @@ Directory structure:
     │   │       ├── scheduledScans.ts
     │   │       ├── user.ts
     │   │       └── verifyToken.ts
-    │   └── test/
-    │       ├── changePassword.test.ts
-    │       ├── forgotPassword.test.ts
-    │       ├── initCron.test.ts
-    │       ├── retrieveIssue.test.ts
-    │       ├── runScheduleScans.test.ts
-    │       └── scanUrl.test.ts
+    │   ├── test/
+    │   │   ├── changePassword.test.ts
+    │   │   ├── createNewScan.test.ts
+    │   │   ├── forgotPassword.test.ts
+    │   │   ├── initCron.test.ts
+    │   │   ├── previewScan.test.ts
+    │   │   ├── retrieveIssue.test.ts
+    │   │   ├── runScheduleScans.test.ts
+    │   │   └── scanUrl.test.ts
+    │   └── .cursor/
+    │       └── rules/
+    │           ├── backend-architecture.mdc
+    │           ├── resolver-best-practices.mdc
+    │           └── testing-backend.mdc
     ├── e2e/
     │   ├── Dockerfile
     │   ├── package-lock.json
@@ -104,19 +115,23 @@ Directory structure:
     │   │           └── defaultSettingsView-DkkRvn5X.js
     │   ├── test-results/
     │   │   └── .last-run.json
-    │   └── tests/
-    │       ├── authflow.test.ts
-    │       ├── basic.test.ts
-    │       ├── createScan.test.ts
-    │       ├── privatePages.test.ts
-    │       ├── auth/
-    │       │   ├── dashboard.test.ts
-    │       │   ├── disconnect.test.ts
-    │       │   ├── invitPages.test.ts
-    │       │   └── profile.test.ts
-    │       └── setup/
-    │           ├── auth.setup.ts
-    │           └── base.ts
+    │   ├── tests/
+    │   │   ├── authflow.test.ts
+    │   │   ├── basic.test.ts
+    │   │   ├── createScan.test.ts
+    │   │   ├── privatePages.test.ts
+    │   │   ├── auth/
+    │   │   │   ├── createScanAuth.test.ts
+    │   │   │   ├── dashboard.test.ts
+    │   │   │   ├── disconnect.test.ts
+    │   │   │   ├── invitPages.test.ts
+    │   │   │   └── profile.test.ts
+    │   │   └── setup/
+    │   │       ├── auth.setup.ts
+    │   │       └── base.ts
+    │   └── .cursor/
+    │       └── rules/
+    │           └── playwright.mdc
     ├── frontend/
     │   ├── README.md
     │   ├── codegen.ts
@@ -144,88 +159,102 @@ Directory structure:
     │   │       ├── Satoshi-Light.woff2
     │   │       ├── Satoshi-Medium.woff2
     │   │       └── Satoshi-Regular.woff2
-    │   └── src/
-    │       ├── App.css
-    │       ├── App.tsx
-    │       ├── index.css
-    │       ├── main.tsx
-    │       ├── vite-env.d.ts
-    │       ├── @types/
-    │       │   ├── issue.d.ts
-    │       │   └── scan.d.ts
-    │       ├── assets/
-    │       ├── components/
-    │       │   ├── ActiveIssues.tsx
-    │       │   ├── Faq.tsx
-    │       │   ├── FeaturesSection.tsx
-    │       │   ├── Footer.tsx
-    │       │   ├── FormAddScan.tsx
-    │       │   ├── Header.tsx
-    │       │   ├── Help.tsx
-    │       │   ├── HeroSection.tsx
-    │       │   ├── Layout.tsx
-    │       │   ├── OnlyGuestRoute.tsx
-    │       │   ├── PrivateRoute.tsx
-    │       │   ├── RadarVisualization.tsx
-    │       │   ├── ScanHistory.tsx
-    │       │   ├── scan-history/
-    │       │   │   ├── ScanChart.tsx
-    │       │   │   ├── ScanDetails.tsx
-    │       │   │   ├── ScanList.tsx
-    │       │   │   ├── ScanListItem.tsx
-    │       │   │   ├── SearchFilter.tsx
-    │       │   │   ├── StatusIndicator.tsx
-    │       │   │   ├── types.ts
-    │       │   │   └── utils.ts
-    │       │   └── ui/
-    │       │       ├── accordion.tsx
-    │       │       ├── alert-dialog.tsx
-    │       │       ├── alert.tsx
-    │       │       ├── badge.tsx
-    │       │       ├── button.tsx
-    │       │       ├── card.tsx
-    │       │       ├── checkbox.tsx
-    │       │       ├── dropdown-menu.tsx
-    │       │       ├── form.tsx
-    │       │       ├── input.tsx
-    │       │       ├── label.tsx
-    │       │       ├── select.tsx
-    │       │       ├── separator.tsx
-    │       │       ├── sheet.tsx
-    │       │       ├── sonner.tsx
-    │       │       ├── table.tsx
-    │       │       ├── tabs.tsx
-    │       │       └── tooltip.tsx
-    │       ├── generated/
-    │       │   └── graphql-types.ts
-    │       ├── graphql/
-    │       │   ├── mutations.ts
-    │       │   ├── queries.ts
-    │       │   └── subscriptions.ts
-    │       ├── hooks/
-    │       │   └── useAuth.tsx
-    │       ├── lib/
-    │       │   ├── linkSSE.ts
-    │       │   └── utils.ts
-    │       ├── pages/
-    │       │   ├── DashboardPage.tsx
-    │       │   ├── ForgotPasswordPage.tsx
-    │       │   ├── HomePage.tsx
-    │       │   ├── LoginPage.tsx
-    │       │   ├── ProfilePage.tsx
-    │       │   └── SignUpPage.tsx
-    │       ├── schema/
-    │       │   └── FormAddScanSchema.ts
-    │       ├── test/
-    │       │   ├── accessibility.test.tsx
-    │       │   ├── Footer.test.tsx
-    │       │   ├── FormAddScan.test.tsx
-    │       │   ├── FormLogin.test.tsx
-    │       │   ├── FormSignup.test.tsx
-    │       │   └── Header.test.tsx
-    │       └── utils/
-    │           ├── capitalizeFirstLetter.ts
-    │           └── isPasswordValid.ts
+    │   ├── src/
+    │   │   ├── App.css
+    │   │   ├── App.tsx
+    │   │   ├── index.css
+    │   │   ├── main.tsx
+    │   │   ├── vite-env.d.ts
+    │   │   ├── @types/
+    │   │   │   ├── issue.d.ts
+    │   │   │   └── scan.d.ts
+    │   │   ├── assets/
+    │   │   ├── components/
+    │   │   │   ├── ActiveIssues.tsx
+    │   │   │   ├── AuthScanForm.tsx
+    │   │   │   ├── BaseScanForm.tsx
+    │   │   │   ├── CreateTagInput.tsx
+    │   │   │   ├── Faq.tsx
+    │   │   │   ├── FeaturesSection.tsx
+    │   │   │   ├── Footer.tsx
+    │   │   │   ├── Header.tsx
+    │   │   │   ├── Help.tsx
+    │   │   │   ├── HeroSection.tsx
+    │   │   │   ├── Layout.tsx
+    │   │   │   ├── OnlyGuestRoute.tsx
+    │   │   │   ├── PrivateRoute.tsx
+    │   │   │   ├── PublicScanForm.tsx
+    │   │   │   ├── RadarVisualization.tsx
+    │   │   │   ├── ScanHistory.tsx
+    │   │   │   ├── scan-history/
+    │   │   │   │   ├── ScanChart.tsx
+    │   │   │   │   ├── ScanDetails.tsx
+    │   │   │   │   ├── ScanList.tsx
+    │   │   │   │   ├── ScanListItem.tsx
+    │   │   │   │   ├── SearchFilter.tsx
+    │   │   │   │   ├── StatusIndicator.tsx
+    │   │   │   │   ├── types.ts
+    │   │   │   │   └── utils.ts
+    │   │   │   └── ui/
+    │   │   │       ├── accordion.tsx
+    │   │   │       ├── alert-dialog.tsx
+    │   │   │       ├── alert.tsx
+    │   │   │       ├── badge.tsx
+    │   │   │       ├── button.tsx
+    │   │   │       ├── card.tsx
+    │   │   │       ├── checkbox.tsx
+    │   │   │       ├── dropdown-menu.tsx
+    │   │   │       ├── form.tsx
+    │   │   │       ├── input.tsx
+    │   │   │       ├── label.tsx
+    │   │   │       ├── select.tsx
+    │   │   │       ├── separator.tsx
+    │   │   │       ├── sheet.tsx
+    │   │   │       ├── sonner.tsx
+    │   │   │       ├── table.tsx
+    │   │   │       ├── tabs.tsx
+    │   │   │       └── tooltip.tsx
+    │   │   ├── generated/
+    │   │   │   └── graphql-types.ts
+    │   │   ├── graphql/
+    │   │   │   ├── mutations.ts
+    │   │   │   ├── queries.ts
+    │   │   │   └── subscriptions.ts
+    │   │   ├── hooks/
+    │   │   │   └── useAuth.tsx
+    │   │   ├── lib/
+    │   │   │   ├── linkSSE.ts
+    │   │   │   └── utils.ts
+    │   │   ├── pages/
+    │   │   │   ├── DashboardPage.tsx
+    │   │   │   ├── ForgotPasswordPage.tsx
+    │   │   │   ├── HomePage.tsx
+    │   │   │   ├── LoginPage.tsx
+    │   │   │   ├── ProfilePage.tsx
+    │   │   │   ├── ScanPreviewPage.tsx
+    │   │   │   └── SignUpPage.tsx
+    │   │   ├── schema/
+    │   │   │   └── ScanFormSchema.ts
+    │   │   ├── test/
+    │   │   │   ├── accessibility.test.tsx
+    │   │   │   ├── AuthScanForm.test.tsx
+    │   │   │   ├── BaseScanForm.test.tsx
+    │   │   │   ├── CreateTagInput.test.tsx
+    │   │   │   ├── Footer.test.tsx
+    │   │   │   ├── FormLogin.test.tsx
+    │   │   │   ├── FormSignup.test.tsx
+    │   │   │   ├── Header.test.tsx
+    │   │   │   ├── PublicScanForm.test.tsx
+    │   │   │   └── ScanPreviewPage.test.tsx
+    │   │   └── utils/
+    │   │       ├── capitalizeFirstLetter.ts
+    │   │       └── isPasswordValid.ts
+    │   └── .cursor/
+    │       └── rules/
+    │           ├── apollo.mdc
+    │           ├── frontend.mdc
+    │           ├── shadcn.mdc
+    │           └── test-frontend.mdc
     ├── playwright-report/
     │   ├── index.html
     │   └── trace/
@@ -245,8 +274,17 @@ Directory structure:
     │           ├── codeMirrorModule-DpJ-EmBQ.js
     │           └── defaultSettingsView-DTenqiGw.js
     ├── tasks/
-    │   ├── prd-create-scan-block.md
-    │   └── tasks-prd-create-scan-block.md
+    │   ├── prd-add-scan-feature.md
+    │   └── tasks-prd-add-scan-feature.md
+    ├── .cursor/
+    │   ├── architecture.md
+    │   ├── tree-structure.md
+    │   └── rules/
+    │       ├── comment.mdc
+    │       ├── create-prd.mdc
+    │       ├── generate-tasks.mdc
+    │       ├── global.mdc
+    │       └── tasks-management.mdc
     └── .github/
         └── workflows/
             ├── e2e.yml

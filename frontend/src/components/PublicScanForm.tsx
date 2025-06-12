@@ -40,6 +40,7 @@ const PublicScanForm = () => {
             variant="dark"
             submitButtonText="Scan Your Website"
             loadingText="Checking..."
+            className="bg-[#0a2540] border-[#0c2d4d]"
         />
     );
 };

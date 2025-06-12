@@ -173,7 +173,7 @@ class ScanResolver {
         }
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => String)
     async deleteScan(@Arg('id', () => Int) id: number) {
         try {
@@ -205,7 +205,7 @@ class ScanResolver {
         return scan
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => Scan)
     async pauseOrRestartScan(@Arg('id', () => Int) id: number) {
         const scan = await Scan.findOne({
@@ -222,7 +222,7 @@ class ScanResolver {
         return scan
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => String)
     async updateScan(@Arg('data', () => UpdateScanInput) updateScanData: UpdateScanInput) {
         try {

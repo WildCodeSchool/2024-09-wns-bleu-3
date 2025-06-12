@@ -6,8 +6,15 @@
 
 :root {
     --radius: 0.6rem;
+    --sidebar: hsl(0 0% 98%);
+    --sidebar-foreground: hsl(240 5.3% 26.1%);
+    --sidebar-primary: hsl(240 5.9% 10%);
+    --sidebar-primary-foreground: hsl(0 0% 98%);
+    --sidebar-accent: hsl(240 4.8% 95.9%);
+    --sidebar-accent-foreground: hsl(240 5.9% 10%);
+    --sidebar-border: hsl(220 13% 91%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
-
 
 /* 
 @font-face {
@@ -46,15 +53,138 @@
     src: url('/public/fonts/Barlow-Italic.woff2') format("woff2");
 } */
 
-
 @theme inline {
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) + 4px);
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
 }
 
 @theme {
+    /* Dashboard Design Colors - Primary Palette */
+    --color-dashboard-blue-50: #eff7ff;
+    --color-dashboard-blue-100: #deedff;
+    --color-dashboard-blue-200: #b6ddff;
+    --color-dashboard-blue-300: #76c2ff;
+    --color-dashboard-blue-400: #2da4ff;
+    --color-dashboard-blue-500: #1f5cff;
+    --color-dashboard-blue-600: #0047e6;
+    --color-dashboard-blue-700: #0038cc;
+    --color-dashboard-blue-800: #002bb3;
+    --color-dashboard-blue-900: #001f99;
+
+    /* Dashboard Design Colors - Purple Palette */
+    --color-dashboard-purple-50: #f5f3ff;
+    --color-dashboard-purple-100: #ede9fe;
+    --color-dashboard-purple-200: #ddd6fe;
+    --color-dashboard-purple-300: #c4b5fd;
+    --color-dashboard-purple-400: #a78bfa;
+    --color-dashboard-purple-500: #924fff;
+    --color-dashboard-purple-600: #7c3aed;
+    --color-dashboard-purple-700: #6d28d9;
+    --color-dashboard-purple-800: #5b21b6;
+    --color-dashboard-purple-900: #4c1d95;
+
+    /* Dashboard Design Colors - Dark Navy */
+    --color-dashboard-navy-50: #f8fafc;
+    --color-dashboard-navy-100: #f1f5f9;
+    --color-dashboard-navy-200: #e2e8f0;
+    --color-dashboard-navy-300: #cbd5e1;
+    --color-dashboard-navy-400: #94a3b8;
+    --color-dashboard-navy-500: #64748b;
+    --color-dashboard-navy-600: #475569;
+    --color-dashboard-navy-700: #334155;
+    --color-dashboard-navy-800: #1e293b;
+    --color-dashboard-navy-900: #0a2540;
+
+    /* Dashboard Design Colors - Glassmorphism Support */
+    --color-glass-white: rgba(255, 255, 255, 0.1);
+    --color-glass-white-light: rgba(255, 255, 255, 0.05);
+    --color-glass-white-medium: rgba(255, 255, 255, 0.15);
+    --color-glass-white-strong: rgba(255, 255, 255, 0.25);
+
+    /* Status Colors for Dashboard */
+    --color-status-success-50: #f0fdf4;
+    --color-status-success-100: #dcfce7;
+    --color-status-success-200: #bbf7d0;
+    --color-status-success-300: #86efac;
+    --color-status-success-400: #4ade80;
+    --color-status-success-500: #22c55e;
+    --color-status-success-600: #16a34a;
+    --color-status-success-700: #15803d;
+    --color-status-success-800: #166534;
+    --color-status-success-900: #14532d;
+
+    --color-status-warning-50: #fffbeb;
+    --color-status-warning-100: #fef3c7;
+    --color-status-warning-200: #fde68a;
+    --color-status-warning-300: #fcd34d;
+    --color-status-warning-400: #fbbf24;
+    --color-status-warning-500: #f59e0b;
+    --color-status-warning-600: #d97706;
+    --color-status-warning-700: #b45309;
+    --color-status-warning-800: #92400e;
+    --color-status-warning-900: #78350f;
+
+    --color-status-error-50: #fef2f2;
+    --color-status-error-100: #fee2e2;
+    --color-status-error-200: #fecaca;
+    --color-status-error-300: #fca5a5;
+    --color-status-error-400: #f87171;
+    --color-status-error-500: #ef4444;
+    --color-status-error-600: #dc2626;
+    --color-status-error-700: #b91c1c;
+    --color-status-error-800: #991b1b;
+    --color-status-error-900: #7f1d1d;
+
+    /* Dashboard Gradient Utilities */
+    --gradient-dashboard-primary: linear-gradient(135deg, var(--color-dashboard-blue-500) 0%, var(--color-dashboard-purple-500) 100%);
+    --gradient-dashboard-secondary: linear-gradient(135deg, var(--color-dashboard-purple-500) 0%, var(--color-dashboard-blue-500) 100%);
+    --gradient-dashboard-background: linear-gradient(135deg, #fef7f0 0%, #e0f2fe 50%, #f3e8ff 100%);
+    --gradient-dashboard-card: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.4) 100%);
+    --gradient-dashboard-button: linear-gradient(135deg, var(--color-dashboard-blue-500) 0%, var(--color-dashboard-purple-500) 100%);
+    --gradient-dashboard-button-hover: linear-gradient(135deg, var(--color-dashboard-blue-600) 0%, var(--color-dashboard-purple-600) 100%);
+    --gradient-dashboard-text: linear-gradient(135deg, var(--color-dashboard-blue-600) 0%, var(--color-dashboard-purple-600) 100%);
+    --gradient-dashboard-premium: linear-gradient(135deg, var(--color-dashboard-purple-500) 0%, #ec4899 100%);
+    --gradient-dashboard-premium-hover: linear-gradient(135deg, var(--color-dashboard-purple-600) 0%, #db2777 100%);
+    
+    /* Status Gradients */
+    --gradient-status-success: linear-gradient(135deg, var(--color-status-success-500) 0%, var(--color-status-success-600) 100%);
+    --gradient-status-warning: linear-gradient(135deg, var(--color-status-warning-500) 0%, var(--color-status-warning-600) 100%);
+    --gradient-status-error: linear-gradient(135deg, var(--color-status-error-500) 0%, var(--color-status-error-600) 100%);
+
+    /* Glassmorphism Background Gradients */
+    --gradient-glass-light: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
+    --gradient-glass-medium: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 100%);
+    --gradient-glass-strong: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+
+    /* Dashboard Shadow Variants */
+    --shadow-dashboard-card: 0 4px 6px -1px rgba(31, 92, 255, 0.1), 0 2px 4px -1px rgba(31, 92, 255, 0.06);
+    --shadow-dashboard-card-hover: 0 10px 15px -3px rgba(31, 92, 255, 0.15), 0 4px 6px -2px rgba(31, 92, 255, 0.1);
+    --shadow-dashboard-button: 0 4px 14px 0 rgba(31, 92, 255, 0.25);
+    --shadow-dashboard-button-hover: 0 6px 20px 0 rgba(31, 92, 255, 0.35);
+    --shadow-dashboard-premium: 0 4px 14px 0 rgba(146, 79, 255, 0.25);
+    --shadow-dashboard-premium-hover: 0 6px 20px 0 rgba(146, 79, 255, 0.35);
+    --shadow-glass-light: 0 8px 32px 0 rgba(31, 41, 55, 0.1);
+    --shadow-glass-medium: 0 20px 25px -5px rgba(31, 41, 55, 0.1), 0 10px 10px -5px rgba(31, 41, 55, 0.04);
+    --shadow-glass-strong: 0 25px 50px -12px rgba(31, 41, 55, 0.25);
+    --shadow-sidebar: 4px 0 24px -2px rgba(31, 41, 55, 0.1);
+    --shadow-dropdown: 0 20px 25px -5px rgba(31, 41, 55, 0.1), 0 10px 10px -5px rgba(31, 41, 55, 0.04);
+
+    /* Status Shadows */
+    --shadow-status-success: 0 4px 14px 0 rgba(34, 197, 94, 0.25);
+    --shadow-status-warning: 0 4px 14px 0 rgba(245, 158, 11, 0.25);
+    --shadow-status-error: 0 4px 14px 0 rgba(239, 68, 68, 0.25);
+
+    /* Existing Main Colors */
     --color-main-50: #eff7ff;
     --color-main-100: #deedff;
     --color-main-200: #b6ddff;
@@ -82,14 +212,82 @@
     --font-primary: "Barlow", serif;
 }
 
-@keyframes radar-scan {
-    0% {
-        transform: rotate(0deg);
-    }
+/* Dashboard Glassmorphism Utilities */
+.glass-light {
+    background: var(--gradient-glass-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
-    100% {
-        transform: rotate(360deg);
-    }
+.glass-medium {
+    background: var(--gradient-glass-medium);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-strong {
+    background: var(--gradient-glass-strong);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.glass-card {
+    background: var(--gradient-dashboard-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: var(--shadow-glass-medium);
+}
+
+.glass-sidebar {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: var(--shadow-sidebar);
+}
+
+/* Dashboard Button Utilities */
+.btn-dashboard-primary {
+    background: var(--gradient-dashboard-button);
+    box-shadow: var(--shadow-dashboard-button);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-dashboard-primary:hover {
+    background: var(--gradient-dashboard-button-hover);
+    box-shadow: var(--shadow-dashboard-button-hover);
+    transform: translateY(-1px);
+}
+
+.btn-dashboard-premium {
+    background: var(--gradient-dashboard-premium);
+    box-shadow: var(--shadow-dashboard-premium);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-dashboard-premium:hover {
+    background: var(--gradient-dashboard-premium-hover);
+    box-shadow: var(--shadow-dashboard-premium-hover);
+    transform: translateY(-1px);
+}
+
+/* Dashboard Text Utilities */
+.text-gradient-dashboard {
+    background: var(--gradient-dashboard-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-premium {
+    background: var(--gradient-dashboard-premium);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .radar-background::before {
@@ -131,3 +329,218 @@
     background: radial-gradient(circle at center, rgba(45, 164, 255, 0.2) 0%, rgba(45, 164, 255, 0) 70%);
     pointer-events: none;
 }
+
+/* 
+---break--- */
+
+.dark {
+    --sidebar: hsl(240 5.9% 10%);
+    --sidebar-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-primary: hsl(224.3 76.3% 48%);
+    --sidebar-primary-foreground: hsl(0 0% 100%);
+    --sidebar-accent: hsl(240 3.7% 15.9%);
+    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+    --sidebar-border: hsl(240 3.7% 15.9%);
+    --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+/* Dashboard Animation Utilities */
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+
+.animate-bounce-subtle {
+    animation: bounceSubtle 0.6s ease-in-out;
+}
+
+.animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Hover Transition Utilities */
+.transition-dashboard {
+    transition: all 0.2s ease-in-out;
+}
+
+.transition-dashboard-slow {
+    transition: all 0.3s ease-in-out;
+}
+
+.transition-transform {
+    transition: transform 0.2s ease-in-out;
+}
+
+.transition-colors {
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.transition-shadow {
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+/* Hover Effects */
+.hover-lift:hover {
+    transform: translateY(-2px);
+}
+
+.hover-lift-subtle:hover {
+    transform: translateY(-1px);
+}
+
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+.hover-scale-subtle:hover {
+    transform: scale(1.01);
+}
+
+.hover-glow:hover {
+    box-shadow: 0 0 20px rgba(31, 92, 255, 0.3);
+}
+
+.hover-glow-premium:hover {
+    box-shadow: 0 0 20px rgba(146, 79, 255, 0.3);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceSubtle {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-4px);
+    }
+    60% {
+        transform: translateY(-2px);
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(31, 92, 255, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(31, 92, 255, 0.6);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes radar-scan {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Test Utility Classes - Remove after verification */
+.test-dashboard-colors {
+    background: var(--color-dashboard-blue-500);
+    color: var(--color-dashboard-purple-500);
+    border: 2px solid var(--color-dashboard-navy-900);
+}
+
+.test-dashboard-gradients {
+    background: var(--gradient-dashboard-primary);
+    color: white;
+    padding: 1rem;
+    margin: 0.5rem;
+}
+
+.test-dashboard-shadows {
+    box-shadow: var(--shadow-dashboard-card);
+    padding: 1rem;
+    margin: 0.5rem;
+}
+
+.test-glassmorphism {
+    background: var(--gradient-glass-medium);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 1rem;
+    margin: 0.5rem;
+}
+
+.test-animations {
+    animation: float 3s ease-in-out infinite;
+    transition: all 0.2s ease-in-out;
+    padding: 1rem;
+    margin: 0.5rem;
+}
+
+.test-animations:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--shadow-dashboard-card-hover);
+}
+
+/* End Test Classes */

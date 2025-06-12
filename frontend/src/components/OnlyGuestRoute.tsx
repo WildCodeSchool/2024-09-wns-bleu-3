@@ -7,7 +7,7 @@ function OnlyGuestRoute() {
     if (loading) return <p>Loading...</p>;
 
     if (isLoggedIn) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/dashboard" replace />;
     }
 
     return <Outlet />
