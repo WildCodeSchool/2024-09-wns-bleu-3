@@ -1,4 +1,4 @@
-import { Arg, Mutation, Query, Resolver } from 'type-graphql'
+import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql'
 import { Scan } from '../entities/Scan'
 import { Frequency } from '../entities/Frequency'
 import { FrequencyInput } from '../inputs/FrequencyInput'
@@ -6,6 +6,7 @@ import { UpdateFrequencyInput } from '../inputs/UpdateFrequencyInput'
 
 @Resolver(Scan)
 class FrequenceResolver {
+    // @Authorized("Admin", "User") // à décommenté lorsque sera retiré de la homepage scan history 
     @Query(() => [Frequency])
     async getAllFrequences() {
         const frequency = await Frequency.find({
@@ -18,6 +19,7 @@ class FrequenceResolver {
         return frequency
     }
 
+    // @Authorized("Admin", "User")
     @Query(() => Frequency)
     async getFrequenceById(@Arg('id') id: number) {
         const frequency = await Frequency.findOne({
@@ -28,6 +30,7 @@ class FrequenceResolver {
         return frequency
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async deleteFrequence(@Arg('id') id: number) {
         const frequenceToDelete = await Frequency.findOne({
@@ -40,6 +43,7 @@ class FrequenceResolver {
     }
 
     // create new frequence
+    @Authorized("Admin", "User")
     @Mutation(() => Frequency)
     async createNewFrequence(@Arg('data') newFrequenceData: FrequencyInput) {
         try {
@@ -54,6 +58,7 @@ class FrequenceResolver {
     }
 
     // updateFrequence
+    @Authorized("Admin")
     @Mutation(() => String)
     async updateFrequence(@Arg('id') id: number, @Arg('data') updateFrequenceData: UpdateFrequencyInput) {
         const frequencyToUpdate = await Frequency.findOne({

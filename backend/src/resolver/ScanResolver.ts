@@ -1,4 +1,4 @@
-import { Arg, Ctx, Int, Mutation, Query, Resolver, Root, Subscription } from 'type-graphql'
+import { Arg, Authorized, Ctx, Int, Mutation, Query, Resolver, Root, Subscription } from 'type-graphql'
 import { Scan } from '../entities/Scan'
 import { ScanInput } from '../inputs/ScanInput'
 import { UpdateScanInput } from '../inputs/UpdateScanInput'
@@ -14,6 +14,7 @@ import { issuesArray } from '../utils/issuesArray'
 
 @Resolver(Scan)
 class ScanResolver {
+    // @Authorized("Admin", "User") // commenté en attendant de retirer le scanHistory global de la home page
     // Public query to preview scan results without authentication or persistence
     @Query(() => ScanPreview)
     async previewScan(@Arg('url', () => String) url: string): Promise<ScanPreview> {
@@ -54,6 +55,7 @@ class ScanResolver {
         }
     }
 
+    // @Authorized("Admin", "User")
     @Query(() => ScanByUserId)
     async getAllScansByUserId(@Ctx() context: ContextType) {
         const userId = context.id
@@ -171,6 +173,7 @@ class ScanResolver {
         }
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async deleteScan(@Arg('id', () => Int) id: number) {
         try {
@@ -189,6 +192,7 @@ class ScanResolver {
         }
     }
 
+    // @Authorized("Admin", "User")
     @Query(() => Scan)
     async getScanById(@Arg('id', () => Int) id: number) {
         const scan = await Scan.findOne({
@@ -201,6 +205,7 @@ class ScanResolver {
         return scan
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => Scan)
     async pauseOrRestartScan(@Arg('id', () => Int) id: number) {
         const scan = await Scan.findOne({
@@ -217,6 +222,7 @@ class ScanResolver {
         return scan
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async updateScan(@Arg('data', () => UpdateScanInput) updateScanData: UpdateScanInput) {
         try {

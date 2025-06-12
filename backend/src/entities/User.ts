@@ -1,7 +1,8 @@
 import { Field, ObjectType } from 'type-graphql'
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Scan } from './Scan'
 import { MinLength } from 'class-validator'
+import { Role } from './Role'
 
 @ObjectType()
 @Entity()
@@ -36,4 +37,8 @@ export class User extends BaseEntity {
     @Field(() => [Scan])
     @OneToMany(() => Scan, scan => scan.user)
     scans: Scan[]
+
+    @Field(() => Role)
+    @ManyToOne(() => Role, role => role.users, { nullable: true, onDelete: "SET NULL" })
+    role: Role
 }

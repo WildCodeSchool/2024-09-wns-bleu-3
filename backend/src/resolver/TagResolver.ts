@@ -1,4 +1,4 @@
-import { Arg, Mutation, Query, Resolver } from 'type-graphql'
+import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql'
 import { Tag } from '../entities/Tag'
 import { TagInput } from '../inputs/TagInput'
 import { UpdateTagInput } from '../inputs/UpdateTagInput'
@@ -27,6 +27,7 @@ class TagResolver {
         return tag
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async deleteTag(@Arg('id') id: number) {
         const tagToDelete = await Tag.findOne({
@@ -38,6 +39,7 @@ class TagResolver {
         return 'Le tag a bien été supprimé'
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => Tag)
     async createNewTag(@Arg('data') newTagData: TagInput) {
         try {
@@ -59,6 +61,7 @@ class TagResolver {
         }
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async updateTag(@Arg('id') id: number, @Arg('data') updateTagData: UpdateTagInput) {
         const tagToUpdate = await Tag.findOne({

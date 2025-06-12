@@ -1,11 +1,12 @@
 import { IsNull, Not } from 'typeorm'
 import { dataHealthCheck } from '../src/config/db'
 import { Frequency } from '../src/entities/Frequency'
+import { Role } from '../src/entities/Role'
 import { Scan } from '../src/entities/Scan'
 import { Tag } from '../src/entities/Tag'
 import { User } from '../src/entities/User'
 import { faker } from '@faker-js/faker'
-import * as argon2 from 'argon2' // pense à importer argon2
+import * as argon2 from 'argon2'
 
 // Scan type for creation
 interface ScanData {
@@ -72,14 +73,23 @@ export async function seedDatabase() {
         const scanRepo = dataHealthCheck.getRepository(Scan)
         const tagRepo = dataHealthCheck.getRepository(Tag)
         const frequencyRepo = dataHealthCheck.getRepository(Frequency)
+        const rolesRepo = dataHealthCheck.getRepository(Role)
 
         await scanRepo.delete({ id: Not(IsNull()) })
         await tagRepo.delete({ id: Not(IsNull()) })
         await frequencyRepo.delete({ id: Not(IsNull()) })
         await userRepo.delete({ id: Not(IsNull()) })
+        await rolesRepo.delete({ id: Not(IsNull()) })
         console.log('Deleted all data')
 
         const hashedPassword = await argon2.hash(process.env.LOGIN_TEST_PWD as string)
+
+        // Create fake roles
+        const roles = rolesRepo.create([
+            { name: 'User' },
+            { name: 'Admin' },
+        ])
+        await rolesRepo.save(roles)
 
         // Create some fake users
         const users = userRepo.create([
@@ -87,11 +97,13 @@ export async function seedDatabase() {
                 email: 'f.rumigny@gmail.com',
                 password: hashedPassword,
                 username: 'florian',
+                role: roles.find(r => r.name === 'Admin'),
             },
             {
                 email: 'bylo@duck.com',
                 password: '$argon2id$v=19$m=65536,t=3,p=4$FwWGT2p/5nv2rd/68srNCQ$W4W8Fl7f2cSdvbwnwprACl8cwa1ykbz/ORiBkMAk3KU',
                 username: 'amadou',
+                role: roles.find(r => r.name === 'User'),
             },
         ])
         await userRepo.save(users)
