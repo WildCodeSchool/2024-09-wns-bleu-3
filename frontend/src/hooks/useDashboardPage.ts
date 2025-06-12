@@ -3,6 +3,7 @@ import { useMemo } from "react"
 export type ScanStatusProps = {
   statusCode: number
   statusMessage: string
+
 }
 
 export const useDashboardPage = (scans: ScanStatusProps[]) => {
