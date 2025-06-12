@@ -1,6 +1,6 @@
 import cron from 'node-cron'
 import { runScheduledScans } from '../utils/scheduledScans'
-import { cleanupExpiredCodes } from 'scripts/cleanup-expired'
+import { cleanupExpiredCodes } from '../utils/cleanup-expired'
 
 /**
  * Initializes all CRON jobs
