@@ -21,7 +21,7 @@ const PORT = 4000
 
 async function start() {
     try {
-    // Validate environment
+        // Validate environment
         if (!process.env.JWT_SECRET_KEY) {
             throw new Error('JWT_SECRET_KEY environment variable is required')
         }
@@ -45,6 +45,7 @@ async function start() {
         const schema = await buildSchema({
             resolvers: [ScanResolver, FrequenceResolver, TagResolver, UserResolver, ScanHistoryResolver],
             pubSub,
+            validate: true,
             // authChecker: ({ context }) => !!context.email,
         })
 
