@@ -1,4 +1,4 @@
-import FormAddScan from "./FormAddScan";
+import PublicScanForm from "./PublicScanForm";
 
 const HeroSection = () => {
     return (
@@ -17,7 +17,7 @@ const HeroSection = () => {
                     </div>
                 </div>
                 <div className="z-10 relative">
-                    <FormAddScan />
+                    <PublicScanForm />
                 </div>
             </section>
         </div>

@@ -1,0 +1,36 @@
+---
+description: 
+globs: **/**/*.test.tsx,*.ts,*.tsx
+alwaysApply: false
+---
+- Always use vitest for writing unit testing
+- Use best practices when writing tests
+- Naming conventions : name.test.ts
+- When testing components, concentrate on verifying that the component renders correctly given certain props or state and that it emits the correct events in response to user interactions.`
+- Structure each test case following the AAA pattern for clarity and maintainability.
+- Mocking external dependencies:**  Use Vitest's mocking capabilities to isolate units of code during testing. Use `vi.mock()` to mock modules and `vi.spyOn()` to spy on specific methods or properties.
+- Testing asynchronous code:** Utilize `async/await` and Vitest's `expect.resolves` and `expect.rejects` matchers for testing asynchronous functions.
+- Avoid mocking everything.  Mock only external dependencies or components that are not under test.  Testing against mocks rather than real implementations reduces test confidence.
+-  Tests that pass or fail intermittently are a sign of underlying issues.  Investigate flaky tests to identify and fix the root cause, such as race conditions or reliance on external resources.
+- Ensure your tests cover all possible scenarios, including edge cases, error conditions, and boundary values. Don't only test the "happy path".
+- Break down overly complex test functions into smaller, more focused tests. This improves readability and makes it easier to identify the cause of failures.
+- When testing components, use shallow rendering to avoid rendering the entire component tree. This can significantly improve test performance.
+- Group related tests:** Organize tests into modules using `describe` blocks. This improves readability and helps structure test output.
+typescript
+    import { describe, it, expect } from 'vitest';
+    import { add } from './math';
+
+    describe('Math functions', () => {
+      describe('add', () => {
+        it('should add two numbers correctly', () => {
+          expect(add(2, 3)).toBe(5);
+        });
+
+        it('should handle negative numbers', () => {
+          expect(add(-1, 1)).toBe(0);
+        });
+      });
+    });
+- 
+
+Take this for example [FormAddScan.test.tsx](mdc:frontend/src/test/FormAddScan.test.tsx)

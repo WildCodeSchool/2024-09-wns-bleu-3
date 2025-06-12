@@ -34,9 +34,8 @@ const SignupPage = () => {
   const [registerMutation] = useMutation(REGISTER, {
     onCompleted: (data) => {
       console.log("Inscription réussie :", data);
-      toast.success("You’ve successfully signed up! Welcome to s0nar!.")
       navigate("/");
-
+      toast.success("You’ve successfully signed up! Please login to continue.")
     },
     onError: (err) => {
       console.error("An error occurred. Please check your details.", err);

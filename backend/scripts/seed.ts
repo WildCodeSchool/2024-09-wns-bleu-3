@@ -87,7 +87,7 @@ export async function seedDatabase() {
         // Create fake roles
         const roles = rolesRepo.create([
             { name: 'User' },
-            { name: 'Admin' }
+            { name: 'Admin' },
         ])
         await rolesRepo.save(roles)
 
@@ -132,7 +132,6 @@ export async function seedDatabase() {
             color: '#FFFFFE',
         }])
         await tagRepo.save(tags)
-
 
         // Create fake frequencies
         const frequencies = frequencyRepo.create([{

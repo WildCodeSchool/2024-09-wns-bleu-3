@@ -51,8 +51,8 @@ class TagResolver {
                 throw new Error('Un tag avec ce nom existe déjà')
             }
 
-            const newTag = Tag.create({ ...newTagData })
-            await newTag.save()
+            // Create and save the new tag in a single transaction
+            const newTag = await Tag.save(Tag.create({ ...newTagData }))
             return newTag
         }
         catch (error) {

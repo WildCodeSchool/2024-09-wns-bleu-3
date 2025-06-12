@@ -70,4 +70,40 @@ describe('scanUrl', () => {
             error: 'An error occured',
         })
     })
+
+    it('should handle network timeout errors', async () => {
+        vi.mocked(axios.get).mockRejectedValue(new Error('ECONNABORTED: timeout'))
+
+        const result = await scanUrl('https://example.com')
+
+        expect(result).toEqual({
+            error: 'An error occured',
+        })
+    })
+
+    it('should handle network connection errors', async () => {
+        vi.mocked(axios.get).mockRejectedValue(new Error('ENOTFOUND: getaddrinfo'))
+
+        const result = await scanUrl('https://nonexistent-domain.com')
+
+        expect(result).toEqual({
+            error: 'An error occured',
+        })
+    })
+
+    it('should handle malformed URLs', async () => {
+        const result = await scanUrl('not-a-url')
+
+        expect(result).toEqual({
+            error: 'An error occur',
+        })
+    })
+
+    it('should handle empty URL', async () => {
+        const result = await scanUrl('')
+
+        expect(result).toEqual({
+            error: 'An error occur',
+        })
+    })
 })

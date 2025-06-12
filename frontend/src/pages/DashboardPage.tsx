@@ -1,10 +1,11 @@
 
-import { Bell, Settings, BarChart4, CheckCircle, AlertTriangle } from "lucide-react";
+import { Bell, Settings, BarChart4, CheckCircle, AlertTriangle, Plus } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import ActiveIssues from "../components/ActiveIssues";
+import AuthScanForm from "../components/AuthScanForm";
 import { useState } from "react";
 
 const DashboardPage = () => {
@@ -39,7 +40,7 @@ const DashboardPage = () => {
 
 
     if (loading) return <p>Loading...</p>
-    if (error) return <p>Error</p>
+    if (error) return <p>There is an error: {error.message}</p>
 
     return (
         <div className="container p-8 w-screen mx-auto">
@@ -117,7 +118,27 @@ const DashboardPage = () => {
                     </CardContent>
                 </Card>
             </div>
-            <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} />
+
+            {/* Bottom Grid Row: Create New Scan + Active Issues */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 grid-rows-1">
+                {/* Create New Scan Section */}
+                <div className="lg:col-span-2 h-full">
+                    <div className="bg-white rounded-xl border shadow-sm p-6 border-gray-200 h-full flex flex-col">
+                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                            <Plus className="h-5 w-5" />
+                            Create New Scan
+                        </h2>
+                        <div className="flex-1">
+                            <AuthScanForm />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Active Issues Section */}
+                <div className="lg:col-span-3 h-full">
+                    <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} />
+                </div>
+            </div>
         </div >
     );
 };

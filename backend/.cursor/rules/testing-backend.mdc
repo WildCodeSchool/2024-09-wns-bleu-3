@@ -1,0 +1,85 @@
+---
+description: 
+globs: **/test/*.test.ts,*.test.ts
+alwaysApply: false
+---
+## ✅ Group related tests using `describe()`
+
+Use `describe()` blocks to organize your test suite logically. This improves readability and makes it easier to understand what’s being tested.
+
+```ts
+describe('User Authentication', () => {
+  it('should return 401 for invalid credentials', () => {
+    // ...
+  });
+});
+✅ Always assert something in your it() blocks
+Each test should include at least one expect() call. Avoid writing empty or placeholder tests.
+
+ts
+Copier
+Modifier
+it('returns user data', async () => {
+  const res = await getUserById(1);
+  expect(res).toHaveProperty('email');
+});
+✅ Use async/await instead of .then()
+Prefer await for readability and consistent error handling.
+
+✅ Recommended:
+
+ts
+Copier
+Modifier
+const user = await fetchUser();
+expect(user.name).toBe('Alice');
+❌ Avoid:
+
+ts
+Copier
+Modifier
+fetchUser().then((user) => {
+  expect(user.name).toBe('Alice');
+});
+✅ Clean up mocks and side effects
+Use hooks like beforeEach, afterEach, or afterAll to reset any mocks or clean up database state between tests.
+
+ts
+Copier
+Modifier
+afterEach(() => {
+  vi.clearAllMocks();
+});
+❌ Avoid hardcoded timeouts or setTimeout
+Using manual delays makes your tests flaky. If you must simulate time, use Vitest’s fake timers.
+
+ts
+Copier
+Modifier
+vi.useFakeTimers();
+// your code here
+vi.runAllTimers();
+✅ Keep tests isolated and deterministic
+Tests should not depend on shared state, execution order, or data that changes over time. Each test should pass or fail on its own.
+
+✅ Mock external services or use dependency injection
+When testing logic that interacts with external services (like email, DB, APIs), mock them using vi.mock() or inject fake versions.
+
+ts
+Copier
+Modifier
+vi.mock('../services/emailService', () => ({
+  sendEmail: vi.fn(),
+}));
+✅ Use consistent naming for test files
+Use .test.ts or .spec.ts extensions so your tools (like Vitest or Cursor) can auto-detect them.
+
+✅ Bonus tip: prefer expect(...).toEqual(...) over toBe(...) for object comparisons
+Use toEqual() for comparing objects or arrays to avoid false negatives.
+
+ts
+Copier
+Modifier
+expect(result).toEqual({ success: true });
+
+Like this [retrieveIssue.test.ts](mdc:backend/test/retrieveIssue.test.ts)
