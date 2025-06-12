@@ -1,4 +1,4 @@
-import { Arg, Ctx, Mutation, Query, Resolver, Root, Subscription } from 'type-graphql'
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver, Root, Subscription } from 'type-graphql'
 import { Scan } from '../entities/Scan'
 import { ScanInput } from '../inputs/ScanInput'
 import { UpdateScanInput } from '../inputs/UpdateScanInput'
@@ -13,6 +13,7 @@ import { issuesArray } from '../utils/issuesArray'
 
 @Resolver(Scan)
 class ScanResolver {
+    // @Authorized("Admin", "User") // commenté en attendant de retirer le scanHistory global de la home page
     @Query(() => [Scan])
     async getAllScans() {
         try {
@@ -29,6 +30,7 @@ class ScanResolver {
         }
     }
 
+    // @Authorized("Admin", "User")
     @Query(() => ScanByUserId)
     async getAllScansByUserId(@Ctx() context: ContextType) {
         const userId = context.id
@@ -123,6 +125,7 @@ class ScanResolver {
         }
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async deleteScan(@Arg('id') id: number) {
         try {
@@ -141,6 +144,7 @@ class ScanResolver {
         }
     }
 
+    // @Authorized("Admin", "User")
     @Query(() => Scan)
     async getScanById(@Arg('id') id: number) {
         const scan = await Scan.findOne({
@@ -153,6 +157,7 @@ class ScanResolver {
         return scan
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => Scan)
     async pauseOrRestartScan(@Arg('id') id: number) {
         const scan = await Scan.findOne({
@@ -169,6 +174,7 @@ class ScanResolver {
         return scan
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async updateScan(@Arg('data') updateScanData: UpdateScanInput) {
         try {

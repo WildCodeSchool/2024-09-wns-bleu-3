@@ -2,6 +2,7 @@ import { User } from '../entities/User'
 import { UserInput } from '../inputs/UserInput'
 import {
     Arg,
+    Authorized,
     Ctx,
     Mutation,
     Query,
@@ -18,6 +19,7 @@ import { UpdateUserInput } from '../inputs/UpdateUserInput'
 import { ContextType } from '../schema/context'
 import UserInfo from '../inputs/UserInfo'
 import { isPasswordValid } from '../utils/isPasswordValid'
+import { Role } from '../entities/Role'
 
 @Resolver(() => User)
 class UserResolver {
@@ -60,6 +62,12 @@ class UserResolver {
             throw new Error('An account with this email already exists.')
         }
 
+        let roleUser = await Role.findOneBy({ name: "User" })
+
+        if (!roleUser) {
+            throw new Error('Default role not found')
+        }
+
         // Validate password strength
         isPasswordValid(newUserData.password)
 
@@ -67,6 +75,7 @@ class UserResolver {
             username: newUserData.username,
             email: newUserData.email,
             password: await argon2.hash(newUserData.password),
+            role: roleUser
         })
 
         if (!result) {
@@ -76,6 +85,7 @@ class UserResolver {
         return 'User successfully created'
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async updateUser(@Arg('id', () => Number) id: number, @Arg('data', () => UpdateUserInput) updateUserData: UpdateUserInput) {
         const userToUpdate = await User.findOne({
@@ -102,7 +112,10 @@ class UserResolver {
     @Mutation(() => String)
     async login(@Arg('data', () => UserLoginInput) loginData: UserLoginInput, @Ctx() context: any) {
         let isPasswordCorrect = false
-        const user = await User.findOneBy({ email: loginData.email })
+        const user = await User.findOne({
+            where: { email: loginData.email },
+            relations: ['role']
+        })
 
         if (user) {
             isPasswordCorrect = await argon2.verify(
@@ -113,8 +126,9 @@ class UserResolver {
         // if user identified : generate token
         if (isPasswordCorrect === true && user !== null) {
             const token = jwt.sign(
-                { email: user.email, userId: user.id },
+                { email: user.email, userId: user.id, role: user.role.name },
                 process.env.JWT_SECRET_KEY as Secret,
+                { expiresIn: '1h' }
             )
             context.res.setHeader(
                 'Set-Cookie',
@@ -137,6 +151,7 @@ class UserResolver {
         return 'logged out'
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
     async deleteUser(@Arg('id', () => Number) id: number, @Ctx() context: any) {
         try {

@@ -43,9 +43,11 @@ export type Mutation = {
   __typename?: 'Mutation';
   changePassword: Scalars['String']['output'];
   createNewFrequence: Frequency;
+  createNewRole: Role;
   createNewScan: Scan;
   createNewTag: Tag;
   deleteFrequence: Scalars['String']['output'];
+  deleteRole: Scalars['String']['output'];
   deleteScan: Scalars['String']['output'];
   deleteTag: Scalars['String']['output'];
   deleteUser: Scalars['String']['output'];
@@ -73,6 +75,11 @@ export type MutationCreateNewFrequenceArgs = {
 };
 
 
+export type MutationCreateNewRoleArgs = {
+  data: RoleInput;
+};
+
+
 export type MutationCreateNewScanArgs = {
   data: ScanInput;
 };
@@ -85,6 +92,11 @@ export type MutationCreateNewTagArgs = {
 
 export type MutationDeleteFrequenceArgs = {
   id: Scalars['Float']['input'];
+};
+
+
+export type MutationDeleteRoleArgs = {
+  name: Scalars['String']['input'];
 };
 
 
@@ -148,6 +160,7 @@ export type MutationUpdateUserArgs = {
 export type Query = {
   __typename?: 'Query';
   getAllFrequences: Array<Frequency>;
+  getAllRoles: Array<Role>;
   getAllScans: Array<Scan>;
   getAllScansByUserId: ScanByUserId;
   getAllTags: Array<Tag>;
@@ -177,6 +190,18 @@ export type QueryGetScanHistoryArgs = {
 
 export type QueryGetTagByIdArgs = {
   id: Scalars['Float']['input'];
+};
+
+export type Role = {
+  __typename?: 'Role';
+  createdAt: Scalars['DateTimeISO']['output'];
+  id: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  users?: Maybe<Array<User>>;
+};
+
+export type RoleInput = {
+  name: Scalars['String']['input'];
 };
 
 export type Scan = {
@@ -275,6 +300,7 @@ export type User = {
   email: Scalars['String']['output'];
   id: Scalars['Float']['output'];
   password: Scalars['String']['output'];
+  role: Role;
   scans: Array<Scan>;
   updatedAt: Scalars['DateTimeISO']['output'];
   username: Scalars['String']['output'];
