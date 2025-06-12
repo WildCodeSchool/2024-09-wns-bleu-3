@@ -2,11 +2,11 @@
 import { Bell, Settings, BarChart4, CheckCircle, AlertTriangle } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import ActiveIssues from "../components/ActiveIssues";
 import { useState } from "react";
 import ScanListHistory from "@/components/dashborad/ScanListHistory";
+import { useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
 
 const DashboardPage = () => {
 
