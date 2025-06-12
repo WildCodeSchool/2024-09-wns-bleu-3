@@ -10,7 +10,7 @@ export class Role extends BaseEntity {
     id: number
 
     @Field(() => String)
-    @Column({ unique: true, nullable: true })
+    @Column({ type: 'varchar', unique: true, nullable: true })
     name: string
 
     @Field(() => Date)

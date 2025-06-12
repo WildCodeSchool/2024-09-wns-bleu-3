@@ -144,7 +144,7 @@ class ScanResolver {
         }
     }
 
-    @Authorized("Admin", "User")
+    // @Authorized("Admin", "User")
     @Query(() => Scan)
     async getScanById(@Arg('id') id: number) {
         const scan = await Scan.findOne({
