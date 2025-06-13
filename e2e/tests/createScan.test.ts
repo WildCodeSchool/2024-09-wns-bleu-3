@@ -19,6 +19,8 @@ test.describe('Create Scan - Public Form (Unauthenticated)', () => {
 
         // Should navigate to preview page
         await expect(page).toHaveURL(/\/scan\/preview\?url=https%3A%2F%2Fwww\.youtube\.com%2F/);
+
+        await page.waitForTimeout(1000);
         
         // Should show preview page content
         await expect(page.getByText('Scan Preview')).toBeVisible();
