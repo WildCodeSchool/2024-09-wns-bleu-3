@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ScanPreviewPage from './pages/ScanPreviewPage';
 import PrivateRoute from './components/PrivateRoute';
 import OnlyGuestRoute from './components/OnlyGuestRoute';
 import DashboardPage from './pages/DashboardPage';
@@ -26,6 +27,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
+          {/* Public routes accessible to all users */}
+          <Route path="scan/preview" element={<ScanPreviewPage />} />
           <Route element={<PrivateRoute />}>
             <Route path="profile" element={<ProfilePage />} />
             <Route path="dashboard" element={<DashboardPage />} />

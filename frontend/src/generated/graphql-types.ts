@@ -43,9 +43,11 @@ export type Mutation = {
   __typename?: 'Mutation';
   changePassword: Scalars['String']['output'];
   createNewFrequence: Frequency;
+  createNewRole: Role;
   createNewScan: Scan;
   createNewTag: Tag;
   deleteFrequence: Scalars['String']['output'];
+  deleteRole: Scalars['String']['output'];
   deleteScan: Scalars['String']['output'];
   deleteTag: Scalars['String']['output'];
   deleteUser: Scalars['String']['output'];
@@ -73,6 +75,11 @@ export type MutationCreateNewFrequenceArgs = {
 };
 
 
+export type MutationCreateNewRoleArgs = {
+  data: RoleInput;
+};
+
+
 export type MutationCreateNewScanArgs = {
   data: ScanInput;
 };
@@ -88,8 +95,13 @@ export type MutationDeleteFrequenceArgs = {
 };
 
 
+export type MutationDeleteRoleArgs = {
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteScanArgs = {
-  id: Scalars['Float']['input'];
+  id: Scalars['Int']['input'];
 };
 
 
@@ -114,7 +126,7 @@ export type MutationLoginArgs = {
 
 
 export type MutationPauseOrRestartScanArgs = {
-  id: Scalars['Float']['input'];
+  id: Scalars['Int']['input'];
 };
 
 
@@ -148,6 +160,7 @@ export type MutationUpdateUserArgs = {
 export type Query = {
   __typename?: 'Query';
   getAllFrequences: Array<Frequency>;
+  getAllRoles: Array<Role>;
   getAllScans: Array<Scan>;
   getAllScansByUserId: ScanByUserId;
   getAllTags: Array<Tag>;
@@ -156,6 +169,7 @@ export type Query = {
   getScanHistory: Array<ScanHistory>;
   getTagById: Tag;
   getUserInfo?: Maybe<UserInfo>;
+  previewScan: ScanPreview;
 };
 
 
@@ -165,7 +179,7 @@ export type QueryGetFrequenceByIdArgs = {
 
 
 export type QueryGetScanByIdArgs = {
-  id: Scalars['Float']['input'];
+  id: Scalars['Int']['input'];
 };
 
 
@@ -177,6 +191,23 @@ export type QueryGetScanHistoryArgs = {
 
 export type QueryGetTagByIdArgs = {
   id: Scalars['Float']['input'];
+};
+
+
+export type QueryPreviewScanArgs = {
+  url: Scalars['String']['input'];
+};
+
+export type Role = {
+  __typename?: 'Role';
+  createdAt: Scalars['DateTimeISO']['output'];
+  id: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  users?: Maybe<Array<User>>;
+};
+
+export type RoleInput = {
+  name: Scalars['String']['input'];
 };
 
 export type Scan = {
@@ -229,6 +260,16 @@ export type ScanInput = {
   url: Scalars['String']['input'];
 };
 
+export type ScanPreview = {
+  __typename?: 'ScanPreview';
+  isOnline: Scalars['Boolean']['output'];
+  responseTime: Scalars['Int']['output'];
+  sslCertificate: Scalars['String']['output'];
+  statusCode: Scalars['Int']['output'];
+  statusMessage: Scalars['String']['output'];
+  url: Scalars['String']['output'];
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   newScan: Scan;
@@ -255,7 +296,7 @@ export type UpdateFrequencyInput = {
 
 export type UpdateScanInput = {
   frequencyId?: InputMaybe<Scalars['Int']['input']>;
-  id: Scalars['Float']['input'];
+  id: Scalars['Int']['input'];
   tagIds?: InputMaybe<Array<Scalars['Float']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
@@ -275,6 +316,7 @@ export type User = {
   email: Scalars['String']['output'];
   id: Scalars['Float']['output'];
   password: Scalars['String']['output'];
+  role: Role;
   scans: Array<Scan>;
   updatedAt: Scalars['DateTimeISO']['output'];
   username: Scalars['String']['output'];
@@ -307,11 +349,18 @@ export type CreateNewScanMutationVariables = Exact<{
 export type CreateNewScanMutation = { __typename?: 'Mutation', createNewScan: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any } };
 
 export type DeleteScanMutationVariables = Exact<{
-  deleteScanId: Scalars['Float']['input'];
+  deleteScanId: Scalars['Int']['input'];
 }>;
 
 
 export type DeleteScanMutation = { __typename?: 'Mutation', deleteScan: string };
+
+export type CreateNewTagMutationVariables = Exact<{
+  data: TagInput;
+}>;
+
+
+export type CreateNewTagMutation = { __typename?: 'Mutation', createNewTag: { __typename?: 'Tag', id: number, name: string, color: string } };
 
 export type RegisterMutationVariables = Exact<{
   data: UserInput;
@@ -363,13 +412,20 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: string };
 
+export type PreviewScanQueryVariables = Exact<{
+  url: Scalars['String']['input'];
+}>;
+
+
+export type PreviewScanQuery = { __typename?: 'Query', previewScan: { __typename?: 'ScanPreview', url: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean } };
+
 export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAllScansQuery = { __typename?: 'Query', getAllScans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null }> };
 
 export type QueryQueryVariables = Exact<{
-  getScanByIdId: Scalars['Float']['input'];
+  getScanByIdId: Scalars['Int']['input'];
 }>;
 
 
@@ -452,7 +508,7 @@ export type CreateNewScanMutationHookResult = ReturnType<typeof useCreateNewScan
 export type CreateNewScanMutationResult = Apollo.MutationResult<CreateNewScanMutation>;
 export type CreateNewScanMutationOptions = Apollo.BaseMutationOptions<CreateNewScanMutation, CreateNewScanMutationVariables>;
 export const DeleteScanDocument = gql`
-    mutation DeleteScan($deleteScanId: Float!) {
+    mutation DeleteScan($deleteScanId: Int!) {
   deleteScan(id: $deleteScanId)
 }
     `;
@@ -482,6 +538,41 @@ export function useDeleteScanMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteScanMutationHookResult = ReturnType<typeof useDeleteScanMutation>;
 export type DeleteScanMutationResult = Apollo.MutationResult<DeleteScanMutation>;
 export type DeleteScanMutationOptions = Apollo.BaseMutationOptions<DeleteScanMutation, DeleteScanMutationVariables>;
+export const CreateNewTagDocument = gql`
+    mutation CreateNewTag($data: TagInput!) {
+  createNewTag(data: $data) {
+    id
+    name
+    color
+  }
+}
+    `;
+export type CreateNewTagMutationFn = Apollo.MutationFunction<CreateNewTagMutation, CreateNewTagMutationVariables>;
+
+/**
+ * __useCreateNewTagMutation__
+ *
+ * To run a mutation, you first call `useCreateNewTagMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateNewTagMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createNewTagMutation, { data, loading, error }] = useCreateNewTagMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateNewTagMutation(baseOptions?: Apollo.MutationHookOptions<CreateNewTagMutation, CreateNewTagMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateNewTagMutation, CreateNewTagMutationVariables>(CreateNewTagDocument, options);
+      }
+export type CreateNewTagMutationHookResult = ReturnType<typeof useCreateNewTagMutation>;
+export type CreateNewTagMutationResult = Apollo.MutationResult<CreateNewTagMutation>;
+export type CreateNewTagMutationOptions = Apollo.BaseMutationOptions<CreateNewTagMutation, CreateNewTagMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($data: UserInput!) {
   register(data: $data)
@@ -705,6 +796,51 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const PreviewScanDocument = gql`
+    query PreviewScan($url: String!) {
+  previewScan(url: $url) {
+    url
+    statusCode
+    statusMessage
+    responseTime
+    sslCertificate
+    isOnline
+  }
+}
+    `;
+
+/**
+ * __usePreviewScanQuery__
+ *
+ * To run a query within a React component, call `usePreviewScanQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePreviewScanQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePreviewScanQuery({
+ *   variables: {
+ *      url: // value for 'url'
+ *   },
+ * });
+ */
+export function usePreviewScanQuery(baseOptions: Apollo.QueryHookOptions<PreviewScanQuery, PreviewScanQueryVariables> & ({ variables: PreviewScanQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PreviewScanQuery, PreviewScanQueryVariables>(PreviewScanDocument, options);
+      }
+export function usePreviewScanLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PreviewScanQuery, PreviewScanQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PreviewScanQuery, PreviewScanQueryVariables>(PreviewScanDocument, options);
+        }
+export function usePreviewScanSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<PreviewScanQuery, PreviewScanQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PreviewScanQuery, PreviewScanQueryVariables>(PreviewScanDocument, options);
+        }
+export type PreviewScanQueryHookResult = ReturnType<typeof usePreviewScanQuery>;
+export type PreviewScanLazyQueryHookResult = ReturnType<typeof usePreviewScanLazyQuery>;
+export type PreviewScanSuspenseQueryHookResult = ReturnType<typeof usePreviewScanSuspenseQuery>;
+export type PreviewScanQueryResult = Apollo.QueryResult<PreviewScanQuery, PreviewScanQueryVariables>;
 export const GetAllScansDocument = gql`
     query GetAllScans {
   getAllScans {
@@ -755,7 +891,7 @@ export type GetAllScansLazyQueryHookResult = ReturnType<typeof useGetAllScansLaz
 export type GetAllScansSuspenseQueryHookResult = ReturnType<typeof useGetAllScansSuspenseQuery>;
 export type GetAllScansQueryResult = Apollo.QueryResult<GetAllScansQuery, GetAllScansQueryVariables>;
 export const QueryDocument = gql`
-    query Query($getScanByIdId: Float!) {
+    query Query($getScanByIdId: Int!) {
   getScanById(id: $getScanByIdId) {
     id
     url

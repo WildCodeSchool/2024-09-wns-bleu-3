@@ -1,7 +1,8 @@
-import { Arg, Ctx, Mutation, Query, Resolver, Root, Subscription } from 'type-graphql'
+import { Arg, Authorized, Ctx, Int, Mutation, Query, Resolver, Root, Subscription } from 'type-graphql'
 import { Scan } from '../entities/Scan'
 import { ScanInput } from '../inputs/ScanInput'
 import { UpdateScanInput } from '../inputs/UpdateScanInput'
+import { ScanPreview } from '../inputs/ScanPreview'
 import { Tag } from '../entities/Tag'
 import { scanUrl } from '../utils/scanUrl'
 import { Frequency } from '../entities/Frequency'
@@ -13,6 +14,31 @@ import { issuesArray } from '../utils/issuesArray'
 
 @Resolver(Scan)
 class ScanResolver {
+    // @Authorized("Admin", "User") // commenté en attendant de retirer le scanHistory global de la home page
+    // Public query to preview scan results without authentication or persistence
+    @Query(() => ScanPreview)
+    async previewScan(@Arg('url', () => String) url: string): Promise<ScanPreview> {
+        try {
+            const result = await scanUrl(url)
+
+            // Check if scanUrl returned an error
+            if ('error' in result) {
+                throw new Error(result.error)
+            }
+
+            // Ensure sslCertificate is always a string (handle optional case)
+            return {
+                ...result,
+                sslCertificate: result.sslCertificate || 'Error retrieving SSL expiry',
+            }
+        }
+        catch (error) {
+            console.error({ 'Error in previewScan': error })
+            // Re-throw the original error instead of a generic message
+            throw error
+        }
+    }
+
     @Query(() => [Scan])
     async getAllScans() {
         try {
@@ -29,6 +55,7 @@ class ScanResolver {
         }
     }
 
+    // @Authorized("Admin", "User")
     @Query(() => ScanByUserId)
     async getAllScansByUserId(@Ctx() context: ContextType) {
         const userId = context.id
@@ -62,7 +89,7 @@ class ScanResolver {
         }
     }
 
-    @Subscription({
+    @Subscription(() => Scan, {
         topics: 'SCAN_CREATED',
     })
     newScan(@Root() scan: Scan): Scan {
@@ -71,8 +98,17 @@ class ScanResolver {
     }
 
     @Mutation(() => Scan)
-    async createNewScan(@Arg('data') newScanData: ScanInput) {
+    async createNewScan(@Arg('data', () => ScanInput) newScanData: ScanInput, @Ctx() context: ContextType) {
+        // Check if user is authenticated
+        const userId = context.id
+        if (!userId) {
+            throw new Error('You must be logged in to create a scan')
+        }
+
         try {
+            // Get the authenticated user
+            const user = await User.findOneByOrFail({ id: userId })
+
             const urlData = await scanUrl(newScanData.url)
 
             if ('error' in urlData) {
@@ -81,7 +117,7 @@ class ScanResolver {
 
             const { url, statusCode, statusMessage, responseTime, sslCertificate, isOnline } = urlData
 
-            // Create the scan object
+            // Create the scan object and associate it with the authenticated user
             const newScanToSave = Scan.create({
                 title: newScanData.title,
                 url,
@@ -90,6 +126,7 @@ class ScanResolver {
                 responseTime,
                 sslCertificate,
                 isOnline,
+                user, // Associate scan with the authenticated user
             })
 
             // Handle tags if provided
@@ -98,16 +135,29 @@ class ScanResolver {
                 newScanToSave.tags = tags
             }
 
+            // Handle frequency - if not provided, use default (60 minutes)
+            let frequency: Frequency
             if (newScanData.frequencyId) {
-                const frequency = await Frequency.findOne({ where: { id: newScanData.frequencyId } })
-                if (frequency) {
-                    newScanToSave.frequency = frequency
-                    // Initialize the next scan date
-                    const nextScanDate = new Date()
-                    nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
-                    newScanToSave.nextScanAt = nextScanDate
+                const foundFrequency = await Frequency.findOne({ where: { id: newScanData.frequencyId } })
+                if (!foundFrequency) {
+                    throw new Error('Invalid frequency selected')
                 }
+                frequency = foundFrequency
             }
+            else {
+                // Default to 60 minutes frequency if not specified
+                const defaultFrequency = await Frequency.findOne({ where: { intervalMinutes: 60 } })
+                if (!defaultFrequency) {
+                    throw new Error('Default frequency (60 minutes) not found in database')
+                }
+                frequency = defaultFrequency
+            }
+
+            newScanToSave.frequency = frequency
+            // Initialize the next scan date
+            const nextScanDate = new Date()
+            nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
+            newScanToSave.nextScanAt = nextScanDate
 
             const result = await newScanToSave.save()
 
@@ -116,15 +166,16 @@ class ScanResolver {
 
             return result
         }
-
         catch (error) {
             console.error({ 'Error creating scan': error })
-            throw new Error('Something wrong happened')
+            // Re-throw the original error instead of a generic message
+            throw error
         }
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
-    async deleteScan(@Arg('id') id: number) {
+    async deleteScan(@Arg('id', () => Int) id: number) {
         try {
             const result = await Scan.delete(id)
 
@@ -141,8 +192,9 @@ class ScanResolver {
         }
     }
 
+    // @Authorized("Admin", "User")
     @Query(() => Scan)
-    async getScanById(@Arg('id') id: number) {
+    async getScanById(@Arg('id', () => Int) id: number) {
         const scan = await Scan.findOne({
             where: { id },
             order: { id: 'DESC' },
@@ -153,8 +205,9 @@ class ScanResolver {
         return scan
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => Scan)
-    async pauseOrRestartScan(@Arg('id') id: number) {
+    async pauseOrRestartScan(@Arg('id', () => Int) id: number) {
         const scan = await Scan.findOne({
             where: { id },
         })
@@ -162,15 +215,16 @@ class ScanResolver {
         if (!scan) {
             return null
         }
-        scan.isPause = scan?.isPause === true ? false : true
+        scan.isPause = scan?.isPause !== true
 
         await scan.save()
 
         return scan
     }
 
+    @Authorized("Admin", "User")
     @Mutation(() => String)
-    async updateScan(@Arg('data') updateScanData: UpdateScanInput) {
+    async updateScan(@Arg('data', () => UpdateScanInput) updateScanData: UpdateScanInput) {
         try {
             let scanToUpdate = await Scan.findOne({
                 where: { id: updateScanData.id },
@@ -194,19 +248,28 @@ class ScanResolver {
             await scanToUpdate.save()
 
             if (updateScanData.frequencyId !== undefined) {
-                const frequency = await Frequency.findOne({ where: { id: updateScanData.frequencyId } })
-                if (frequency) {
-                    scanToUpdate.frequency = frequency
-
-                    // Mettre à jour la date du prochain scan
-                    const nextScanDate = new Date()
-                    nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
-                    scanToUpdate.nextScanAt = nextScanDate
+                let frequency: Frequency
+                if (updateScanData.frequencyId) {
+                    const foundFrequency = await Frequency.findOne({ where: { id: updateScanData.frequencyId } })
+                    if (!foundFrequency) {
+                        throw new Error('Invalid frequency selected for update')
+                    }
+                    frequency = foundFrequency
                 }
                 else {
-                    scanToUpdate.frequency = null
-                    scanToUpdate.nextScanAt = null
+                    // Default to 60 minutes frequency if not specified
+                    const defaultFrequency = await Frequency.findOne({ where: { intervalMinutes: 60 } })
+                    if (!defaultFrequency) {
+                        throw new Error('Default frequency (60 minutes) not found in database')
+                    }
+                    frequency = defaultFrequency
                 }
+
+                scanToUpdate.frequency = frequency
+                // Update next scan date
+                const nextScanDate = new Date()
+                nextScanDate.setMinutes(nextScanDate.getMinutes() + frequency.intervalMinutes)
+                scanToUpdate.nextScanAt = nextScanDate
             }
 
             return 'Scan has been updated'

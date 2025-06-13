@@ -19,10 +19,20 @@ mutation CreateNewScan($data: ScanInput!) {
   }`
 
 export const DELETE_SCAN = gql`
-mutation DeleteScan($deleteScanId: Float!) {
+mutation DeleteScan($deleteScanId: Int!) {
     deleteScan(id: $deleteScanId)
   }`
 
+/******* TAG *********/
+
+export const CREATE_NEW_TAG = gql`
+mutation CreateNewTag($data: TagInput!) {
+    createNewTag(data: $data) {
+      id
+      name
+      color
+    }
+  }`
 
   /******* USER *********/
 export const REGISTER = gql`

@@ -6,6 +6,7 @@ import { Tag } from '../entities/Tag'
 import { User } from '../entities/User'
 import { ForgotPassword } from '../entities/ForgotPassword'
 import { ScanHistory } from '../entities/ScanHistory'
+import { Role } from '../entities/Role'
 
 export const dataHealthCheck = new DataSource({
     type: 'postgres',
@@ -13,7 +14,7 @@ export const dataHealthCheck = new DataSource({
     username: 'postgres',
     database: 'postgres',
     password: 'postgres',
-    entities: [Scan, Tag, Frequency, User, ForgotPassword, ScanHistory],
+    entities: [Scan, Tag, Frequency, User, ForgotPassword, ScanHistory, Role],
     synchronize: true,
     logging: ['error', 'query'],
     namingStrategy: new SnakeNamingStrategy(),

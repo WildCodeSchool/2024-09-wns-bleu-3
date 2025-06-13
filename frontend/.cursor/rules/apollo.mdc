@@ -1,0 +1,7 @@
+---
+description: 
+globs: *.tsx,frontend/**/*.ts
+alwaysApply: false
+---
+- Always use codegen generated function in component to retrieve data [graphql-types.ts](mdc:frontend/src/generated/graphql-types.ts) 
+- Use aliases to rename [data, error, loading] from the function. This is bad: const { data, loading, error } = useGetAllScansByUserIdQuery({}) prefer rename like this example: const { data: historyData, loading: historyLoading }
