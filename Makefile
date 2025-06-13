@@ -2,7 +2,7 @@
 
 # Run Docker Container and rebuild
 start: 
-	docker compose up --build
+	docker compose -f docker-compose.yml up --build
 
 # Stop Docker Container
 stop:
