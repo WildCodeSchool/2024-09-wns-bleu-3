@@ -3,10 +3,10 @@ import { Field, InputType, Int } from 'type-graphql'
 
 @InputType()
 export class ScanInput implements Partial<Scan> {
-    @Field()
+    @Field(() => String)
     url: string
 
-    @Field()
+    @Field(() => String)
     title: string
 
     @Field(() => [Int], { nullable: true })

@@ -3,6 +3,7 @@
 import { ForgotPassword } from 'src/entities/ForgotPassword';
 import { User } from 'src/entities/User';
 import UserResolver from 'src/resolver/UserResolver';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 // Prepare resolver instance
 const resolver = new UserResolver();

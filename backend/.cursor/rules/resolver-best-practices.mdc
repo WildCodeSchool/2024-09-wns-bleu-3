@@ -1,0 +1,38 @@
+---
+description: 
+globs: backend/src/resolver/**/*.ts
+alwaysApply: false
+---
+# Resolver Best Practices
+
+This document outlines the best practices for creating and modifying GraphQL resolvers in this project. All resolvers are located in the [`backend/src/resolver/`](mdc:backend/src/resolver) directory.
+
+## Guiding Principles
+
+-   **Keep Resolvers Thin**: Resolvers should primarily be the "controller" layer of your GraphQL API. They are responsible for validating input, calling the appropriate business logic (often in services), and formatting the response.
+-   **Separation of Concerns**: Complex business logic should not live directly inside resolvers. Extract it into separate service classes or utility functions. This makes your code more modular, easier to test, and reusable.
+-   **Strong Typing**: Always use the auto-generated TypeScript types from your GraphQL schema (`graphql-codegen`). This includes types for arguments, inputs, and return values.
+
+## Creating a New Resolver
+
+1.  **Define the Schema**: Before writing any code, define your queries, mutations, or subscriptions in a `.graphql` file within [`backend/src/schema/`](mdc:backend/src/schema).
+2.  **Generate Types**: Run the `graphql-codegen` script to generate the necessary TypeScript types.
+3.  **Create the Resolver File**: Add a new `[Entity]Resolver.ts` file in the `backend/src/resolver/` directory.
+4.  **Implement the Resolver Class**:
+    -   Use the `@Resolver()` decorator from `type-graphql`.
+    -   Inject dependencies like services or repositories using the constructor.
+    -   Implement the query and mutation methods, using the generated types for arguments (`@Arg`) and context (`@Ctx`).
+
+## Modifying an Existing Resolver
+
+-   When adding a new query or mutation, always start by updating the GraphQL schema first.
+-   Ensure any changes are covered by tests.
+-   If a resolver method is becoming too complex, refactor the business logic into a separate service.
+
+## Reference Example
+
+For a good example of how to structure a resolver, including dependency injection, input validation, and clear separation of concerns, see the **[`UserResolver.ts`](mdc:backend/src/resolver/UserResolver.ts)**.
+
+## Documentation
+
+If you need to understand the purpose of an existing resolver or the context behind its implementation, you can use the **Context** feature to get more information and documentation.

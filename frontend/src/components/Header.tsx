@@ -9,13 +9,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Separator } from "./ui/separator"
 import { useGetUserInfoQuery, useLogoutMutation } from "@/generated/graphql-types"
 import { useEffect, useState } from "react"
+import { useAuth } from "@/hooks/useAuth"
 
 const Header = () => {
   const navigate = useNavigate();
   const [selectedAvatar, setSelectedAvatar] = useState(0);
 
   const { data, error } = useGetUserInfoQuery()
-  const isLoggedIn = data?.getUserInfo?.isLoggedIn;
+  const { isLoggedIn } = useAuth();
   const mail = data?.getUserInfo?.email
   const username = data?.getUserInfo?.username
 

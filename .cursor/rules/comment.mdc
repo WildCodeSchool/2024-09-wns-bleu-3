@@ -1,0 +1,50 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+## Goal
+
+Ensure the AI-generated code is well-commented to improve readability, maintainability, and help junior developers understand the logic easily.
+
+## Guidelines
+
+1. **Comment Purpose**  
+   - Explain *why* the code does something, not just *what* it does.  
+   - Clarify complex logic or non-obvious decisions.  
+   - Highlight any assumptions or important side effects.
+
+2. **Comment Style**  
+   - Use clear, concise English sentences.  
+   - Avoid redundant comments that restate obvious code.  
+   - Use consistent formatting and style matching the language conventions (e.g., `//` for JS/TS, `#` for Python).
+
+3. **Where to Comment**  
+   - At the top of each new function or method, explain its purpose and parameters.  
+   - Before any complex block or algorithm, provide a brief explanation.  
+   - Inline comments only when necessary to clarify tricky lines.  
+   - Add TODO or FIXME comments if there are known issues or improvements needed.
+
+4. **Example**
+
+```typescript
+// Fetches user data from API and caches it for 5 minutes.
+// Params:
+//   userId: string - ID of the user to fetch
+// Returns:
+//   Promise<User> - resolves with user data object
+async function fetchUserData(userId: string): Promise<User> {
+  // Check cache first to avoid unnecessary API calls
+  if (cache.has(userId)) {
+    return cache.get(userId);
+  }
+
+  // Fetch from remote API
+  const response = await fetch(`/api/users/${userId}`);
+  const data = await response.json();
+
+  // Cache the result
+  cache.set(userId, data, 300); // cache for 300 seconds
+
+  return data;
+}

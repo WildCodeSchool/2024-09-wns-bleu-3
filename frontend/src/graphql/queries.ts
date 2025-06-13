@@ -2,6 +2,19 @@ import { gql } from "@apollo/client";
 
 /******* SCAN *********/
 
+// Preview scan query for unauthenticated users
+export const PREVIEW_SCAN = gql`
+query PreviewScan($url: String!) {
+  previewScan(url: $url) {
+    url
+    statusCode
+    statusMessage
+    responseTime
+    sslCertificate
+    isOnline
+  }
+}`
+
 export const GET_ALL_SCANS = gql`
 query GetAllScans {
   getAllScans {
@@ -20,7 +33,7 @@ query GetAllScans {
 }`
 
 export const GET_SCAN_BY_ID = gql`
-query Query($getScanByIdId: Float!) {
+query Query($getScanByIdId: Int!) {
   getScanById(id: $getScanByIdId) {
     id
     url
@@ -85,23 +98,42 @@ export const GET_SCAN_HISTORY = gql`
   }
 `
 
-// /******* DASHBOARD *********/
-// export const GET_DASHBOARD_DATA = gql`
-//   query GetUserDashboardData {
-//     getUserDashboardData {
-//       scans {
-//         id
-//         url
-//         isOnline
-//         statusCode
-//         statusMessage
-//         createdAt
-//       }
-//       user {
-//         id
-//         email
-//         username
-//       }
-//     }
-//   }
-// `;
+/******* DASHBOARD *********/
+export const GET_DASHBOARD_USER_DATA = gql`
+  query GetAllScansByUserId {
+    getAllScansByUserId {
+      issues {
+        id
+        scanId
+        issueType
+        issue
+      }
+      totalIssues
+      scans {
+        id
+        url
+        title
+        statusCode
+        statusMessage
+        responseTime
+        sslCertificate
+        isOnline
+        createdAt
+        updatedAt
+        lastScannedAt
+        frequency {
+          id
+          intervalMinutes
+          name
+      }
+        tags {
+          id
+          name
+          color
+        }
+      }
+      totalScans
+      username
+    }
+  }
+`;
