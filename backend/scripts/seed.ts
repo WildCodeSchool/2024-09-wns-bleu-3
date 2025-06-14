@@ -1,4 +1,4 @@
-import { IsNull, Not } from 'typeorm'
+import { In, IsNull, Not } from 'typeorm'
 import { dataHealthCheck } from '../src/config/db'
 import { Frequency } from '../src/entities/Frequency'
 import { Role } from '../src/entities/Role'
@@ -17,7 +17,7 @@ interface ScanData {
     responseTime: number
     sslCertificate: '15 days' | '500 days' | 'Expired'
     isOnline: boolean
-    tagIds: string[]
+    tagIds: number[]
     frequency: Frequency
     lastScannedAt: Date | null
     nextScanAt: Date | null
@@ -26,7 +26,7 @@ interface ScanData {
 }
 
 // Create a mock scan object
-async function mockScanUrl(frequency: Frequency, user: User): Promise<ScanData> {
+async function mockScanUrl(frequency: Frequency, user: User, allTags: Tag[]): Promise<ScanData> {
     // Mocking a scan URL
     const urls = [
         'http://vitest.dev/',
@@ -35,6 +35,7 @@ async function mockScanUrl(frequency: Frequency, user: User): Promise<ScanData> 
         'https://openai.com/',
         'https://vite.dev/',
     ]
+    const selectedTags = faker.helpers.arrayElements(allTags, faker.number.int({ min: 1, max: 2 }))
 
     return {
         title: faker.lorem.words(3),
@@ -44,7 +45,7 @@ async function mockScanUrl(frequency: Frequency, user: User): Promise<ScanData> 
         responseTime: faker.number.int({ min: 10, max: 100 }),
         sslCertificate: faker.helpers.arrayElement(['15 days', '500 days', 'Expired']),
         isOnline: faker.datatype.boolean(),
-        tagIds: [], // Optional tags
+        tagIds: selectedTags.map(tag => tag.id), // Optional tags
         frequency, // Optional frequency
         lastScannedAt: null,
         nextScanAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes from now
@@ -54,11 +55,11 @@ async function mockScanUrl(frequency: Frequency, user: User): Promise<ScanData> 
 }
 
 // Create a certain number of fake scans
-async function createFakeScans(count: number, frequency: Frequency, user: User): Promise<ScanData[]> {
+async function createFakeScans(count: number, frequency: Frequency, user: User, tag: Tag[]): Promise<ScanData[]> {
     const fakeScans: ScanData[] = []
 
     for (let i = 0; i < count; i++) {
-        const scanData = await mockScanUrl(frequency, user)
+        const scanData = await mockScanUrl(frequency, user, tag)
         fakeScans.push(scanData)
     }
 
@@ -153,11 +154,31 @@ export async function seedDatabase() {
         if (!user) {
             throw new Error('User not found')
         }
-        const fakeScans = await createFakeScans(10, frequencies[0], user)
-        const scans = scanRepo.create(fakeScans)
-        await scanRepo.save(scans)
+        // const fakeScans = await createFakeScans(10, frequencies[2], user, tags)
+        // const scans = scanRepo.create(fakeScans)
+        // await scanRepo.save(scans)
 
         // Create fake scans
+        const fakeScans = await createFakeScans(10, frequencies[2], user, tags)
+
+        const scansWithTags: Scan[] = []
+
+        for (const scanData of fakeScans) {
+            const scan = scanRepo.create({
+                ...scanData,
+                frequency: scanData.frequency,
+                user: scanData.user,
+            })
+
+            // Associer les tags à partir des IDs
+            scan.tags = await tagRepo.findBy({ id: In(scanData.tagIds) })
+
+            console.log(`Scan ==> ${scan.title} → Tags ==> ${scan.tags.map(t => t.name).join(', ')}`)
+
+            scansWithTags.push(scan)
+        }
+
+        await scanRepo.save(scansWithTags)
     }
     catch (error) {
         console.error('Error initializing dataHealthCheck: ', error)
