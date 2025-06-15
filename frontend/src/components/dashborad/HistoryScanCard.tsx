@@ -53,6 +53,7 @@ const HistoryScanCard = ({ scan }: ScanCardProps) => {
 
   const result = useGetScanHistoryQuery({ variables: { scanId: id } })
   const history = result.data?.getScanHistory ?? []
+  console.log('getScanHistory ==> ', history)
   const uptime = getUptime(history)
 
 
@@ -93,7 +94,7 @@ const HistoryScanCard = ({ scan }: ScanCardProps) => {
             <span className="text-sm text-gray-600">
               {getLastScannedAt(lastScannedAt)}
             </span>
-            {/* tags //TODO : gerer les tags*/}
+            {/* tags */}
             {tags?.map((tag) => (
               <span
                 key={tag.id}

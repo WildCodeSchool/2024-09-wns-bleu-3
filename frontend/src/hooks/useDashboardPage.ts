@@ -1,5 +1,12 @@
 import { useMemo } from "react"
 
+/**
+ * Récupère les statuts uniques des scans (code + message) sans doublons.
+ * Utilise useMemo pour optimiser les performances.
+ * Utile pour alimenter les filtres par statut dans le dashboard.
+ */
+
+
 export type ScanStatusProps = {
   statusCode: number
   statusMessage: string

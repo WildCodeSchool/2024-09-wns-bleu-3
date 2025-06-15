@@ -1,5 +1,13 @@
 import { GetScanHistoryQuery } from "@/generated/graphql-types"
 
+
+/**
+ * Calcule l’uptime d’un scan : pourcentage de réponses avec status 200.
+ * Basé sur l’historique complet des scans (succès / total).
+ * Retourne une string formatée comme "0% - 92%".
+ */
+
+
 export const getUptime = (
   history: GetScanHistoryQuery["getScanHistory"]
 ): string => {

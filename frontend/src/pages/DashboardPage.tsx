@@ -144,7 +144,7 @@ const DashboardPage = () => {
             </div>
 
             {/* ActiveIssues */}
-            <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} />
+            {/* <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} /> */}
 
             {/* Scans list */}
             <ScanListHistory

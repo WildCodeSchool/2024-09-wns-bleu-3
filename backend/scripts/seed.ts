@@ -84,6 +84,7 @@ export async function seedDatabase() {
         console.log('Deleted all data')
 
         const hashedPassword = await argon2.hash(process.env.LOGIN_TEST_PWD as string)
+        const hashedPasswordAmadou = await argon2.hash(process.env.LOGIN_TEST_PWD2 as string)
 
         // Create fake roles
         const roles = rolesRepo.create([
@@ -102,9 +103,9 @@ export async function seedDatabase() {
             },
             {
                 email: 'bylo@duck.com',
-                password: '$argon2id$v=19$m=65536,t=3,p=4$FwWGT2p/5nv2rd/68srNCQ$W4W8Fl7f2cSdvbwnwprACl8cwa1ykbz/ORiBkMAk3KU',
+                password: hashedPasswordAmadou,
                 username: 'amadou',
-                role: roles.find(r => r.name === 'User'),
+                role: roles.find(r => r.name === 'Admin'),
             },
         ])
         await userRepo.save(users)
@@ -154,12 +155,9 @@ export async function seedDatabase() {
         if (!user) {
             throw new Error('User not found')
         }
-        // const fakeScans = await createFakeScans(10, frequencies[2], user, tags)
-        // const scans = scanRepo.create(fakeScans)
-        // await scanRepo.save(scans)
 
         // Create fake scans
-        const fakeScans = await createFakeScans(10, frequencies[2], user, tags)
+        const fakeScans = await createFakeScans(10, frequencies[1], user, tags)
 
         const scansWithTags: Scan[] = []
 
@@ -172,8 +170,6 @@ export async function seedDatabase() {
 
             // Associer les tags à partir des IDs
             scan.tags = await tagRepo.findBy({ id: In(scanData.tagIds) })
-
-            console.log(`Scan ==> ${scan.title} → Tags ==> ${scan.tags.map(t => t.name).join(', ')}`)
 
             scansWithTags.push(scan)
         }

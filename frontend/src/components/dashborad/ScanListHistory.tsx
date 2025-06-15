@@ -65,7 +65,7 @@ const ScanListHistory = ({ scans }: ScanListHistoryProps) => {
 
 
     return (
-        <div className="bg-white rounded-xl border shadow-sm p-6 border-gray-200">
+        <div className="bg-white rounded-xl border shadow-sm p-6 border-gray-200 mt-8">
             <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
                 <h2 className="text-xl font-bold">Your Scans</h2>
                 <div className="flex gap-2 flex-1 md:max-w-md">
