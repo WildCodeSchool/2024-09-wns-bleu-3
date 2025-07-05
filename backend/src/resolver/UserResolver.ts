@@ -62,7 +62,7 @@ class UserResolver {
             throw new Error('An account with this email already exists.')
         }
 
-        let roleUser = await Role.findOneBy({ name: "User" })
+        let roleUser = await Role.findOneBy({ name: 'User' })
 
         if (!roleUser) {
             throw new Error('Default role not found')
@@ -75,7 +75,7 @@ class UserResolver {
             username: newUserData.username,
             email: newUserData.email,
             password: await argon2.hash(newUserData.password),
-            role: roleUser
+            role: roleUser,
         })
 
         if (!result) {
@@ -85,7 +85,7 @@ class UserResolver {
         return 'User successfully created'
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => String)
     async updateUser(@Arg('id', () => Number) id: number, @Arg('data', () => UpdateUserInput) updateUserData: UpdateUserInput) {
         const userToUpdate = await User.findOne({
@@ -112,23 +112,25 @@ class UserResolver {
     @Mutation(() => String)
     async login(@Arg('data', () => UserLoginInput) loginData: UserLoginInput, @Ctx() context: any) {
         let isPasswordCorrect = false
+        // 1.recherche du user
         const user = await User.findOne({
             where: { email: loginData.email },
-            relations: ['role']
+            relations: ['role'],
         })
 
+        // 2. vérification du mot de pass haché stocké en base avec argon
         if (user) {
             isPasswordCorrect = await argon2.verify(
                 user.password,
                 loginData.password,
             )
         }
-        // if user identified : generate token
+        // 3. si le urser exist, le mot depasse correct, génération du JWT pis envoie dans un cookie sécurisé
         if (isPasswordCorrect === true && user !== null) {
             const token = jwt.sign(
                 { email: user.email, userId: user.id, role: user.role.name },
                 process.env.JWT_SECRET_KEY as Secret,
-                { expiresIn: '1h' }
+                { expiresIn: '1h' },
             )
             context.res.setHeader(
                 'Set-Cookie',
@@ -137,7 +139,7 @@ class UserResolver {
 
             return token
         }
-        else {
+        else { // 4. refuser l'accès sans donner trop de détails sur l'information manquante
             throw new Error('Identifiants incorrects')
         }
     }
@@ -151,7 +153,7 @@ class UserResolver {
         return 'logged out'
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => String)
     async deleteUser(@Arg('id', () => Number) id: number, @Ctx() context: any) {
         try {
