@@ -4,6 +4,11 @@
 start: 
 	docker compose up --build
 
+
+# Run e2e Docker Container and rebuild
+start-e2e:
+	docker compose -f docker-compose.e2e.yml up --build
+
 # Stop Docker Container
 stop:
 	docker compose down

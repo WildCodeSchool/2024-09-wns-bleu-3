@@ -62,7 +62,7 @@ class UserResolver {
             throw new Error('An account with this email already exists.')
         }
 
-        let roleUser = await Role.findOneBy({ name: 'User' })
+        const roleUser = await Role.findOneBy({ name: 'User' })
 
         if (!roleUser) {
             throw new Error('Default role not found')
