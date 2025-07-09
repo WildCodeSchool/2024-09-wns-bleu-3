@@ -25,7 +25,7 @@ import { Role } from '../entities/Role'
 class UserResolver {
     @Query(() => UserInfo, { nullable: true })
     async getUserInfo(@Ctx() context: ContextType): Promise<UserInfo | null> {
-        // Extract email from the context
+        // Extract email from the context 
         const { email } = context
 
         if (!email) {
