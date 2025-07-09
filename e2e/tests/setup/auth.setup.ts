@@ -5,8 +5,12 @@ import fs from 'fs'
 
 const storageFilePath = path.resolve(__dirname, '../../.auth/user.json');
 
-if(fs.existsSync(storageFilePath)) {
-  setup.skip(true, 'Auth already setup, skipping test');
+/**
+ * Always recreate the storage state to avoid using an expired / invalid JWT that
+ * would make authenticated pages (like /dashboard) fail locally.
+ */
+if (fs.existsSync(storageFilePath)) {
+  fs.rmSync(storageFilePath, { force: true });
 }
 
 setup.describe('Auth setup', () => {

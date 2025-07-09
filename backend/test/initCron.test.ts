@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import { initCronJobs } from '../src/cron/index';
 import { runScheduledScans } from '../src/utils/scheduledScans';
-import { MockInstance } from 'vitest';
+import { beforeEach, describe, expect, it, MockInstance, vi } from 'vitest';
 
 vi.mock('node-cron', () => ({
     default: {

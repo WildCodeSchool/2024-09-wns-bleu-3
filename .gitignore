@@ -12,3 +12,5 @@ e2e/playwright-report/
 e2e/test-results/
 e2e/.auth/user.json
 dist
+
+backend/coverage
