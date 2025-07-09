@@ -82,7 +82,7 @@ export async function seedDatabase() {
         console.log('Deleted all data')
 
         const hashedPassword = await argon2.hash(process.env.LOGIN_TEST_PWD as string)
-        const hashedPassword2 = await argon2.hash(process.env.LOGIN_TEST_PWD2 as string)
+        // const hashedPassword2 = await argon2.hash(process.env.LOGIN_TEST_PWD2 as string)
 
         const roles = rolesRepo.create([{ name: 'User' }, { name: 'Admin' }])
         await rolesRepo.save(roles)
@@ -94,12 +94,12 @@ export async function seedDatabase() {
                 username: 'florian',
                 role: roles.find(r => r.name === 'Admin'),
             },
-            {
-                email: 'bylo@duck.com',
-                password: hashedPassword2,
-                username: 'amadou',
-                role: roles.find(r => r.name === 'User'),
-            },
+            // {
+            //     email: 'bylo@duck.com',
+            //     password: hashedPassword2,
+            //     username: 'amadou',
+            //     role: roles.find(r => r.name === 'User'),
+            // },
         ])
         await userRepo.save(users)
 

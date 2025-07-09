@@ -117,6 +117,9 @@ class UserResolver {
             relations: ['role'],
         })
 
+        console.log('user ==>', user)
+        console.log('loginData ==> ', loginData)
+
         if (user) {
             isPasswordCorrect = await argon2.verify(
                 user.password,
