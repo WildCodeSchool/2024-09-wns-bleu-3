@@ -39,7 +39,7 @@ const DashboardPage = () => {
     const activeIssueCount = activeIssues.length
 
 
-    console.log("all scan =>", scans)
+    console.log("Dashboard AllScans =>", scans)
 
     if (loading) return <p>Loading...</p>
     if (error) return <p>There is an error: {error.message}</p>

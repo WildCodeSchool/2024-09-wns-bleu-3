@@ -6,12 +6,13 @@ import {
   XCircle,
 } from "lucide-react";
 import { Link } from "react-router";
-import { GetAllScansByUserIdQuery, useGetScanHistoryQuery } from "@/generated/graphql-types";
+import { useGetScanHistoryQuery } from "@/generated/graphql-types";
 import { getLastScannedAt } from "@/utils/dates";
 import { getUptime } from "@/utils/scans";
+import { IScan } from "./ScanListHistory";
 
 type ScanCardProps = {
-  scan: GetAllScansByUserIdQuery["getAllScansByUserId"]["scans"][number];
+  scan: IScan
 };
 
 const getStatusColor = (code: number) => {
@@ -54,7 +55,7 @@ const HistoryScanCard = ({ scan }: ScanCardProps) => {
   //récupérartion de l'historique du scanId
   const result = useGetScanHistoryQuery({ variables: { scanId: id } })
   const history = result.data?.getScanHistory ?? []
-  console.log(`HisctoryScan of id= ${id}`, history)
+  console.log(`HistoryScan n° ==> ${id} : `, history)
   //calcul de l'uptime : scan positif StatusCode == 200
   const uptime = getUptime(history)
 
