@@ -51,9 +51,11 @@ const HistoryScanCard = ({ scan }: ScanCardProps) => {
    */
 
 
+  //récupérartion de l'historique du scanId
   const result = useGetScanHistoryQuery({ variables: { scanId: id } })
   const history = result.data?.getScanHistory ?? []
-  console.log('getScanHistory ==> ', history)
+  console.log(`HisctoryScan of id= ${id}`, history)
+  //calcul de l'uptime : scan positif StatusCode == 200
   const uptime = getUptime(history)
 
 

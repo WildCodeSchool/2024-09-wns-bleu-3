@@ -44,7 +44,7 @@ async function mockScanUrl(frequency: Frequency, user: User, allTags: Tag[]): Pr
         isOnline: faker.datatype.boolean(),
         tagIds: selectedTags.map(tag => tag.id),
         frequency,
-        lastScannedAt: null,
+        lastScannedAt: new Date(),
         nextScanAt: new Date(Date.now() + 15 * 60 * 1000),
         isPause: false,
         user,
@@ -94,12 +94,7 @@ export async function seedDatabase() {
                 username: 'florian',
                 role: roles.find(r => r.name === 'Admin'),
             },
-            // {
-            //     email: 'bylo@duck.com',
-            //     password: hashedPassword2,
-            //     username: 'amadou',
-            //     role: roles.find(r => r.name === 'User'),
-            // },
+
         ])
         await userRepo.save(users)
 
