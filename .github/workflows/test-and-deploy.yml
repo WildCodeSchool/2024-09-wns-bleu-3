@@ -51,6 +51,8 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile.prod
           push: true
+          no-cache: true
+          pull: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
@@ -84,6 +86,8 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile.prod
           push: true
+          no-cache: true
+          pull: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
