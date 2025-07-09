@@ -19,7 +19,7 @@ import { UpdateUserInput } from '../inputs/UpdateUserInput'
 import { ContextType } from '../schema/context'
 import UserInfo from '../inputs/UserInfo'
 import { isPasswordValid } from '../utils/isPasswordValid'
-import { Role } from '../entities/Role'
+// import { Role } from '../entities/Role'
 
 @Resolver(() => User)
 class UserResolver {
@@ -62,11 +62,11 @@ class UserResolver {
             throw new Error('An account with this email already exists.')
         }
 
-        const roleUser = await Role.findOneBy({ name: 'User' })
+        // const roleUser = await Role.findOneBy({ name: 'User' })
 
-        if (!roleUser) {
-            throw new Error('Default role not found')
-        }
+        // if (!roleUser) {
+        //     throw new Error('Default role not found')
+        // }
 
         // Validate password strength
         isPasswordValid(newUserData.password)
@@ -75,7 +75,7 @@ class UserResolver {
             username: newUserData.username,
             email: newUserData.email,
             password: await argon2.hash(newUserData.password),
-            role: roleUser,
+            // role: roleUser,
         })
 
         if (!result) {
