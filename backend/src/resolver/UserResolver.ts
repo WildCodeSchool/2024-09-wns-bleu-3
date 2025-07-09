@@ -19,13 +19,13 @@ import { UpdateUserInput } from '../inputs/UpdateUserInput'
 import { ContextType } from '../schema/context'
 import UserInfo from '../inputs/UserInfo'
 import { isPasswordValid } from '../utils/isPasswordValid'
-// import { Role } from '../entities/Role'
+import { Role } from '../entities/Role'
 
 @Resolver(() => User)
 class UserResolver {
     @Query(() => UserInfo, { nullable: true })
     async getUserInfo(@Ctx() context: ContextType): Promise<UserInfo | null> {
-        // Extract email from the context 
+        // Extract email from the context
         const { email } = context
 
         if (!email) {
@@ -62,11 +62,14 @@ class UserResolver {
             throw new Error('An account with this email already exists.')
         }
 
-        // const roleUser = await Role.findOneBy({ name: 'User' })
+        // Trouver ou créer le rôle 'User'
+        let roleUser = await Role.findOneBy({ name: 'User' })
 
-        // if (!roleUser) {
-        //     throw new Error('Default role not found')
-        // }
+        if (!roleUser) {
+            console.log('Creating default User role...')
+            roleUser = Role.create({ name: 'User' })
+            await roleUser.save()
+        }
 
         // Validate password strength
         isPasswordValid(newUserData.password)
@@ -75,7 +78,7 @@ class UserResolver {
             username: newUserData.username,
             email: newUserData.email,
             password: await argon2.hash(newUserData.password),
-            // role: roleUser,
+            role: roleUser,
         })
 
         if (!result) {
