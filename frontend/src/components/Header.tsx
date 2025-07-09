@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Link, useNavigate } from "react-router"
-import { LogOut, Menu, Settings, Sparkles, User } from "lucide-react"
+import { LogOut, Menu, Settings, Sparkles, User, LayoutDashboard } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet"
 
 import { GET_USER_INFO } from "@/graphql/queries"
@@ -96,6 +96,13 @@ const Header = () => {
                   <Link to="/profile">
                     <User className="mr-2 h-4 w-4" />
                     Profile
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem asChild className="hover:bg-[#0c2d4d] cursor-pointer">
+                  <Link to="/dashboard">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Dashboard
                   </Link>
                 </DropdownMenuItem>
 
