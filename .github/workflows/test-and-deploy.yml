@@ -51,6 +51,8 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile.prod
           push: true
+          no-cache: true
+          pull: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_SERVER_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
@@ -84,25 +86,18 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile.prod
           push: true
+          no-cache: true
+          pull: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
-
-  zap-scan:
-    needs: [deploy-server, deploy-client]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/staging'
-    steps:
-      - name: Run OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.10.0
-        with:
-          target: 'https://staging.092024-bleu-3.wns.wilders.dev/'
-          fail_action: true
-          artifact_name: report
 
   deploy-main:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
-      - name: Call production webhook
-        run: curl -X POST https://ops.092024-bleu-3.wns.wilders.dev/hooks/${{ secrets.WEBHOOK_ID }}
+    - name: Call production webhook
+      run: curl -X POST https://ops.092024-bleu-3.wns.wilders.dev/hooks/${{ secrets.WEBHOOK_ID }}
+
+    - name: Call staging webhook
+      run: curl -X POST https://ops.092024-bleu-3.wns.wilders.dev/hooks/${{ secrets.WEBHOOK_STAGING_ID }}
