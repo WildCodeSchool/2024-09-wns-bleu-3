@@ -10,30 +10,49 @@ import { limitScanHistory } from './scheduleDeleteHistoryScans';
 export async function runScheduledScans() {
     try {
         const now = new Date();
+        const BATCH_SIZE = 50;
 
-        // Récupérer tous les scans actifs avec leurs fréquences
-        const scans = await Scan.find({
-            relations: ['frequency'],
-            where: {
-                // scan + intervalle < maintenant
-                nextScanAt: LessThan(now),
-                isPause: false
+        let offset = 0;
+        let hasMoreScans = true;
+        let totalProcessed = 0;
+
+        while (hasMoreScans) {
+
+            const scans = await Scan.find({
+                relations: ['frequency'],
+                where: {
+                    nextScanAt: LessThan(now),
+                    isPause: false
+                },
+                take: BATCH_SIZE,
+                skip: offset,
+                order: { nextScanAt: 'ASC' }
+            });
+
+            if (scans.length === 0) {
+                hasMoreScans = false;
+                break;
             }
-        });
 
-        console.log(`Found ${scans.length} scans to run`);
+            console.log(`Processing batch ${Math.floor(offset / BATCH_SIZE) + 1}: ${scans.length} scans`);
 
-        // Pour chaque scan à exec, mettre à jour les résultats
-        for (const scan of scans) {
-            await updateScanResults(scan);
+            for (const scan of scans) {
+                await updateScanResults(scan);
+                totalProcessed++;
+            }
+
+            offset += BATCH_SIZE;
+
+            if (scans.length < BATCH_SIZE) {
+                hasMoreScans = false;
+            }
         }
 
-        console.log('Scheduled scans completed successfully');
+        console.log(`Scheduled scans completed successfully. Total processed: ${totalProcessed}`);
     } catch (error) {
         console.error('Error running scheduled scans:', error);
     }
 }
-
 /**
  * Met à jour les résultats d'un scan spécifique
  * @param scan Le scan à mettre à jour
