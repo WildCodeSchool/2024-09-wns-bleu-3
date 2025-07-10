@@ -1,4 +1,4 @@
-import { Plus, RefreshCw, Search } from "lucide-react";
+import { RefreshCw, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { useState } from "react";
 import {
@@ -94,10 +94,10 @@ const ScanListHistory = ({ scans }: ScanListHistoryProps) => {
                         </div>
                         {/* filtres status */}
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-[180px] cursor-pointer" >
                                 <SelectValue placeholder="Status" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent >
                                 <SelectItem value="all">All Status Codes</SelectItem>
                                 {uniqueStatusCodes.map((scan) => (
                                     <SelectItem
@@ -110,7 +110,7 @@ const ScanListHistory = ({ scans }: ScanListHistoryProps) => {
                             </SelectContent>
                         </Select>
                         {/* refresh */}
-                        <Button variant="outline" className="gap-2 border-gray-200" onClick={() => refetch()}>
+                        <Button variant="outline" className="gap-2 border-gray-200 hover:bg-gray-200 cursor-pointer" onClick={() => refetch()}>
                             <RefreshCw className="h-4 w-4" />
                             <span className="hidden md:inline">Refresh</span>
 
@@ -122,7 +122,7 @@ const ScanListHistory = ({ scans }: ScanListHistoryProps) => {
                     {/* liste d'onglets */}
                     <TabsList className="mb-4">
                         {scanTabs.map((tab) => (
-                            <TabsTrigger key={tab.value} value={tab.value}>
+                            <TabsTrigger key={tab.value} value={tab.value} className="cursor-pointer">
                                 {tab.label}
                             </TabsTrigger>
                         ))}
@@ -154,14 +154,12 @@ const ScanListHistory = ({ scans }: ScanListHistoryProps) => {
                                 </TabsContent>
                             );
                         })
-                    ) : ( //TODO
+                    ) : (
                         <div className="text-center py-12">
                             <p className="text-gray-500">
-                                No scans found matching your criteria.
+                                No scans yet — Click “Create Scan” to get started.
                             </p>
-                            <Button variant="outline" className="mt-4">
-                                <Plus className="mr-2 h-4 w-4" /> Add New Scan
-                            </Button>
+
                         </div>
                     )}
                 </Tabs>

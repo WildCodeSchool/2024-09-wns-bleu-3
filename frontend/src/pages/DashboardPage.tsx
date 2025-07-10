@@ -12,7 +12,6 @@ import { useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
 const DashboardPage = () => {
 
     const [resolvedIssues, setResolvedIssues] = useState<string[]>([])
-
     // ID variable not necessary, ID check by context
     const { data, loading, error } = useGetAllScansByUserIdQuery({})
 
@@ -38,8 +37,7 @@ const DashboardPage = () => {
 
     const activeIssueCount = activeIssues.length
 
-
-    console.log("Dashboard AllScans =>", scans)
+    // console.log("Dashboard AllScans =>", scans)
 
     if (loading) return <p>Loading...</p>
     if (error) return <p>There is an error: {error.message}</p>
@@ -143,16 +141,14 @@ const DashboardPage = () => {
                 </div>
             </div>
 
-            {/* ActiveIssues */}
-            {/* <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} /> */}
-
             {/* Scans list */}
             <ScanListHistory
                 scans={scans}
             />
+
         </div >
     );
 };
 
 export default DashboardPage;
-{/* Scans list */ }
+
