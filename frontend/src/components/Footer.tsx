@@ -7,9 +7,6 @@ export default function Footer() {
                 <p className="text-center text-sm leading-loose text-gray-400 md:text-left">
                     © 2025 s0nar. All rights reserved.
                 </p>
-                <p className="text-center text-sm leading-loose text-gray-400 md:text-left">
-                    +
-                </p>
                 <nav className="flex items-center gap-4 text-sm">
                     <Link to="/terms" className="text-gray-400 hover:text-white hover:underline transition-colors">
                         Terms
