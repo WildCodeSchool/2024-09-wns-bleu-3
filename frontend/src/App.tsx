@@ -13,6 +13,7 @@ import ScanPreviewPage from './pages/ScanPreviewPage';
 import PrivateRoute from './components/PrivateRoute';
 import OnlyGuestRoute from './components/OnlyGuestRoute';
 import DashboardPage from './pages/DashboardPage';
+import ScanDetailsPage from './pages/ScanDetailsPage';
 
 function App() {
   const { loading, error, data } = useQuery(GET_ALL_SCANS);
@@ -37,6 +38,7 @@ function App() {
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
             <Route path="reset-password" element={<ForgotPasswordPage />} />
+            <Route path="scan-details" element={<ScanDetailsPage />} />
           </Route>
         </Route >
       </Routes >
