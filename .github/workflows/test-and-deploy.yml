@@ -91,7 +91,13 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
-      - name: Call production webhook
+
+  deploy-staging:
+    needs: [deploy-client, deploy-server]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
+    steps:
+      - name: Call staging webhook
         run: curl -X POST https://ops.092024-bleu-3.wns.wilders.dev/hooks/${{ WEBHOOK_STAGING_ID }}
 
   deploy-main:
