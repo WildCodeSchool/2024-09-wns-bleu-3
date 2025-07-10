@@ -9,7 +9,7 @@ export default function Footer() {
                 </p>
                 <nav className="flex items-center gap-4 text-sm">
                     <Link to="/terms" className="text-gray-400 hover:text-white hover:underline transition-colors">
-                        Terms
+                        Terms & Terms
                     </Link>
                     <Link to="/privacy" className="text-gray-400 hover:text-white hover:underline transition-colors">
                         Privacy
