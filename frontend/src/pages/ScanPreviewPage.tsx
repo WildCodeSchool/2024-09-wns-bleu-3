@@ -13,7 +13,10 @@ import {
     XCircle,
     ArrowLeft,
     RefreshCw,
-    LogIn
+    LogIn,
+    Zap,
+    Lock,
+    Signal,
 } from 'lucide-react';
 import { usePreviewScanQuery } from '../generated/graphql-types';
 import { toast } from 'sonner';
@@ -158,6 +161,7 @@ const ScanPreviewPage: React.FC = () => {
     const statusColor = isOnline ? 'text-green-600' : 'text-red-600';
     const StatusIcon = isOnline ? CheckCircle : XCircle;
 
+
     // Handle login navigation with return URL
     const handleLoginClick = () => {
         const currentUrl = `/scan/preview?url=${encodeURIComponent(decodedUrl)}`;
@@ -172,11 +176,12 @@ const ScanPreviewPage: React.FC = () => {
                 <div className="flex items-center gap-4">
                     <Button
                         onClick={() => navigate('/')}
-                        variant="outline"
+                        className='cursor-pointer'
+                        variant="blue"
                         size="sm"
                         aria-label="Go back to homepage"
                     >
-                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        <ArrowLeft className="h-4 w-4" />
                         Back
                     </Button>
                     <h1 className="text-2xl font-bold text-gray-900">Scan Preview</h1>
@@ -189,7 +194,7 @@ const ScanPreviewPage: React.FC = () => {
                 >
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Globe className="h-5 w-5" />
+                            <Signal className="h-5 w-5" />
                             Scan Results
                         </CardTitle>
                     </CardHeader>
@@ -197,7 +202,7 @@ const ScanPreviewPage: React.FC = () => {
                         {/* URL Display */}
                         <div>
                             <h3 className="text-sm font-medium text-gray-500 mb-1">URL</h3>
-                            <p className="font-mono text-sm bg-gray-100 p-2 rounded border break-all">
+                            <p className="font-mono text-sm bg-gray-100 p-2 rounded break-all">
                                 {scanData.url}
                             </p>
                         </div>
@@ -205,71 +210,84 @@ const ScanPreviewPage: React.FC = () => {
                         {/* Status Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Online Status */}
-                            <div className="bg-white p-4 rounded-lg border">
+                            <div className="bg-white flex flex-col gap-2 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Activity className="h-4 w-4 text-gray-500" />
                                     <span className="text-sm font-medium text-gray-500">Status</span>
                                 </div>
-                                <div className={`flex items-center gap-2 ${statusColor}`}>
-                                    <StatusIcon className="h-5 w-5" />
-                                    <span className="font-semibold">
+                                <div className={`flex items-center justify-center gap-2 p-2 rounded-md }`}>
+
+                                    <StatusIcon className={`h-5 w-5 ${statusColor}`} />
+                                    <span className={`font-semibold text-xl ${statusColor}`}>
                                         {isOnline ? 'Online' : 'Offline'}
                                     </span>
                                 </div>
                             </div>
 
                             {/* Status Code */}
-                            <div className="bg-white p-4 rounded-lg border">
+                            <div className="bg-white flex flex-col gap-2 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-white">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Globe className="h-4 w-4 text-gray-500" />
                                     <span className="text-sm font-medium text-gray-500">Status Code</span>
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="text-2xl font-bold text-gray-900">{scanData.statusCode}</p>
-                                    <p className="text-sm text-gray-600">{scanData.statusMessage}</p>
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="flex items-center gap-2">
+
+                                        <p className="text-2xl font-bold text-gray-900">{scanData.statusCode}</p>
+                                        <p className="text-lg text-gray-600">{scanData.statusMessage}</p>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Response Time */}
-                            <div className="bg-white p-4 rounded-lg border">
+                            <div className="bg-white flex flex-col gap-2 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Clock className="h-4 w-4 text-gray-500" />
                                     <span className="text-sm font-medium text-gray-500">Response Time</span>
                                 </div>
-                                <p className="text-2xl font-bold text-gray-900">{scanData.responseTime}ms</p>
+                                <div className='flex items-center justify-center gap-2'>
+                                    <Zap className="h-5 w-5 text-blue-500" />
+                                    <p className="text-2xl font-bold text-gray-900">{scanData.responseTime}ms</p>
+                                </div>
                             </div>
 
                             {/* SSL Certificate */}
-                            <div className="bg-white p-4 rounded-lg border">
+                            <div className="bg-white flex flex-col gap-2 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <Shield className="h-4 w-4 text-gray-500" />
+                                    <Lock className="h-4 w-4 text-gray-500" />
                                     <span className="text-sm font-medium text-gray-500">SSL Certificate</span>
                                 </div>
-                                <p className="text-sm font-medium text-gray-900">{scanData.sslCertificate}</p>
+                                <div className='flex items-center justify-center gap-2'>
+                                    <Shield className="h-5 w-5 text-purple-500" />
+                                    <p className="text-2xl font-bold text-gray-900">{scanData.sslCertificate}</p>
+                                </div>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Login Prompt Card */}
-                <Card>
+                <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
                     <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                    Login to Save This Scan
-                                </h3>
-                                <p className="text-gray-600">
-                                    Create an account or log in to save this scan, set up monitoring,
-                                    and receive alerts when your website status changes.
-                                </p>
+                        <div className="flex flex-col gap-4 items-center justify-between">
+                            <div className="flex items-start gap-4">
+
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                        Login to Save This Scan
+                                    </h3>
+                                    <p className="text-gray-600">
+                                        Create an account or log in to save this scan, set up monitoring,
+                                        and receive alerts when your website status changes.
+                                    </p>
+                                </div>
                             </div>
                             <Button
                                 onClick={handleLoginClick}
-                                className="ml-4"
+                                className="ml-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white cursor-pointer"
                                 aria-describedby="login-description"
                             >
-                                <LogIn className="h-4 w-4 mr-2" />
+                                <LogIn className="h-4 w-4" />
                                 Login
                             </Button>
                         </div>
