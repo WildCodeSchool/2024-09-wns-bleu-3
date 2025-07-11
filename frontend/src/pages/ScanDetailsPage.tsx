@@ -11,7 +11,7 @@ const ScanDetailsPage = () => {
         <>
             <div className="flex min-h-screen flex-col">
                 <main className="flex-1 bg-gray-50">
-                    <div className="container py-8 px-6">
+                    <div className=" py-8 px-6">
                         {/* back to dashboard */}
                         <div className="flex items-center mb-6">
                             <Button variant="ghost" size="sm" asChild>

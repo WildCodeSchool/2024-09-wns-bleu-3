@@ -56,21 +56,22 @@ const ScanDetailsCards = () => {
     // const statusDisplay = getStatusDisplay(scan.status)
     return (
         <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 ">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
                 <Card>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-sm font-medium text-gray-500">Status</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="">
                         <div className="flex items-center gap-2">
                             <div className={`flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-600`}>
                                 <CheckCircle className="h-5 w-5" />
                             </div>
                             <div className="text-2xl font-bold">Operational</div>
                         </div>
-                        <div className="mt-2 text-sm text-gray-500">Last checked 2 mins ago</div>
+                        <div className="mt-2 text-sm text-gray-500 w-full text-left">Last checked 2 mins ago</div>
                     </CardContent>
                 </Card>
+
             </div>
         </>
     )
