@@ -37,6 +37,8 @@ vi.mock('../src/utils/scanUrl', () => ({
 describe('runScheduledScans', () => {
     const fixedDate = new Date('2023-01-01T12:00:00Z');
     const mockSave = vi.fn().mockResolvedValue(true);
+    const BATCH_SIZE = 50;
+    let offset = 0;
 
     // Un scan dont nextScanAt est dans le passé
     const pastScan = {
@@ -72,8 +74,11 @@ describe('runScheduledScans', () => {
             relations: ['frequency'],
             where: {
                 nextScanAt: LessThan(fixedDate),
-                isPause: false,
+                isPause: false
             },
+            take: BATCH_SIZE,
+            skip: offset,
+            order: { nextScanAt: 'ASC' }
         });
     });
 
