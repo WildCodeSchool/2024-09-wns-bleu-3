@@ -31,17 +31,19 @@ function App() {
           <Route index element={<HomePage />} />
           {/* Public routes accessible to all users */}
           <Route path="scan/preview" element={<ScanPreviewPage />} />
+          <Route path="*" element={<NotFound />} />
+          {/* Private routes accessible to all users already authenticated */}
           <Route element={<PrivateRoute />}>
             <Route path="profile" element={<ProfilePage />} />
             <Route path="dashboard" element={<DashboardPage />} />
           </Route>
+          {/* Only not authenticated users can access those, so the authenticated ones can't get to signup page for example*/}
           <Route element={<OnlyGuestRoute />}>
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
             <Route path="reset-password" element={<ForgotPasswordPage />} />
             <Route path="scan-details" element={<ScanDetailsPage />} />
           </Route>
-          <Route path="*" element={<NotFound />} />
         </Route >
       </Routes >
     </>

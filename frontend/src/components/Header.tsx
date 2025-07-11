@@ -7,7 +7,7 @@ import { GET_USER_INFO } from "@/graphql/queries"
 import Avatar from "boring-avatars";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Separator } from "./ui/separator"
-import { useGetUserInfoQuery, useLogoutMutation } from "@/generated/graphql-types"
+import { useLogoutMutation } from "@/generated/graphql-types"
 import { useEffect, useState } from "react"
 import { useAuth } from "@/hooks/useAuth"
 
@@ -15,8 +15,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [selectedAvatar, setSelectedAvatar] = useState(0);
 
-  const { data, error } = useGetUserInfoQuery()
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, data, error } = useAuth();
   const mail = data?.getUserInfo?.email
   const username = data?.getUserInfo?.username
 

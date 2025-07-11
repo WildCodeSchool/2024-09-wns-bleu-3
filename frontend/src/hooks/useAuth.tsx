@@ -6,6 +6,7 @@ export function useAuth() {
   });
 
   return {
+    data,
     loading,
     error,
     user: data?.getUserInfo || null,
