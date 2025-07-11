@@ -57,7 +57,6 @@ services:
     image: nginx
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./maintenance.html:/usr/share/nginx/html/maintenance.html
     depends_on:
       backend:
         condition: service_healthy
