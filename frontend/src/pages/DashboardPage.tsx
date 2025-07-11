@@ -1,15 +1,10 @@
 
-import { Bell, Settings, BarChart4, CheckCircle, AlertTriangle, Plus } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
-import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 import ActiveIssues from "../components/ActiveIssues";
 import AuthScanForm from "../components/AuthScanForm";
 import { useState } from "react";
 
 const DashboardPage = () => {
-
     const [resolvedIssues, setResolvedIssues] = useState<string[]>([])
 
     // ID variable not necessary, ID check by context
@@ -22,124 +17,83 @@ const DashboardPage = () => {
         (scan) => scan.statusCode >= 200 && scan.statusCode < 300
     ).length
 
-
-    const healthyPercentage = totalScans > 0
-        ? Math.round((activeScans / totalScans) * 100)
+    // Calculate average response time from all scans
+    const averageResponseTime = scans.length > 0
+        ? Math.round(scans.reduce((sum, scan) => sum + scan.responseTime, 0) / scans.length)
         : 0
-
-    let healthColor = 'text-gray-500'
-    if (healthyPercentage >= 80) healthColor = 'text-green-600'
-    else if (healthyPercentage >= 50) healthColor = 'text-yellow-500'
-    else healthColor = 'text-red-500'
 
     const allIssues = data?.getAllScansByUserId.issues ?? []
     const activeIssues = allIssues.filter(issue => !resolvedIssues.includes(issue.id))
 
     const activeIssueCount = activeIssues.length
 
+    if (loading) return (
+        <div className="min-h-screen bg-slate-950 text-slate-300 font-mono flex items-center justify-center">
+            <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-slate-700 border-t-blue-400 rounded-full animate-spin"></div>
+                <span className="text-slate-400">Loading dashboard...</span>
+            </div>
+        </div>
+    )
 
-
-    if (loading) return <p>Loading...</p>
-    if (error) return <p>There is an error: {error.message}</p>
+    if (error) return (
+        <div className="min-h-screen bg-slate-950 text-slate-300 font-mono flex items-center justify-center">
+            <div className="text-center">
+                <div className="text-red-400 mb-2">◖ ERROR</div>
+                <p className="text-slate-400">{error.message}</p>
+            </div>
+        </div>
+    )
 
     return (
-        <div className="container p-8 w-screen mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-800 text-left">Welcome, {capitalizeFirstLetter(data?.getAllScansByUserId.username ?? '')} </h1>
-                    <p className="text-gray-600">Here's an overview of your URL monitoring</p>
-                </div>
+        <div className="min-h-screen  text-slate-300 font-mono">
+            <div className="flex min-h-screen">
+                {/* Main Content */}
+                <div className="flex-1 p-4 lg:p-6 min-w-0">
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-4 rounded-lg">
+                            <div className="text-slate-300 text-xs font-medium tracking-wider mb-2">TOTAL</div>
+                            <div className="text-2xl text-white font-bold mb-1">{totalScans}</div>
+                            <div className="text-xs text-slate-200">SCANS</div>
+                        </div>
+                        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-4 rounded-lg">
+                            <div className="text-slate-300 text-xs font-medium tracking-wider mb-2">HEALTHY</div>
+                            <div className="text-2xl text-emerald-400 font-bold mb-1">{activeScans}</div>
+                            <div className="text-xs text-slate-200">OPERATIONAL</div>
+                        </div>
+                        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-4 rounded-lg">
+                            <div className="text-slate-300 text-xs font-medium tracking-wider mb-2">ISSUES</div>
+                            <div className="text-2xl text-red-400 font-bold mb-1">{activeIssueCount}</div>
+                            <div className="text-xs text-slate-200">ATTENTION</div>
+                        </div>
+                        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-4 rounded-lg">
+                            <div className="text-slate-300 text-xs font-medium tracking-wider mb-2">AVG RESPONSE</div>
+                            <div className="text-2xl text-white font-bold mb-1">{averageResponseTime}ms</div>
+                            <div className="text-xs text-slate-200">AVERAGE</div>
+                        </div>
+                    </div>
 
-                <div className="flex gap-2">
-                    <Button variant="outline" className="gap-2">
-                        <Bell className="h-4 w-4" />
-                        <span className="hidden md:inline">Notifications</span>
-                    </Button>
-                    <Button variant="outline" className="gap-2">
-                        <Settings className="h-4 w-4" />
-                        <span className="hidden md:inline">Settings</span>
-                    </Button>
-                    {/* <Button variant="outline" className="gap-2">
-                        <User className="h-4 w-4" />
-                        <span className="hidden md:inline">Profile</span>
-                    </Button> */}
-                </div>
-            </div>
+                    {/* Add Scan Form and Active Issues Side by Side */}
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+                        <AuthScanForm />
+                        <ActiveIssues
+                            issues={activeIssues}
+                            scans={scans.map(({ id, title }) => ({ id, title }))}
+                            setResolvedIssues={setResolvedIssues}
+                        />
+                    </div>
 
-            {/* Stats cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-gray-500">Total Scans</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center gap-2">
-                            <BarChart4 className="h-5 w-5 text-blue-500" />
-                            <div className="text-2xl font-bold">{data?.getAllScansByUserId.totalScans}</div>
-                        </div>
-                        <div className="mt-2 text-sm text-gray-500">
-                            {/* <Badge variant="outline" className="bg-blue-50">
-                                Free Plan 
-                            </Badge> */}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-gray-500">Active Scans</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5 text-green-500" />
-                            <div className="text-2xl font-bold">{activeScans}</div>
-                        </div>
-                        <div className="mt-2 text-sm text-gray-500">
-                            <span className={`${healthColor}`}>
-                                {data?.getAllScansByUserId.totalScans ? `${healthyPercentage}% healthy`
-                                    : 'No data'}
-                            </span>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-gray-500">Issues</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                            <div className="text-2xl font-bold">{activeIssueCount}</div>
-                        </div>
-                        <div className="mt-2 text-sm text-gray-500">
-                            <span className="text-yellow-600">Needs attention</span>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Bottom Grid Row: Create New Scan + Active Issues */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 grid-rows-1">
-                {/* Create New Scan Section */}
-                <div className="lg:col-span-2 h-full">
-                    <div className="bg-white rounded-xl border shadow-sm p-6 border-gray-200 h-full flex flex-col">
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                            <Plus className="h-5 w-5" />
-                            Create New Scan
-                        </h2>
-                        <div className="flex-1">
-                            <AuthScanForm />
+                    {/* Footer */}
+                    <div className="mt-6 pt-4 border-t border-slate-800/30">
+                        <div className="flex flex-col sm:flex-row justify-between text-xs text-slate-500 gap-2">
+                            <div>LAST REFRESH: {new Date().toLocaleString()}</div>
+                            <div>NEXT SCAN CYCLE: 2m 15s</div>
                         </div>
                     </div>
                 </div>
-
-                {/* Active Issues Section */}
-                <div className="lg:col-span-3 h-full">
-                    <ActiveIssues issues={activeIssues} scans={scans.map(({ id, title }) => ({ id, title }))} setResolvedIssues={setResolvedIssues} />
-                </div>
             </div>
-        </div >
+        </div>
     );
 };
 

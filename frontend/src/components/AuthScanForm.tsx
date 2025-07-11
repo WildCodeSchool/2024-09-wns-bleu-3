@@ -8,11 +8,12 @@ import {
     useGetAllTagsQuery,
     useGetAllFrequencesQuery
 } from '../generated/graphql-types';
+import { Globe } from 'lucide-react';
 
 /**
  * Authenticated scan form component for logged-in users.
  * Shows all fields: title, URL, tags, and frequency selection.
- * Uses light theme styling for dashboard integration.
+ * Uses dark cyberpunk theme styling for dashboard integration.
  * Submits data to GraphQL API and navigates to dashboard on success.
  */
 const AuthScanForm = () => {
@@ -77,12 +78,17 @@ const AuthScanForm = () => {
     // Show loading if data is still being fetched
     if (tagsLoading || frequenciesLoading) {
         return (
-            <div className="w-full h-full flex flex-col" data-testid="base-scan-form">
-                <h2 className="text-xl font-semibold mb-4 text-gray-900">Create New Scan</h2>
-                <div className="space-y-4 flex-1 flex flex-col">
+            <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl rounded-lg p-6 flex flex-col">
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-white font-bold">ADD NEW MONITOR</h2>
+                    <div className="bg-blue-500/20 border border-blue-400/30 text-blue-400 px-3 py-1 rounded text-xs font-medium backdrop-blur-sm">
+                        LOADING
+                    </div>
+                </div>
+                <div className="flex-1 flex items-center justify-center py-8">
                     <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                        <span className="text-gray-600">
+                        <div className="w-4 h-4 border-2 border-slate-700 border-t-blue-400 rounded-full animate-spin"></div>
+                        <span className="text-slate-200 text-sm">
                             {tagsLoading && frequenciesLoading
                                 ? "Loading form data..."
                                 : tagsLoading
@@ -91,38 +97,38 @@ const AuthScanForm = () => {
                             }
                         </span>
                     </div>
-                    {/* Show skeleton form fields */}
-                    <div className="space-y-3 flex-1">
-                        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-                    </div>
-                    <div className="mt-auto pt-4">
-                        <div className="h-10 bg-gray-300 rounded animate-pulse"></div>
-                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <BaseScanForm
-            onSubmit={handleSubmit}
-            isLoading={isFormLoading}
-            showTitle={true}
-            showTags={true}
-            showFrequency={true}
-            variant="light"
-            submitButtonText="Create Scan"
-            loadingText="Creating..."
-            availableTags={availableTags}
-            availableFrequencies={availableFrequencies}
-            defaultFrequencyId={defaultFrequency?.id}
-            fullContainer={true}
-        />
+        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl rounded-lg p-6 flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-white font-bold">ADD NEW MONITOR</h2>
+                <div className="bg-blue-500/20 border border-blue-400/30 text-blue-400 px-3 py-1 rounded text-xs font-medium backdrop-blur-sm">
+                    QUICK SETUP
+                </div>
+            </div>
+
+            <div className="flex-1">
+                <BaseScanForm
+                    onSubmit={handleSubmit}
+                    isLoading={isFormLoading}
+                    showTitle={true}
+                    showTags={true}
+                    showFrequency={true}
+                    variant="dark"
+                    submitButtonText="CREATE MONITOR"
+                    loadingText="Creating..."
+                    availableTags={availableTags}
+                    availableFrequencies={availableFrequencies}
+                    defaultFrequencyId={defaultFrequency?.id}
+                    fullContainer={true}
+                    className=""
+                />
+            </div>
+        </div>
     );
 };
 
