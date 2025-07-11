@@ -14,6 +14,7 @@ import PrivateRoute from './components/PrivateRoute';
 import OnlyGuestRoute from './components/OnlyGuestRoute';
 import DashboardPage from './pages/DashboardPage';
 import ScanDetailsPage from './pages/ScanDetailsPage';
+import NotFound from './not-found';
 
 function App() {
   const { loading, error, data } = useQuery(GET_ALL_SCANS);
@@ -40,6 +41,7 @@ function App() {
             <Route path="reset-password" element={<ForgotPasswordPage />} />
             <Route path="scan-details" element={<ScanDetailsPage />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Route >
       </Routes >
     </>
