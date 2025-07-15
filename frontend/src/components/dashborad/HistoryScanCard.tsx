@@ -61,7 +61,7 @@ const HistoryScanCard = ({ scan }: ScanCardProps) => {
 
 
   return (
-    <Link to={`/dashboard/${id}`}>
+    <Link to={`/scan-details/${id}`}>
       <div className="rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
         <div className="flex flex-col md:flex-row md:items-center justify-between p-4 gap-4">
           <div className="flex items-center gap-4">
