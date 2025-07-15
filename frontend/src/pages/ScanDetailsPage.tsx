@@ -1,30 +1,31 @@
 import ScanDetailsCards from "@/components/scan-details/ScanDetailsCards"
 import { ScanDetailsChart } from "@/components/scan-details/ScanDetailsChart"
 import { Button } from "@/components/ui/button"
-import { GET_SCAN_BY_ID, GET_SCAN_HISTORY } from "@/graphql/queries"
-import { useQuery } from "@apollo/client"
+import { useGetScanByIdQuery } from "@/generated/graphql-types"
+import { useGetScanHistoryQuery } from "@/generated/graphql-types"
 import { ArrowLeft } from "lucide-react"
 import { Link, useParams } from "react-router"
 
 
 
 const ScanDetailsPage = () => {
-
     const { id } = useParams();
-
-    const { loading: scanByIdLoading, error: scanByIdError, data: scanByIdData } = useQuery(GET_SCAN_BY_ID, {
-        variables: { getScanByIdId: id ? Number(id) : 0 },
+    const { data, loading, error } = useGetScanByIdQuery({ variables: { getScanByIdId: Number(id) } })
+    const { data: historyData, loading: historyLoading } = useGetScanHistoryQuery({
+        variables: { scanId: Number(id) },
     });
 
-    const { data: historyData, loading: historyLoading } = useQuery(GET_SCAN_HISTORY, {
-        variables: { scanId: id ? Number(id) : 0 },
-    });
+
+
+    console.log("scanDetails ==>", data)
+
+
+    if (loading) return <p>Loading...</p>
+    if (error) return <p>There is an error: {error.message}</p>
+
 
     const scanHistory = historyData?.getScanHistory || [];
 
-    if (scanByIdLoading || !scanByIdData) return <p>Loading...</p>
-
-    if (scanByIdError) return <p>Error: {scanByIdError.message}</p>
 
     return (
         <>

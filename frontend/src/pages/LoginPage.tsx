@@ -30,7 +30,7 @@ export default function LoginPage() {
             email: "",
             password: "",
         },
-        mode:"onChange"
+        mode: "onChange"
     });
     const onSubmit = async (data: LoginFormValues) => {
         await login({
@@ -49,8 +49,8 @@ export default function LoginPage() {
         console.log("Données envoyées:", data);
     };
     return (
-        <div className="w-full h-screen py-12 md:py-24 bg-[#051525] text-white flex justify-center">
-            <Card className="w-full max-w-md p-8 space-y-6 bg-[#0A2540] rounded-xl border border-[#0C2D4D] shadow">
+        <div className="w-full h-screen py-12 md:py-24 bg-[#051525] text-white flex justify-center ">
+            <Card className="w-full max-w-md p-8 space-y-6 bg-[#0A2540] rounded-xl border border-[#0C2D4D] shadow max-h-max">
                 <div className="text-center">
                     <h1 className="text-3xl font-bold text-white">Se connecter à Sonar</h1>
                 </div>

@@ -33,7 +33,7 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route path="profile" element={<ProfilePage />} />
             <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="dashboard/:id" element={<ScanDetailsPage />} />
+            <Route path="scan-details/:id" element={<ScanDetailsPage />} />
           </Route>
           <Route element={<OnlyGuestRoute />}>
             <Route path="login" element={<LoginPage />} />

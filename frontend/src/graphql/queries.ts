@@ -33,7 +33,7 @@ query GetAllScans {
 }`
 
 export const GET_SCAN_BY_ID = gql`
-query Query($getScanByIdId: Int!) {
+query getScanById($getScanByIdId: Int!) {
   getScanById(id: $getScanByIdId) {
     id
     url

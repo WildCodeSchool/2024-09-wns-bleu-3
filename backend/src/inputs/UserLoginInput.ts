@@ -8,5 +8,3 @@ export class UserLoginInput {
     @Field(() => String)
     password: string
 }
-
-// TODO validatiton des fields du back : minimum requis

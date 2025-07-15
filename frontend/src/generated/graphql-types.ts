@@ -424,12 +424,12 @@ export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllScansQuery = { __typename?: 'Query', getAllScans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null }> };
 
-export type QueryQueryVariables = Exact<{
+export type GetScanByIdQueryVariables = Exact<{
   getScanByIdId: Scalars['Int']['input'];
 }>;
 
 
-export type QueryQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null } };
+export type GetScanByIdQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null } };
 
 export type GetAllFrequencesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -890,8 +890,8 @@ export type GetAllScansQueryHookResult = ReturnType<typeof useGetAllScansQuery>;
 export type GetAllScansLazyQueryHookResult = ReturnType<typeof useGetAllScansLazyQuery>;
 export type GetAllScansSuspenseQueryHookResult = ReturnType<typeof useGetAllScansSuspenseQuery>;
 export type GetAllScansQueryResult = Apollo.QueryResult<GetAllScansQuery, GetAllScansQueryVariables>;
-export const QueryDocument = gql`
-    query Query($getScanByIdId: Int!) {
+export const GetScanByIdDocument = gql`
+    query getScanById($getScanByIdId: Int!) {
   getScanById(id: $getScanByIdId) {
     id
     url
@@ -909,37 +909,37 @@ export const QueryDocument = gql`
     `;
 
 /**
- * __useQueryQuery__
+ * __useGetScanByIdQuery__
  *
- * To run a query within a React component, call `useQueryQuery` and pass it any options that fit your needs.
- * When your component renders, `useQueryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetScanByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetScanByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useQueryQuery({
+ * const { data, loading, error } = useGetScanByIdQuery({
  *   variables: {
  *      getScanByIdId: // value for 'getScanByIdId'
  *   },
  * });
  */
-export function useQueryQuery(baseOptions: Apollo.QueryHookOptions<QueryQuery, QueryQueryVariables> & ({ variables: QueryQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetScanByIdQuery(baseOptions: Apollo.QueryHookOptions<GetScanByIdQuery, GetScanByIdQueryVariables> & ({ variables: GetScanByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
+        return Apollo.useQuery<GetScanByIdQuery, GetScanByIdQueryVariables>(GetScanByIdDocument, options);
       }
-export function useQueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<QueryQuery, QueryQueryVariables>) {
+export function useGetScanByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetScanByIdQuery, GetScanByIdQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
+          return Apollo.useLazyQuery<GetScanByIdQuery, GetScanByIdQueryVariables>(GetScanByIdDocument, options);
         }
-export function useQuerySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<QueryQuery, QueryQueryVariables>) {
+export function useGetScanByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetScanByIdQuery, GetScanByIdQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
+          return Apollo.useSuspenseQuery<GetScanByIdQuery, GetScanByIdQueryVariables>(GetScanByIdDocument, options);
         }
-export type QueryQueryHookResult = ReturnType<typeof useQueryQuery>;
-export type QueryLazyQueryHookResult = ReturnType<typeof useQueryLazyQuery>;
-export type QuerySuspenseQueryHookResult = ReturnType<typeof useQuerySuspenseQuery>;
-export type QueryQueryResult = Apollo.QueryResult<QueryQuery, QueryQueryVariables>;
+export type GetScanByIdQueryHookResult = ReturnType<typeof useGetScanByIdQuery>;
+export type GetScanByIdLazyQueryHookResult = ReturnType<typeof useGetScanByIdLazyQuery>;
+export type GetScanByIdSuspenseQueryHookResult = ReturnType<typeof useGetScanByIdSuspenseQuery>;
+export type GetScanByIdQueryResult = Apollo.QueryResult<GetScanByIdQuery, GetScanByIdQueryVariables>;
 export const GetAllFrequencesDocument = gql`
     query GetAllFrequences {
   getAllFrequences {
