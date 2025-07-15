@@ -82,7 +82,7 @@ export default function ActiveIssues({ issues, scans, setResolvedIssues }: Activ
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-sm text-left">
-                                            <Link to={`/dashboard/scan-${issue.scanId}`} className="hover:underline text-blue-600">
+                                            <Link to={`/dashboard/${issue.scanId}`} className="hover:underline text-blue-600">
                                                 {scanTitle}
                                             </Link>
                                         </TableCell>
