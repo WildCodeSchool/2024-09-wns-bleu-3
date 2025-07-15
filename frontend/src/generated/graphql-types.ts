@@ -348,12 +348,26 @@ export type CreateNewScanMutationVariables = Exact<{
 
 export type CreateNewScanMutation = { __typename?: 'Mutation', createNewScan: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any } };
 
+export type UpdateScanMutationVariables = Exact<{
+  data: UpdateScanInput;
+}>;
+
+
+export type UpdateScanMutation = { __typename?: 'Mutation', updateScan: string };
+
 export type DeleteScanMutationVariables = Exact<{
   deleteScanId: Scalars['Int']['input'];
 }>;
 
 
 export type DeleteScanMutation = { __typename?: 'Mutation', deleteScan: string };
+
+export type PauseOrRestartScanMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type PauseOrRestartScanMutation = { __typename?: 'Mutation', pauseOrRestartScan: { __typename?: 'Scan', id: number, isPause: boolean } };
 
 export type CreateNewTagMutationVariables = Exact<{
   data: TagInput;
@@ -424,12 +438,12 @@ export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllScansQuery = { __typename?: 'Query', getAllScans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null }> };
 
-export type QueryQueryVariables = Exact<{
+export type GetScanByIdQueryVariables = Exact<{
   getScanByIdId: Scalars['Int']['input'];
 }>;
 
 
-export type QueryQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null } };
+export type GetScanByIdQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isPause: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, name: string, intervalMinutes: number }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> } };
 
 export type GetAllFrequencesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -507,6 +521,37 @@ export function useCreateNewScanMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateNewScanMutationHookResult = ReturnType<typeof useCreateNewScanMutation>;
 export type CreateNewScanMutationResult = Apollo.MutationResult<CreateNewScanMutation>;
 export type CreateNewScanMutationOptions = Apollo.BaseMutationOptions<CreateNewScanMutation, CreateNewScanMutationVariables>;
+export const UpdateScanDocument = gql`
+    mutation UpdateScan($data: UpdateScanInput!) {
+  updateScan(data: $data)
+}
+    `;
+export type UpdateScanMutationFn = Apollo.MutationFunction<UpdateScanMutation, UpdateScanMutationVariables>;
+
+/**
+ * __useUpdateScanMutation__
+ *
+ * To run a mutation, you first call `useUpdateScanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateScanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateScanMutation, { data, loading, error }] = useUpdateScanMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateScanMutation(baseOptions?: Apollo.MutationHookOptions<UpdateScanMutation, UpdateScanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateScanMutation, UpdateScanMutationVariables>(UpdateScanDocument, options);
+      }
+export type UpdateScanMutationHookResult = ReturnType<typeof useUpdateScanMutation>;
+export type UpdateScanMutationResult = Apollo.MutationResult<UpdateScanMutation>;
+export type UpdateScanMutationOptions = Apollo.BaseMutationOptions<UpdateScanMutation, UpdateScanMutationVariables>;
 export const DeleteScanDocument = gql`
     mutation DeleteScan($deleteScanId: Int!) {
   deleteScan(id: $deleteScanId)
@@ -538,6 +583,40 @@ export function useDeleteScanMutation(baseOptions?: Apollo.MutationHookOptions<D
 export type DeleteScanMutationHookResult = ReturnType<typeof useDeleteScanMutation>;
 export type DeleteScanMutationResult = Apollo.MutationResult<DeleteScanMutation>;
 export type DeleteScanMutationOptions = Apollo.BaseMutationOptions<DeleteScanMutation, DeleteScanMutationVariables>;
+export const PauseOrRestartScanDocument = gql`
+    mutation PauseOrRestartScan($id: Int!) {
+  pauseOrRestartScan(id: $id) {
+    id
+    isPause
+  }
+}
+    `;
+export type PauseOrRestartScanMutationFn = Apollo.MutationFunction<PauseOrRestartScanMutation, PauseOrRestartScanMutationVariables>;
+
+/**
+ * __usePauseOrRestartScanMutation__
+ *
+ * To run a mutation, you first call `usePauseOrRestartScanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `usePauseOrRestartScanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [pauseOrRestartScanMutation, { data, loading, error }] = usePauseOrRestartScanMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function usePauseOrRestartScanMutation(baseOptions?: Apollo.MutationHookOptions<PauseOrRestartScanMutation, PauseOrRestartScanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<PauseOrRestartScanMutation, PauseOrRestartScanMutationVariables>(PauseOrRestartScanDocument, options);
+      }
+export type PauseOrRestartScanMutationHookResult = ReturnType<typeof usePauseOrRestartScanMutation>;
+export type PauseOrRestartScanMutationResult = Apollo.MutationResult<PauseOrRestartScanMutation>;
+export type PauseOrRestartScanMutationOptions = Apollo.BaseMutationOptions<PauseOrRestartScanMutation, PauseOrRestartScanMutationVariables>;
 export const CreateNewTagDocument = gql`
     mutation CreateNewTag($data: TagInput!) {
   createNewTag(data: $data) {
@@ -890,8 +969,8 @@ export type GetAllScansQueryHookResult = ReturnType<typeof useGetAllScansQuery>;
 export type GetAllScansLazyQueryHookResult = ReturnType<typeof useGetAllScansLazyQuery>;
 export type GetAllScansSuspenseQueryHookResult = ReturnType<typeof useGetAllScansSuspenseQuery>;
 export type GetAllScansQueryResult = Apollo.QueryResult<GetAllScansQuery, GetAllScansQueryVariables>;
-export const QueryDocument = gql`
-    query Query($getScanByIdId: Int!) {
+export const GetScanByIdDocument = gql`
+    query GetScanById($getScanByIdId: Int!) {
   getScanById(id: $getScanByIdId) {
     id
     url
@@ -901,45 +980,56 @@ export const QueryDocument = gql`
     responseTime
     sslCertificate
     isOnline
+    isPause
     createdAt
     updatedAt
     lastScannedAt
+    frequency {
+      id
+      name
+      intervalMinutes
+    }
+    tags {
+      id
+      name
+      color
+    }
   }
 }
     `;
 
 /**
- * __useQueryQuery__
+ * __useGetScanByIdQuery__
  *
- * To run a query within a React component, call `useQueryQuery` and pass it any options that fit your needs.
- * When your component renders, `useQueryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetScanByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetScanByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useQueryQuery({
+ * const { data, loading, error } = useGetScanByIdQuery({
  *   variables: {
  *      getScanByIdId: // value for 'getScanByIdId'
  *   },
  * });
  */
-export function useQueryQuery(baseOptions: Apollo.QueryHookOptions<QueryQuery, QueryQueryVariables> & ({ variables: QueryQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetScanByIdQuery(baseOptions: Apollo.QueryHookOptions<GetScanByIdQuery, GetScanByIdQueryVariables> & ({ variables: GetScanByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
+        return Apollo.useQuery<GetScanByIdQuery, GetScanByIdQueryVariables>(GetScanByIdDocument, options);
       }
-export function useQueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<QueryQuery, QueryQueryVariables>) {
+export function useGetScanByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetScanByIdQuery, GetScanByIdQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
+          return Apollo.useLazyQuery<GetScanByIdQuery, GetScanByIdQueryVariables>(GetScanByIdDocument, options);
         }
-export function useQuerySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<QueryQuery, QueryQueryVariables>) {
+export function useGetScanByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetScanByIdQuery, GetScanByIdQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<QueryQuery, QueryQueryVariables>(QueryDocument, options);
+          return Apollo.useSuspenseQuery<GetScanByIdQuery, GetScanByIdQueryVariables>(GetScanByIdDocument, options);
         }
-export type QueryQueryHookResult = ReturnType<typeof useQueryQuery>;
-export type QueryLazyQueryHookResult = ReturnType<typeof useQueryLazyQuery>;
-export type QuerySuspenseQueryHookResult = ReturnType<typeof useQuerySuspenseQuery>;
-export type QueryQueryResult = Apollo.QueryResult<QueryQuery, QueryQueryVariables>;
+export type GetScanByIdQueryHookResult = ReturnType<typeof useGetScanByIdQuery>;
+export type GetScanByIdLazyQueryHookResult = ReturnType<typeof useGetScanByIdLazyQuery>;
+export type GetScanByIdSuspenseQueryHookResult = ReturnType<typeof useGetScanByIdSuspenseQuery>;
+export type GetScanByIdQueryResult = Apollo.QueryResult<GetScanByIdQuery, GetScanByIdQueryVariables>;
 export const GetAllFrequencesDocument = gql`
     query GetAllFrequences {
   getAllFrequences {
