@@ -3,10 +3,10 @@ import { useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
 import ActiveIssues from "../components/ActiveIssues";
 import AuthScanForm from "../components/AuthScanForm";
 import { useState } from "react";
+import ScanListHistory from "@/components/dashborad/ScanListHistory";
 
 const DashboardPage = () => {
     const [resolvedIssues, setResolvedIssues] = useState<string[]>([])
-
     // ID variable not necessary, ID check by context
     const { data, loading, error } = useGetAllScansByUserIdQuery({})
 
@@ -84,6 +84,11 @@ const DashboardPage = () => {
                         />
                     </div>
 
+                    {/* Scans list */}
+                    <ScanListHistory
+                        scans={scans}
+                    />
+
                     {/* Footer */}
                     <div className="mt-6 pt-4 border-t border-slate-800/30">
                         <div className="flex flex-col sm:flex-row justify-between text-xs text-slate-500 gap-2">
@@ -93,8 +98,11 @@ const DashboardPage = () => {
                     </div>
                 </div>
             </div>
+
+
         </div>
     );
 };
 
 export default DashboardPage;
+

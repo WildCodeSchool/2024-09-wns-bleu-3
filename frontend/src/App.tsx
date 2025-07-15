@@ -14,6 +14,8 @@ import PrivateRoute from './components/PrivateRoute';
 import OnlyGuestRoute from './components/OnlyGuestRoute';
 import DashboardPage from './pages/DashboardPage';
 import DashboardLayout from './components/DashboardLayout';
+import ScanDetailsPage from './pages/ScanDetailsPage';
+import NotFound from './not-found';
 
 function App() {
   const { loading, error, data } = useQuery(GET_ALL_SCANS);
@@ -31,9 +33,11 @@ function App() {
             <Route index element={<HomePage />} />
             {/* Public routes accessible to all users */}
             <Route path="scan/preview" element={<ScanPreviewPage />} />
+            <Route path="*" element={<NotFound />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
             <Route path="reset-password" element={<ForgotPasswordPage />} />
+            <Route path="scan-details" element={<ScanDetailsPage />} />
           </Route>
         </Route >
 

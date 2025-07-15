@@ -16,15 +16,15 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useDeleteUserMutation, useGetUserInfoQuery, useUpdateUserMutation } from "@/generated/graphql-types"
+import { useDeleteUserMutation, useUpdateUserMutation } from "@/generated/graphql-types"
 import { GET_USER_INFO } from "@/graphql/queries"
 import { toast } from "sonner"
 import { useNavigate } from "react-router"
+import { useAuth } from "../hooks/useAuth"
 
 export default function ProfilePage() {
     const navigate = useNavigate()
-
-    const { data, error } = useGetUserInfoQuery()
+    const { data, error } = useAuth();
     const email = data?.getUserInfo?.email
     const username = data?.getUserInfo?.username
     const userId = data?.getUserInfo?.id
