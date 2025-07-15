@@ -370,27 +370,35 @@ export default function ProfilePage() {
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
                                     <div>
-                                        <p className="text-white text-sm font-medium">Email notifications</p>
-                                        <p className="text-slate-400 text-xs">Receive alerts about scan results</p>
+                                        <label htmlFor="email-notifications" className="text-white text-sm font-medium cursor-pointer">
+                                            Email notifications
+                                        </label>
+                                        <p id="email-notifications-desc" className="text-slate-400 text-xs">Receive alerts about scan results</p>
                                     </div>
                                     <div className="flex-shrink-0">
                                         <input
+                                            id="email-notifications"
                                             type="checkbox"
                                             defaultChecked
                                             className="h-4 w-4 rounded border-slate-600 text-main-400 focus:ring-main-400 focus:ring-1 bg-slate-800/50 cursor-pointer"
+                                            aria-describedby="email-notifications-desc"
                                         />
                                     </div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10">
                                     <div>
-                                        <p className="text-white text-sm font-medium">Weekly reports</p>
-                                        <p className="text-slate-400 text-xs">Get summary of your monitoring activity</p>
+                                        <label htmlFor="weekly-reports" className="text-white text-sm font-medium cursor-pointer">
+                                            Weekly reports
+                                        </label>
+                                        <p id="weekly-reports-desc" className="text-slate-400 text-xs">Get summary of your monitoring activity</p>
                                     </div>
                                     <div className="flex-shrink-0">
                                         <input
+                                            id="weekly-reports"
                                             type="checkbox"
                                             className="h-4 w-4 rounded border-slate-600 text-main-400 focus:ring-main-400 focus:ring-1 bg-slate-800/50 cursor-pointer"
+                                            aria-describedby="weekly-reports-desc"
                                         />
                                     </div>
                                 </div>

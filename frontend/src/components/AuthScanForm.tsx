@@ -8,7 +8,6 @@ import {
     useGetAllTagsQuery,
     useGetAllFrequencesQuery
 } from '../generated/graphql-types';
-import { Globe } from 'lucide-react';
 
 /**
  * Authenticated scan form component for logged-in users.
@@ -80,7 +79,7 @@ const AuthScanForm = () => {
         return (
             <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl rounded-lg p-6 flex flex-col">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-white font-bold">ADD NEW MONITOR</h2>
+                    <h2 className="text-white font-bold">ADD NEW SCAN</h2>
                     <div className="bg-blue-500/20 border border-blue-400/30 text-blue-400 px-3 py-1 rounded text-xs font-medium backdrop-blur-sm">
                         LOADING
                     </div>
@@ -105,7 +104,7 @@ const AuthScanForm = () => {
     return (
         <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl rounded-lg p-6 flex flex-col">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-white font-bold">ADD NEW MONITOR</h2>
+                <h2 className="text-white font-bold">ADD NEW SCAN</h2>
                 <div className="bg-blue-500/20 border border-blue-400/30 text-blue-400 px-3 py-1 rounded text-xs font-medium backdrop-blur-sm">
                     QUICK SETUP
                 </div>
@@ -119,7 +118,7 @@ const AuthScanForm = () => {
                     showTags={true}
                     showFrequency={true}
                     variant="dark"
-                    submitButtonText="CREATE MONITOR"
+                    submitButtonText="Create Scan"
                     loadingText="Creating..."
                     availableTags={availableTags}
                     availableFrequencies={availableFrequencies}

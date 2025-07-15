@@ -179,7 +179,7 @@ function BaseScanForm({
                                             {...field}
                                             placeholder="My Website Monitor"
                                             className={inputClasses}
-                                            aria-label="Title"
+                                            aria-label="Scan title"
                                             disabled={isLoading}
                                         />
                                     </FormControl>
@@ -228,6 +228,7 @@ function BaseScanForm({
                                             <SelectTrigger
                                                 className={inputClasses}
                                                 aria-label="Select frequency"
+                                                data-testid="frequency-selector"
                                             >
                                                 <SelectValue placeholder="Select scan frequency" />
                                             </SelectTrigger>
@@ -265,6 +266,7 @@ function BaseScanForm({
                                             <SelectTrigger
                                                 className={inputClasses}
                                                 aria-label="Select tags"
+                                                data-testid="tag-selector"
                                             >
                                                 <SelectValue placeholder="Select a tag" />
                                             </SelectTrigger>

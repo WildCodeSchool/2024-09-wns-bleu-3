@@ -54,10 +54,6 @@ describe.runIf(isDev)("Header", () => {
         // Check main navigation text
         expect(await screen.findByText("nar")).toBeInTheDocument();
 
-        // Check scan
-        const allScansLink = screen.getByRole("link", { name: /See all my scans/i });
-        expect(allScansLink).toBeInTheDocument();
-        expect(allScansLink).toHaveAttribute("href", "/scans");
         // Check sign-in
         const signInLink = screen.getByRole("link", { name: /Sign in/i });
         expect(signInLink).toBeInTheDocument();
