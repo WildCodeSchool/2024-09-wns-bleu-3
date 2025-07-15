@@ -1,11 +1,30 @@
 import ScanDetailsCards from "@/components/scan-details/ScanDetailsCards"
+import { ScanDetailsChart } from "@/components/scan-details/ScanDetailsChart"
 import { Button } from "@/components/ui/button"
+import { GET_SCAN_BY_ID, GET_SCAN_HISTORY } from "@/graphql/queries"
+import { useQuery } from "@apollo/client"
 import { ArrowLeft } from "lucide-react"
-import { Link } from "react-router"
+import { Link, useParams } from "react-router"
 
 
 
 const ScanDetailsPage = () => {
+
+    const { id } = useParams();
+
+    const { loading: scanByIdLoading, error: scanByIdError, data: scanByIdData } = useQuery(GET_SCAN_BY_ID, {
+        variables: { getScanByIdId: id ? Number(id) : 0 },
+    });
+
+    const { data: historyData, loading: historyLoading } = useQuery(GET_SCAN_HISTORY, {
+        variables: { scanId: id ? Number(id) : 0 },
+    });
+
+    const scanHistory = historyData?.getScanHistory || [];
+
+    if (scanByIdLoading || !scanByIdData) return <p>Loading...</p>
+
+    if (scanByIdError) return <p>Error: {scanByIdError.message}</p>
 
     return (
         <>
@@ -26,7 +45,9 @@ const ScanDetailsPage = () => {
                         {/*** HC-50 ***/}
                         <ScanDetailsCards />
                         {/*** HC-53 ***/}
-
+                        <h2 className=" mb-6 text-2xl text-black text-left font-bold">Scan History</h2>
+                        {historyLoading ? <p>Loading...</p> :
+                            <ScanDetailsChart history={scanHistory} />}
                         {/*** HC-52 ***/}
 
                     </div>

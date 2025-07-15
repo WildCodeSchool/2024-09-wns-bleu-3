@@ -43,7 +43,6 @@ import { CheckCircle } from "lucide-react"
 
 
 const ScanDetailsCards = () => {
-    // const scan = scans.find((s) => s.id === params.id) || scans[0]
 
     // const getStatusDisplay = (status: number) => {
     //     if (status === 200)
