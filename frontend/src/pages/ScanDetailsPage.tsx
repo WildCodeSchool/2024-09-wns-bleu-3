@@ -6,7 +6,7 @@ import { useGetScanHistoryQuery } from "@/generated/graphql-types"
 import { ArrowLeft } from "lucide-react"
 import { Link, useParams } from "react-router"
 
-import { useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useState } from 'react'
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -221,7 +221,7 @@ function ScanDetailsPage() {
 
                                             <div className="grid gap-3">
                                                 <Label htmlFor="scan-frequency">Check Frequency</Label>
-                                                <Select value={editedFrequency} onValueChange={(value) => setEditedFrequency(value)}>
+                                                <Select value={editedFrequency} onValueChange={(value: SetStateAction<string>) => setEditedFrequency(value)}>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select frequency" />
                                                     </SelectTrigger>
@@ -240,7 +240,7 @@ function ScanDetailsPage() {
 
                                             <div className="grid gap-3">
                                                 <Label htmlFor="scan-tags">Tag</Label>
-                                                <Select value={editedTags} onValueChange={(value) => setEditedTags(value)}>
+                                                <Select value={editedTags} onValueChange={(value: SetStateAction<string>) => setEditedTags(value)}>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select tags" />
                                                     </SelectTrigger>

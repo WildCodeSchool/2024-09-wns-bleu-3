@@ -53,6 +53,8 @@ const HistoryScanCard = ({ scan }: ScanCardProps) => {
   {/* Calculate uptime: positive scans with StatusCode == 200 */ }
   const uptime = getUptime(history)
 
+  console.log(id)
+
   return (
     <Link to={`/dashboard/${id}`} className="block">
       <div className="border border-white/10 bg-slate-900/30 backdrop-blur-xl rounded-lg hover:bg-slate-800/40 transition-all duration-200 hover:border-white/20 mb-4">

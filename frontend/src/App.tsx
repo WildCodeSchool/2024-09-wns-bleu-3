@@ -37,7 +37,6 @@ function App() {
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
             <Route path="reset-password" element={<ForgotPasswordPage />} />
-            <Route path="dashboard/:id" element={<ScanDetailsPage />} />
           </Route>
         </Route >
 
@@ -45,6 +44,7 @@ function App() {
           <Route element={<DashboardLayout />}>
             <Route path="profile" element={<ProfilePage />} />
             <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="dashboard/:id" element={<ScanDetailsPage />} />
           </Route>
         </Route>
 
