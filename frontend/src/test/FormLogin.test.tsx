@@ -85,7 +85,7 @@ test("submits form with valid data and redirects", async () => {
     })
 
     // Vérifier que la navigation a eu lieu
-    expect(navigateMock).toHaveBeenCalledWith("/")
+    expect(navigateMock).toHaveBeenCalledWith("/dashboard")
 })
 
 

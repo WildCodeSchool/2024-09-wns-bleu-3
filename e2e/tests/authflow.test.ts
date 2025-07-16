@@ -43,7 +43,7 @@ test.describe('Authentication flow', () => {
 
         await page.getByRole('button', { name: 'Se connecter' }).click();
 
-        await page.waitForURL('/')
-        await expect(page).toHaveURL('/')
-    })
+        await page.waitForURL('/dashboard')
+        await expect(page).toHaveURL('/dashboard')
+    } )
 })

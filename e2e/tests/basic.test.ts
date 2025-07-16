@@ -9,7 +9,7 @@ test.describe("Basic test", () => {
        });
 
        test('user can see the title of the page', async ({ page} ) => {
-          await expect(page.getByRole("link", { name: "See all my scans" })).toBeVisible();
+          await expect(page.getByRole('heading', { name: 'Scan URLs Quickly and Easily' })).toBeVisible();
 
        })
   
