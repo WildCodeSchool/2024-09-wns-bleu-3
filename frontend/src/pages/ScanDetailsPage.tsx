@@ -1,10 +1,10 @@
 import ScanDetailsCards from "@/components/scan-details/ScanDetailsCards"
 import { Button } from "@/components/ui/button"
-import { useGetScanByIdQuery } from "@/generated/graphql-types"
+import { GetScanByIdQuery, useGetScanByIdQuery } from "@/generated/graphql-types"
 import { ArrowLeft } from "lucide-react"
 import { Link, useParams } from "react-router"
 
-
+export type IScanDetails = GetScanByIdQuery["getScanById"];
 
 const ScanDetailsPage = () => {
     const { id } = useParams();
@@ -12,11 +12,12 @@ const ScanDetailsPage = () => {
 
 
 
-    console.log("scanDetails ==>", data)
+    console.log("scanDetails ==>", data?.getScanById)
 
-    
+
     if (loading) return <p>Loading...</p>
     if (error) return <p>There is an error: {error.message}</p>
+    if (!data?.getScanById) return null;
 
     return (
         <>
@@ -35,7 +36,7 @@ const ScanDetailsPage = () => {
                         {/*** HC-51 ***/}
 
                         {/*** HC-50 ***/}
-                        <ScanDetailsCards />
+                        <ScanDetailsCards scan={data.getScanById} />
                         {/*** HC-53 ***/}
 
                         {/*** HC-52 ***/}
