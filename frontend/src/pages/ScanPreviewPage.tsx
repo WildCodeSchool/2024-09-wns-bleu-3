@@ -16,7 +16,6 @@ import {
     LogIn,
     Zap,
     Lock,
-    Search,
     Signal,
 } from 'lucide-react';
 import { usePreviewScanQuery } from '../generated/graphql-types';
