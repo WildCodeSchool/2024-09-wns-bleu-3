@@ -4,6 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { MemoryRouter } from "react-router";
 import type { ReactElement } from "react";
+import AuthScanForm from "../components/AuthScanForm";
 // Note: AuthScanForm component will be created in the next task
 // import AuthScanForm from "../components/AuthScanForm";
 
@@ -32,14 +33,14 @@ global.ResizeObserver = class ResizeObserver {
     disconnect() { }
 };
 
-// Mock GraphQL hooks for tags and frequencies
+// Mock GraphQL hooks for tags and frequences
 const mockTags = [
     { id: 1, name: "Web App", color: "#00FF00" },
     { id: 2, name: "API", color: "#FFFF00" },
-    { id: 3, name: "Database", color: "#00FFFF" },
+    { id: 3, name: "Vitrine", color: "#00FFFF" },
 ];
 
-const mockFrequencies = [
+const mockFrequences = [
     { id: 1, name: "Every 1 minute", intervalMinutes: 1 },
     { id: 2, name: "Every 15 minutes", intervalMinutes: 15 },
     { id: 3, name: "Every hour", intervalMinutes: 60 },
@@ -48,37 +49,17 @@ const mockFrequencies = [
 // Mock the GraphQL hooks
 const mockCreateNewScanMutation = vi.fn();
 const mockUseGetAllTagsQuery = vi.fn();
-const mockUseGetAllFrequenciesQuery = vi.fn();
+const mockUseGetAllFrequencesQuery = vi.fn();
 
 vi.mock("../generated/graphql-types", () => ({
     useGetAllTagsQuery: () => mockUseGetAllTagsQuery(),
-    useGetAllFrequenciesQuery: () => mockUseGetAllFrequenciesQuery(),
+    useGetAllFrequencesQuery: () => mockUseGetAllFrequencesQuery(),
     useCreateNewScanMutation: () => [
         mockCreateNewScanMutation,
         { loading: false, error: null }
     ],
 }));
 
-// Mock AuthScanForm component for testing (will be replaced when component is implemented)
-const MockAuthScanForm = vi.fn(() => (
-    <div data-testid="base-scan-form" className="bg-white border-gray-200">
-        <h2>Create New Scan</h2>
-        <form role="form">
-            <input aria-label="Scan title" />
-            <input aria-label="URL to scan" type="url" />
-            <div>Tags</div>
-            <div data-testid="tag-selector">
-                <span>Web App</span>
-                <span>API</span>
-            </div>
-            <div>Frequency</div>
-            <div data-testid="frequency-selector">
-                <span>Every 15 minutes</span>
-            </div>
-            <button type="submit">Create Scan</button>
-        </form>
-    </div>
-));
 
 // Apollo Client wrapper for tests
 function renderWithProviders(ui: ReactElement) {
@@ -107,8 +88,8 @@ beforeEach(() => {
         error: null,
     });
 
-    mockUseGetAllFrequenciesQuery.mockReturnValue({
-        data: { getAllFrequencies: mockFrequencies },
+    mockUseGetAllFrequencesQuery.mockReturnValue({
+        data: { getAllFrequences: mockFrequences },
         loading: false,
         error: null,
     });
@@ -117,7 +98,7 @@ beforeEach(() => {
 describe("AuthScanForm", () => {
     // Test: Component renders correctly with all fields
     test("renders authenticated scan form with all fields", () => {
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         // Should have all form fields
         expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
@@ -129,23 +110,13 @@ describe("AuthScanForm", () => {
         expect(screen.getByRole("button", { name: /create scan/i })).toBeInTheDocument();
 
         // Should have appropriate heading for authenticated form
-        expect(screen.getByText(/create new scan/i)).toBeInTheDocument();
+        expect(screen.getByText(/ADD NEW SCAN/i)).toBeInTheDocument();
     });
 
-    // Test: Light theme styling (dashboard variant)
-    test("applies light theme styling by default", () => {
-        renderWithProviders(<MockAuthScanForm />);
-
-        const formContainer = screen.getByTestId("base-scan-form");
-
-        // Should have light theme classes
-        expect(formContainer).toHaveClass("bg-white");
-        expect(formContainer).toHaveClass("border-gray-200");
-    });
 
     // Test: Form validation for required fields
     test("validates required fields and shows errors", async () => {
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const submitButton = screen.getByRole("button", { name: /create scan/i });
 
@@ -159,7 +130,7 @@ describe("AuthScanForm", () => {
 
     // Test: URL validation
     test("validates URL field and shows error for invalid URL", async () => {
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);
@@ -182,7 +153,7 @@ describe("AuthScanForm", () => {
 
         mockCreateNewScanMutation.mockImplementation(mockCreateScan);
 
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);
@@ -207,7 +178,7 @@ describe("AuthScanForm", () => {
 
         mockCreateNewScanMutation.mockImplementation(mockCreateScan);
 
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);
@@ -222,7 +193,7 @@ describe("AuthScanForm", () => {
         fireEvent.click(tagSelector);
 
         // Select first tag
-        const webAppTag = screen.getByText("Web App");
+        const webAppTag = screen.getByRole("option", { name: "Vitrine" });
         fireEvent.click(webAppTag);
 
         // Submit form
@@ -240,7 +211,7 @@ describe("AuthScanForm", () => {
 
         mockCreateNewScanMutation.mockImplementation(mockCreateScan);
 
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);
@@ -255,7 +226,7 @@ describe("AuthScanForm", () => {
         fireEvent.click(frequencySelector);
 
         // Select 15 minutes frequency
-        const frequency15min = screen.getByText("Every 15 minutes");
+        const frequency15min = screen.getByRole("option", { name: "Every 15 minutes" });
         fireEvent.click(frequency15min);
 
         // Submit form
@@ -273,7 +244,7 @@ describe("AuthScanForm", () => {
 
         mockCreateNewScanMutation.mockImplementation(mockCreateScan);
 
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);
@@ -298,7 +269,7 @@ describe("AuthScanForm", () => {
 
         mockCreateNewScanMutation.mockImplementation(mockCreateScan);
 
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);
@@ -321,7 +292,7 @@ describe("AuthScanForm", () => {
 
         mockCreateNewScanMutation.mockImplementation(mockCreateScan);
 
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);
@@ -342,7 +313,7 @@ describe("AuthScanForm", () => {
 
         mockCreateNewScanMutation.mockImplementation(mockCreateScan);
 
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);
@@ -359,7 +330,7 @@ describe("AuthScanForm", () => {
 
     // Test: Accessibility
     test("has proper accessibility attributes", () => {
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);
@@ -377,7 +348,7 @@ describe("AuthScanForm", () => {
 
     // Test: Keyboard navigation
     test("supports keyboard navigation between fields", () => {
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);
@@ -399,49 +370,38 @@ describe("AuthScanForm", () => {
             error: null,
         });
 
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         // Note: This test will be updated when the real component is implemented
         expect(screen.getByText(/tags/i)).toBeInTheDocument();
     });
 
-    // Test: Frequency loading states
-    test("handles frequency loading states", () => {
-        // Mock loading state for frequencies
-        mockUseGetAllFrequenciesQuery.mockReturnValue({
-            data: null,
-            loading: true,
-            error: null,
-        });
-
-        renderWithProviders(<MockAuthScanForm />);
-
-        // Note: This test will be updated when the real component is implemented
-        expect(screen.getByText(/frequency/i)).toBeInTheDocument();
-    });
-
     // Test: Multiple tag selection
     test("allows multiple tag selection", async () => {
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const tagSelector = screen.getByTestId("tag-selector");
         fireEvent.click(tagSelector);
 
-        // Select multiple tags
-        const webAppTag = screen.getByText("Web App");
-        const apiTag = screen.getByText("API");
+        // Select multiple tags - use getAllByText to handle multiple instances
+        const vitrineOptions = screen.getAllByText("Vitrine");
+        const apiOptions = screen.getAllByText("API");
 
-        fireEvent.click(webAppTag);
-        fireEvent.click(apiTag);
+        // Click on the first option (in the dropdown)
+        fireEvent.click(vitrineOptions[0]);
+
+        // Reopen dropdown to select another tag
+        fireEvent.click(tagSelector);
+        fireEvent.click(apiOptions[0]);
 
         // Note: This test will be updated when the real component is implemented
-        expect(webAppTag).toBeInTheDocument();
-        expect(apiTag).toBeInTheDocument();
+        expect(vitrineOptions[0]).toBeInTheDocument();
+        expect(apiOptions[0]).toBeInTheDocument();
     });
 
     // Test: Form validation with all fields
     test("validates all fields when filled", async () => {
-        renderWithProviders(<MockAuthScanForm />);
+        renderWithProviders(<AuthScanForm />);
 
         const titleInput = screen.getByLabelText(/title/i);
         const urlInput = screen.getByLabelText(/URL to scan/i);

@@ -16,12 +16,11 @@ type ScanCardProps = {
 };
 
 const getStatusColor = (code: number) => {
-  if (code >= 200 && code < 300) return "bg-green-100 text-green-600";
-  if (code >= 400 && code < 500) return "bg-yellow-100 text-yellow-600";
-  if (code >= 500) return "bg-red-100 text-red-600";
-  return "bg-gray-100 text-gray-600";
+  if (code >= 200 && code < 300) return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+  if (code >= 400 && code < 500) return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+  if (code >= 500) return "bg-red-500/20 text-red-400 border-red-500/30";
+  return "bg-slate-500/20 text-slate-400 border-slate-500/30";
 };
-
 
 const getStatusIcon = (code: number) => {
   if (code >= 200 && code < 300) return CheckCircle;
@@ -41,67 +40,57 @@ const HistoryScanCard = ({ scan }: ScanCardProps) => {
     lastScannedAt,
   } = scan;
 
-
   const statusColor = getStatusColor(statusCode);
   const StatusIcon = getStatusIcon(statusCode);
 
-  /**
-   * Calcul de l'uptime : pourcentage de scans avec un statut 
-   * 200 (OK) sur l'ensemble des historiques de scan.
-   * //TODO revoir la limite
-   */
-
-
-  //récupérartion de l'historique du scanId
+  {/* 
+   * Calculate uptime: percentage of scans with status 200 (OK) 
+   * across all scan history entries.
+   * TODO: review the limit
+   */}
   const result = useGetScanHistoryQuery({ variables: { scanId: id } })
   const history = result.data?.getScanHistory ?? []
-  // console.log(`HistoryScan n° ==> ${id} : `, history)
-  //calcul de l'uptime : scan positif StatusCode == 200
+  {/* Calculate uptime: positive scans with StatusCode == 200 */ }
   const uptime = getUptime(history)
 
-
   return (
-    <Link to={`/dashboard/${id}`}>
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+    <Link to={`/dashboard/${id}`} className="block">
+      <div className="border border-white/10 bg-slate-900/30 backdrop-blur-xl rounded-lg hover:bg-slate-800/40 transition-all duration-200 hover:border-white/20 mb-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between p-4 gap-4">
           <div className="flex items-center gap-4">
-            <div
-              className={`flex h-10 w-10 items-center justify-center rounded-full ${statusColor}`}
-            >
+            <div className={`flex h-10 w-10 items-center justify-center rounded-full border ${statusColor}`}>
               <StatusIcon className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-medium text-gray-800">{title}</h3>
-              <p className="text-sm text-gray-600">{url}</p>
+              <h3 className="font-medium text-white font-mono">{title}</h3>
+              <p className="text-sm text-slate-400 font-mono">{url}</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-4 ml-14 md:ml-0">
-            {/* response time : ms*/}
+            {/* Response time: ms */}
             <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-gray-400" />
-              <span className="text-sm text-gray-600">{responseTime}ms</span>
+              <Clock className="h-4 w-4 text-slate-400" />
+              <span className="text-sm text-slate-300 font-mono">{responseTime}ms</span>
             </div>
-            {/* uptime : % */}
+            {/* Uptime: % */}
             <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-gray-400" />
-              <span className="text-sm text-gray-600">{uptime}</span>
+              <Activity className="h-4 w-4 text-slate-400" />
+              <span className="text-sm text-slate-300 font-mono">{uptime}</span>
             </div>
-            {/* status code */}
-            <span
-              className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${statusColor}`}
-            >
+            {/* Status code */}
+            <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium font-mono border ${statusColor}`}>
               {statusCode}
             </span>
-            {/* last scanned at */}
-            <span className="text-sm text-gray-600">
+            {/* Last scanned at */}
+            <span className="text-sm text-slate-400 font-mono">
               {getLastScannedAt(lastScannedAt)}
             </span>
-            {/* tags */}
+            {/* Tags */}
             {tags?.map((tag) => (
               <span
                 key={tag.id}
-                className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-800"
+                className="inline-flex items-center rounded-full bg-blue-500/20 border border-blue-500/30 px-2.5 py-1 text-xs font-medium text-blue-400 font-mono"
               >
                 {tag.name}
               </span>

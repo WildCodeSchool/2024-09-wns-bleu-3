@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 import {
@@ -120,7 +120,7 @@ function BaseScanForm({
     const isDark = variant === 'dark';
     const containerClasses = cn(
         fullContainer
-            ? "w-full h-full flex flex-col"
+            ? "w-[full] flex flex-col"
             : "max-w-md mx-auto rounded-xl shadow-lg border p-6",
         !fullContainer && isDark
             ? "bg-[#0a2540] border-[#0c2d4d]"
@@ -133,24 +133,24 @@ function BaseScanForm({
     const inputClasses = cn(
         "mt-1",
         isDark
-            ? "bg-[#0c2d4d] border-[#0e3359] text-white"
+            ? "bg-slate-800/50 border-slate-700/50 text-slate-100 focus:border-blue-400/50 backdrop-blur-sm"
             : "bg-white border-gray-300 text-gray-900"
     );
 
     const labelClasses = cn(
         "text-sm font-medium",
-        isDark ? "text-gray-300" : "text-gray-700"
+        isDark ? "text-slate-300" : "text-gray-700"
     );
 
     const titleClasses = cn(
         "text-xl font-semibold mb-4",
-        isDark ? "text-white" : "text-gray-900"
+        isDark ? "text-slate-100" : "text-gray-900"
     );
 
     return (
         <div className={containerClasses} data-testid="base-scan-form">
             <h2 className={titleClasses}>
-                {showTitle ? "Create New Scan" : "Quick URL Check"}
+                {showTitle ? "" : "Quick URL Check"}
             </h2>
 
             <Form {...form}>
@@ -165,6 +165,7 @@ function BaseScanForm({
                         </div>
                     )}
 
+
                     {/* Title field - only shown for authenticated users */}
                     {showTitle && (
                         <FormField
@@ -178,7 +179,7 @@ function BaseScanForm({
                                             {...field}
                                             placeholder="My Website Monitor"
                                             className={inputClasses}
-                                            aria-label="Title"
+                                            aria-label="Scan title"
                                             disabled={isLoading}
                                         />
                                     </FormControl>
@@ -210,97 +211,111 @@ function BaseScanForm({
                         )}
                     />
 
-                    {/* Frequency selector - only shown for authenticated users */}
-                    {showFrequency && (
-                        <FormField
-                            control={form.control}
-                            name="frequencyId"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className={labelClasses}>Frequency</FormLabel>
-                                    <Select
-                                        onValueChange={(value) => field.onChange(parseInt(value))}
-                                        value={field.value?.toString() || ""}
-                                        disabled={isLoading}
-                                    >
-                                        <SelectTrigger
-                                            className={inputClasses}
-                                            aria-label="Select frequency"
+                    <div className="flex md:flex-row gap-4 flex-col ">
+                        {/* Frequency selector - only shown for authenticated users */}
+                        {showFrequency && (
+                            <FormField
+                                control={form.control}
+                                name="frequencyId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className={labelClasses}>Frequency</FormLabel>
+                                        <Select
+                                            onValueChange={(value) => field.onChange(parseInt(value))}
+                                            value={field.value?.toString() || ""}
+                                            disabled={isLoading}
                                         >
-                                            <SelectValue placeholder="Select scan frequency" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {availableFrequencies.map((frequency) => (
-                                                <SelectItem
-                                                    key={frequency.id}
-                                                    value={frequency.id.toString()}
-                                                >
-                                                    {frequency.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    )}
+                                            <SelectTrigger
+                                                className={inputClasses}
+                                                aria-label="Select frequency"
+                                                data-testid="frequency-selector"
+                                            >
+                                                <SelectValue placeholder="Select scan frequency" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {availableFrequencies.map((frequency) => (
+                                                    <SelectItem
+                                                        key={frequency.id}
+                                                        value={frequency.id.toString()}
+                                                    >
+                                                        {frequency.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
 
-                    {/* Tags selector with inline creation - only shown for authenticated users */}
-                    {showTags && (
-                        <FormField
-                            control={form.control}
-                            name="tagIds"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className={labelClasses}>Tags</FormLabel>
+                        {/* Tags selector with inline creation - only shown for authenticated users */}
+                        {showTags && (
+                            <FormField
+                                control={form.control}
+                                name="tagIds"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className={labelClasses}>Tags</FormLabel>
 
-                                    <Select
-                                        onValueChange={(value) => field.onChange([parseInt(value)])}
-                                        value={field.value?.length ? field.value[0].toString() : ""}
-                                        disabled={isLoading}
-                                    >
-                                        <SelectTrigger
-                                            className={inputClasses}
-                                            aria-label="Select tags"
+                                        <Select
+                                            onValueChange={(value) => field.onChange([parseInt(value)])}
+                                            value={field.value?.length ? field.value[0].toString() : ""}
+                                            disabled={isLoading}
                                         >
-                                            <SelectValue placeholder="Select a tag" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {availableTags.map((tag) => (
-                                                <SelectItem
-                                                    key={tag.id}
-                                                    value={tag.id.toString()}
-                                                >
-                                                    <div className="flex items-center gap-2">
-                                                        <div
-                                                            className="w-3 h-3 rounded-full"
-                                                            style={{ backgroundColor: tag.color }}
-                                                        />
-                                                        {tag.name}
-                                                    </div>
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    )}
+                                            <SelectTrigger
+                                                className={inputClasses}
+                                                aria-label="Select tags"
+                                                data-testid="tag-selector"
+                                            >
+                                                <SelectValue placeholder="Select a tag" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {availableTags.map((tag) => (
+                                                    <SelectItem
+                                                        key={tag.id}
+                                                        value={tag.id.toString()}
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <div
+                                                                className="w-3 h-3 rounded-full"
+                                                                style={{ backgroundColor: tag.color }}
+                                                            />
+                                                            {tag.name}
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        )}
+                    </div>
+
 
                     {/* Submit button with loading state */}
                     <div className={fullContainer ? "mt-auto pt-4" : ""}>
                         <Button
                             type="submit"
-                            variant={isDark ? "lightBlue" : "blue"}
-                            className="w-full"
+                            className={cn(
+                                "w-full transition-colors",
+                                isDark
+                                    ? "bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 text-blue-400 backdrop-blur-sm"
+                                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                            )}
                             disabled={isLoading}
                         >
                             {isLoading ? (
                                 <>
                                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                                     {loadingText}
+                                </>
+                            ) : isDark && submitButtonText === "CREATE MONITOR" ? (
+                                <>
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    {submitButtonText}
                                 </>
                             ) : (
                                 submitButtonText
