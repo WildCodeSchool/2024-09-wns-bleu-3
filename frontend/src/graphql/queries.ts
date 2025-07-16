@@ -33,7 +33,7 @@ query GetAllScans {
 }`
 
 export const GET_SCAN_BY_ID = gql`
-query Query($getScanByIdId: Int!) {
+query GetScanById($getScanByIdId: Int!) {
   getScanById(id: $getScanByIdId) {
     id
     url
@@ -43,9 +43,20 @@ query Query($getScanByIdId: Int!) {
     responseTime
     sslCertificate
     isOnline
+    isPause
     createdAt
     updatedAt
     lastScannedAt
+    frequency {
+      id
+      name
+      intervalMinutes
+    }
+    tags {
+      id
+      name
+      color
+    }
   }
 }`
 

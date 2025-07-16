@@ -76,7 +76,7 @@ export default function ActiveIssues({ issues, scans, setResolvedIssues }: Activ
 
                                         <Separator orientation="vertical" />
 
-                                        {/* Scan Link */}
+                                        {/* Scan Link  */}
                                         <Link
                                             to={`/dashboard/scan-${issue.scanId}`}
                                             className="hover:underline text-blue-400 text-xs flex-shrink-0 flex items-center gap-2"

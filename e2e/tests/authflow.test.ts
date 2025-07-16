@@ -45,5 +45,5 @@ test.describe('Authentication flow', () => {
 
         await page.waitForURL('/dashboard')
         await expect(page).toHaveURL('/dashboard')
-    } )
+    })
 })

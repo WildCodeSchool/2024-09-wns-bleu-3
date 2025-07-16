@@ -31,13 +31,12 @@ function App() {
         <Route element={<OnlyGuestRoute />}>
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
-            {/* Public routes accessible to all users */}
+
             <Route path="scan/preview" element={<ScanPreviewPage />} />
             <Route path="*" element={<NotFound />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
             <Route path="reset-password" element={<ForgotPasswordPage />} />
-            <Route path="scan-details" element={<ScanDetailsPage />} />
           </Route>
         </Route >
 
@@ -45,6 +44,7 @@ function App() {
           <Route element={<DashboardLayout />}>
             <Route path="profile" element={<ProfilePage />} />
             <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="dashboard/:id" element={<ScanDetailsPage />} />
           </Route>
         </Route>
 
