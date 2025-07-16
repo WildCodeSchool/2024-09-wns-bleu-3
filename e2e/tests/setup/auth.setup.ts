@@ -33,16 +33,14 @@ setup.describe('Auth setup', () => {
       // Button login
 
       await page.getByRole('button', { name: 'Se connecter' }).click();
-      await page.waitForURL('/');
+      await page.waitForURL('/dashboard');
       await page.reload()
 
       // Check if the user is logged in
 
-      await page.getByRole('banner').locator('rect').nth(2).click();
+      await page.getByRole('button', { name: 'avatar Welcome, Florian f.' }).click();
 
-
-      await expect(page.getByText('florian')).toBeVisible();
-
+      await page.getByText('Florian', { exact: true }).click();
         
       await page.context().storageState({path: storageFilePath});
 

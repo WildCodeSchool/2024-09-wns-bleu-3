@@ -4,16 +4,16 @@ test.describe('Dashboard', () => {
     test('User should be able to see the dashboard', async ({page}) => {
         await page.goto('/dashboard')
 
-        const headingPage = page.getByRole('heading', { name: 'Welcome, Florian'});
+        const headingPage = page.getByRole('button', { name: 'avatar Welcome, Florian f.' });
         
-        const totalScans = page.getByText('Total Scans');
-        const activeScans = page.getByText('Active Scans');
-        
-        const activeIssues = page.getByRole('heading', { name: 'Active Issues' });
+        const totalScans = page.getByText('TOTAL', { exact: true });
+        const addNewScan = page.getByRole('heading', { name: 'ADD NEW SCAN' });
+
+        const activeIssues = page.getByRole('main').getByText('ISSUES', { exact: true });
 
         await expect(headingPage).toBeVisible()
         await expect(totalScans).toBeVisible()
-        await expect(activeScans).toBeVisible()
+        await expect(addNewScan).toBeVisible()
         await expect(activeIssues).toBeVisible()
         
     })

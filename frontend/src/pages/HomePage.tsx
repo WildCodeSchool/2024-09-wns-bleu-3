@@ -2,7 +2,6 @@ import Faq from "@/components/Faq"
 import FeaturesSection from "@/components/FeaturesSection"
 import Help from "@/components/Help"
 import HeroSection from "@/components/HeroSection"
-import ScanHistory from "@/components/ScanHistory"
 
 
 const HomePage = () => {
@@ -14,9 +13,9 @@ const HomePage = () => {
             <div className="w-full mb-16 px-6" id="features-section">
                 <FeaturesSection />
             </div>
-            <div className="w-full mb-16 px-6" id="scan-history">
+            {/* <div className="w-full mb-16 px-6" id="scan-history">
                 <ScanHistory />
-            </div>
+            </div> */}
             <div className="w-full mb-16 px-6" id="faq-section">
                 <Faq />
             </div>

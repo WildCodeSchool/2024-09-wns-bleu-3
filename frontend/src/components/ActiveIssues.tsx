@@ -1,11 +1,10 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
-import { AlertTriangle, XCircle, ShieldAlert } from "lucide-react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { AlertTriangle, XCircle, ShieldAlert, Link2Icon } from "lucide-react"
 import { Link } from "react-router"
 import { ScanIssues } from "../@types/scan"
 import { Issue } from "../@types/issue"
+import { Separator } from "./ui/separator"
 
 interface ActiveIssuesProps {
     issues: Issue[]
@@ -21,86 +20,85 @@ export default function ActiveIssues({ issues, scans, setResolvedIssues }: Activ
     const activeIssueCount = issues.length
 
     return (
-        <div className="bg-white rounded-xl border shadow-sm p-6 border-gray-200 h-full flex flex-col">
+        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl rounded-lg p-6 flex flex-col h-[450px] overflow-y-scroll custom-scrollbar">
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Active Issues</h2>
-                <Badge variant="outline" className="bg-red-50 text-red-700">
-                    {activeIssueCount} Total Issues
-                </Badge>
+                <h2 className="text-white font-bold">ACTIVE ISSUES</h2>
+                <div className="bg-red-500/20 border border-red-400/30 text-red-400 px-3 py-1 rounded text-xs font-medium backdrop-blur-sm">
+                    {activeIssueCount} TOTAL ISSUES
+                </div>
             </div>
-            <div className="overflow-y-auto flex-1">
-                <Table>
-                    <TableHeader className="sticky top-0 bg-white">
-                        <TableRow className="border-gray-200">
-                            <TableHead className="font-medium text-gray-500">Issue</TableHead>
-                            <TableHead className="font-medium text-gray-500">Type</TableHead>
-                            <TableHead className="font-medium text-gray-500">Scan</TableHead>
-                            <TableHead className="font-medium text-gray-500 text-center">Resolved</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {activeIssueCount === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={4} className="text-center text-gray-500">
-                                    No active issues found.
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            issues.map((issue) => {
-                                const issueDisplay =
-                                    issue.issueType === "STATUS_CODE"
-                                        ? {
-                                            icon: issue.issue.includes("404") ? (
-                                                <AlertTriangle className="h-4 w-4" />
-                                            ) : (
-                                                <XCircle className="h-4 w-4" />
-                                            ),
-                                            color: issue.issue.includes("404")
-                                                ? "bg-yellow-100 text-yellow-600"
-                                                : "bg-red-100 text-red-600",
-                                        }
-                                        : {
-                                            icon: <ShieldAlert className="h-4 w-4" />,
-                                            color: "bg-orange-100 text-orange-600",
-                                        }
+            <div className="flex-1">
+                {activeIssueCount === 0 ? (
+                    <div className="text-center text-slate-200 py-8">
+                        <div className="text-slate-300 mb-2">◈ NO ISSUES</div>
+                        <p className="text-sm">All monitors are running smoothly</p>
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                        {issues.map((issue) => {
+                            const issueDisplay =
+                                issue.issueType === "STATUS_CODE"
+                                    ? {
+                                        icon: issue.issue.includes("404") ? (
+                                            <AlertTriangle className="h-4 w-4" />
+                                        ) : (
+                                            <XCircle className="h-4 w-4" />
+                                        ),
+                                        color: issue.issue.includes("404") ? "text-amber-400" : "text-red-400",
+                                        bgColor: issue.issue.includes("404") ? "bg-amber-500/20" : "bg-red-500/20",
+                                    }
+                                    : {
+                                        icon: <ShieldAlert className="h-4 w-4" />,
+                                        color: "text-orange-400",
+                                        bgColor: "bg-orange-500/20",
+                                    }
 
-                                const scanTitle = scans.find((s) => s.id === issue.scanId)?.title || `Scan ${issue.scanId}`
+                            const scanTitle = scans.find((s) => s.id === issue.scanId)?.title || `Scan ${issue.scanId}`
 
-                                return (
-                                    <TableRow key={issue.id} className="hover:bg-gray-50 border-gray-200">
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <div className={`flex h-5 w-5 items-center justify-center rounded-full ${issueDisplay.color}`}>
-                                                    {issueDisplay.icon}
-                                                </div>
-                                                <span className="text-sm font-medium">{issue.issue}</span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-left">
-                                            <Badge className="bg-white text-gray-800 border border-gray-200">
-                                                {issue.issueType.replace("_", " ")}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-sm text-left">
-                                            <Link to={`/dashboard/scan-${issue.scanId}`} className="hover:underline text-blue-600">
-                                                {scanTitle}
-                                            </Link>
-                                        </TableCell>
-                                        <TableCell className="text-center">
-                                            <div className="flex items-center justify-center">
-                                                <input
-                                                    type="checkbox"
-                                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                                                    onChange={() => handleResolveIssue(issue.id)}
-                                                />
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                )
-                            })
-                        )}
-                    </TableBody>
-                </Table>
+                            return (
+                                <div
+                                    key={issue.id}
+                                    className="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors flex-shrink-0"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        {/* Icon */}
+                                        <div
+                                            className={`flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0 ${issueDisplay.bgColor} ${issueDisplay.color}`}
+                                        >
+                                            {issueDisplay.icon}
+                                        </div>
+                                        {/* Issue Type Badge */}
+                                        <span className="bg-white/10 text-slate-200 px-2 py-1 text-xs rounded font-medium flex-shrink-0">
+                                            {issue.issueType.replace("_", " ")}
+                                        </span>
+                                        {/* Issue Title */}
+                                        <h3 className="text-white text-sm font-light text-left truncate flex-1 min-w-0">{issue.issue}</h3>
+
+                                        <Separator orientation="vertical" />
+
+                                        {/* Scan Link  */}
+                                        <Link
+                                            to={`/dashboard/scan-${issue.scanId}`}
+                                            className="hover:underline text-blue-400 text-xs flex-shrink-0 flex items-center gap-2"
+                                        >
+                                            {scanTitle}
+                                            <Link2Icon className="h-4 w-4" />
+                                        </Link>
+
+                                        {/* Checkbox */}
+                                        <input
+                                            type="checkbox"
+                                            className="h-4 w-4 rounded border-slate-600 text-blue-400 focus:ring-blue-400 focus:ring-1 bg-slate-800/50 cursor-pointer flex-shrink-0"
+                                            onChange={() => handleResolveIssue(issue.id)}
+                                        />
+                                    </div>
+
+
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     )

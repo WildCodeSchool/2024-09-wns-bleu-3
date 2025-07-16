@@ -13,7 +13,9 @@ import ScanPreviewPage from './pages/ScanPreviewPage';
 import PrivateRoute from './components/PrivateRoute';
 import OnlyGuestRoute from './components/OnlyGuestRoute';
 import DashboardPage from './pages/DashboardPage';
+import DashboardLayout from './components/DashboardLayout';
 import ScanDetailsPage from './pages/ScanDetailsPage';
+import NotFound from './not-found';
 
 function App() {
   const { loading, error, data } = useQuery(GET_ALL_SCANS);
@@ -26,21 +28,26 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<HomePage />} />
-          {/* Public routes accessible to all users */}
-          <Route path="scan/preview" element={<ScanPreviewPage />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="scan-details/:id" element={<ScanDetailsPage />} />
-          </Route>
-          <Route element={<OnlyGuestRoute />}>
+        <Route element={<OnlyGuestRoute />}>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<HomePage />} />
+
+            <Route path="scan/preview" element={<ScanPreviewPage />} />
+            <Route path="*" element={<NotFound />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
             <Route path="reset-password" element={<ForgotPasswordPage />} />
           </Route>
         </Route >
+
+        <Route element={<PrivateRoute />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="dashboard/:id" element={<ScanDetailsPage />} />
+          </Route>
+        </Route>
+
       </Routes >
     </>
   )
