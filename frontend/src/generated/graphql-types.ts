@@ -445,8 +445,6 @@ export type GetScanByIdQueryVariables = Exact<{
 
 export type GetScanByIdQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isPause: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, name: string, intervalMinutes: number }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> } };
 
-
-
 export type GetAllFrequencesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
