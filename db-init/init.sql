@@ -1,0 +1,12 @@
+CREATE ROLE app_backend WITH LOGIN PASSWORD 'mdp2test';
+
+CREATE ROLE app_admin;
+
+GRANT USAGE ON SCHEMA public TO app_backend;
+
+GRANT
+SELECT,
+INSERT
+,
+UPDATE,
+DELETE ON ALL TABLES IN SCHEMA public TO app_backend;

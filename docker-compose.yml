@@ -3,6 +3,8 @@ services:
     image: postgres:latest
     environment:
       POSTGRES_PASSWORD: postgres
+    volumes: 
+      - ./db-init:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432
     healthcheck:
