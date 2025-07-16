@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react'
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
     BarChart4,
     Clock,
@@ -18,7 +17,7 @@ import {
     ArrowLeft,
     Play
 } from "lucide-react"
-import { useGetScanHistoryQuery, useDeleteScanMutation, usePauseOrRestartScanMutation, useUpdateScanMutation, useGetScanByIdQuery, useGetAllFrequencesQuery, useGetAllTagsQuery } from '../generated/graphql-types'
+import { useGetScanHistoryQuery, useDeleteScanMutation, usePauseOrRestartScanMutation, useUpdateScanMutation, Frequency, useGetScanByIdQuery, useGetAllFrequencesQuery, useGetAllScansQuery, useGetAllTagsQuery } from '../generated/graphql-types'
 import { useParams } from 'react-router'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -29,7 +28,8 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
-
+import { GET_ALL_FREQUENCIES, GET_ALL_TAGS } from '@/graphql/queries'
+import { useQuery } from '@apollo/client'
 
 const ScanDetailsPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -42,7 +42,7 @@ const ScanDetailsPage = () => {
 
 
     // Get scan data
-    const { data: scanData, loading: scanLoading, error: scanError, refetch } = useGetScanByIdQuery({
+    const { data: scanData, loading: scanLoading, error: scanError } = useGetScanByIdQuery({
         variables: { getScanByIdId: scanId },
         skip: !scanId
     });
@@ -74,7 +74,6 @@ const ScanDetailsPage = () => {
 
         onCompleted: () => {
             toast.success("Scan updated successfully");
-            refetch(); // Refetch scan data after update
         },
         onError: (error) => {
             console.error("Error updating scan:", error);
@@ -254,7 +253,6 @@ const ScanDetailsPage = () => {
                                     <Label htmlFor="scan-title">Title</Label>
                                     <Input
                                         id="scan-title"
-                                        className="border border-gray-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                                         value={editedTitle}
                                         onChange={(e) => setEditedTitle(e.target.value)}
                                     />
@@ -263,14 +261,14 @@ const ScanDetailsPage = () => {
                                 <div className="grid gap-3">
                                     <Label htmlFor="scan-frequency">Check Frequency</Label>
                                     <Select value={editedFrequency} onValueChange={(value) => setEditedFrequency(value)}>
-                                        <SelectTrigger className='cursor-pointer'>
+                                        <SelectTrigger>
                                             <SelectValue placeholder="Select frequency" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectGroup>
                                                 <SelectLabel>Frequency Options</SelectLabel>
                                                 {frequencyData?.getAllFrequences?.map((frequency) => (
-                                                    <SelectItem className='cursor-pointer' key={frequency.id} value={frequency.id.toString()}>
+                                                    <SelectItem key={frequency.id} value={frequency.id.toString()}>
                                                         {frequency.name}
                                                     </SelectItem>
                                                 ))}
@@ -282,43 +280,32 @@ const ScanDetailsPage = () => {
 
 
                                 <div className="grid gap-3">
-                                    <Label htmlFor="scan-tags">Tags</Label>
-                                    <div id="scan-tags" className="space-y-2 max-h-48 overflow-y-auto p-3">
-                                        {tagsData?.getAllTags?.map((tag) => (
-                                            <div key={tag.id} className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    className="text-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 cursor-pointer"
-                                                    id={`tag-${tag.id}`}
-                                                    checked={editedTags.includes(tag.id.toString())}
-                                                    onCheckedChange={(checked) => {
-                                                        if (checked) {
-                                                            setEditedTags((prev) => [...prev, tag.id.toString()]);
-                                                        } else {
-                                                            setEditedTags((prev) => prev.filter((t) => t !== tag.id.toString()));
-                                                        }
-                                                    }}
-                                                />
-                                                <label
-                                                    htmlFor={`tag-${tag.id}`}
-                                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                                                >
-                                                    {tag.name}
-                                                </label>
-                                            </div>
-                                        ))}
-                                        {!tagsData?.getAllTags?.length && (
-                                            <p className="text-sm text-gray-500 text-center py-2">
-                                                No tags available
-                                            </p>
-                                        )}
+                                    <Label htmlFor="scan-tags">Tag</Label>
+                                    <Select value={editedTags} onValueChange={(value) => setEditedTags(value)}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select tags" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Available Tags</SelectLabel>
+                                                {tagsData?.getAllTags?.map((tag) => (
+                                                    <SelectItem key={tag.id} value={tag.id.toString()}>
+                                                        {tag.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <div className="flex flex-wrap gap-2">
+
+
+
                                     </div>
-
-
                                 </div>
 
                             </div>
                             <SheetFooter>
-                                <Button variant={"lightBlue"} className="gap-2 border-gray-200 cursor-pointer"
+                                <Button
                                     onClick={() => {
                                         updateScan({
                                             variables: {
@@ -326,7 +313,6 @@ const ScanDetailsPage = () => {
                                                     id: scan.id,
                                                     title: editedTitle,
                                                     frequencyId: editedFrequency ? parseInt(editedFrequency) : null,
-                                                    tagIds: editedTags.map(tag => parseInt(tag)),
                                                 },
                                             },
                                         });
@@ -336,7 +322,7 @@ const ScanDetailsPage = () => {
                                     Save changes
                                 </Button>
                                 <SheetClose asChild>
-                                    <Button className='border border-gray-200 cursor-pointer hover:bg-gray-100' variant="outline">Close</Button>
+                                    <Button variant="outline">Close</Button>
                                 </SheetClose>
                             </SheetFooter>
                         </SheetContent>
@@ -374,8 +360,7 @@ const ScanDetailsPage = () => {
                 <Tabs defaultValue="history">
                     <TabsList className="mb-4 cursor-pointer">
                         <TabsTrigger className="cursor-pointer" value="history">History</TabsTrigger>
-                        <TabsTrigger className="cursor-pointer" value="notifications">Notifications</TabsTrigger>
-
+                        <TabsTrigger className="cursor-pointer" value="settings">Settings</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="history">
@@ -449,9 +434,10 @@ const ScanDetailsPage = () => {
                         </div>
                     </TabsContent>
 
-                    <TabsContent value="notifications">
+
+                    <TabsContent value="settings">
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium mb-4">Notifications</h3>
+                            <h3 className="text-lg font-medium mb-4">Settings</h3>
                             <div className="bg-gray-50 p-4 rounded-lg">
                                 <p className="text-gray-600 text-center">
                                     Notification settings are not yet implemented.
@@ -459,10 +445,6 @@ const ScanDetailsPage = () => {
                             </div>
                         </div>
                     </TabsContent>
-
-
-
-
                 </Tabs>
             </div>
         </div >

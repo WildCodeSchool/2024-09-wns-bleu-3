@@ -43,9 +43,20 @@ query GetScanById($getScanByIdId: Int!) {
     responseTime
     sslCertificate
     isOnline
+    isPause
     createdAt
     updatedAt
     lastScannedAt
+    frequency {
+      id
+      name
+      intervalMinutes
+    }
+    tags {
+      id
+      name
+      color
+    }
   }
 }`
 
