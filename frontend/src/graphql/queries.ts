@@ -47,6 +47,16 @@ query GetScanById($getScanByIdId: Int!) {
     createdAt
     updatedAt
     lastScannedAt
+    frequency {
+      id
+      name
+      intervalMinutes
+    }
+    tags {
+      id
+      name
+      color
+    }
   }
 }`
 

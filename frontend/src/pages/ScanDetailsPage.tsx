@@ -1,13 +1,39 @@
 import ScanDetailsCards from "@/components/scan-details/ScanDetailsCards"
 import { ScanDetailsChart } from "@/components/scan-details/ScanDetailsChart"
 import { Button } from "@/components/ui/button"
-import { useGetScanByIdQuery } from "@/generated/graphql-types"
+import { GetScanByIdQuery, useGetScanByIdQuery } from "@/generated/graphql-types"
+import { useGetScanHistoryQuery } from "@/generated/graphql-types"
 import { ArrowLeft } from "lucide-react"
 import { Link, useParams } from "react-router"
 
+export type IScanDetails = GetScanByIdQuery["getScanById"]; import { SetStateAction, useEffect, useState } from 'react'
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+    BarChart4,
+    Clock,
+    CheckCircle,
+    XCircle,
+    Activity,
+    Zap,
+    Trash2,
+    RefreshCw,
+    Settings,
+    Star,
+    Pause,
+    Play
+} from "lucide-react"
+import { useDeleteScanMutation, usePauseOrRestartScanMutation, useUpdateScanMutation, useGetAllFrequencesQuery, useGetAllTagsQuery } from '../generated/graphql-types'
 
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { toast } from 'sonner'
 
-const ScanDetailsPage = () => {
+function ScanDetailsPage() {
     const { id } = useParams();
     const scanId = id ? parseInt(id) : 0;
 
@@ -28,9 +54,97 @@ const ScanDetailsPage = () => {
 
     console.log("scanDetails ==>", data?.getScanById)
 
-    
+    // Initialize states from backend data
+    useEffect(() => {
+        if (data?.getScanById) {
+            const scan = data.getScanById;
+            setEditedTitle(scan.title);
+            setEditedFrequency(scan.frequency?.id.toString() || "");
+            setEditedTags(scan.tags.length > 0 ? scan.tags[0].id.toString() : "");
+            setIsPause(scan.isPause);
+        }
+    }, [data?.getScanById]);
+
+    // Update scan
+    const [updateScan] = useUpdateScanMutation({
+        onCompleted: () => {
+            toast.success("Scan updated successfully");
+        },
+        onError: (error) => {
+            console.error("Error updating scan:", error);
+            toast.error("Failed to update scan");
+        }
+    })
+
+    // Delete scan 
+    const [deleteScan, { loading: deleteLoading }] = useDeleteScanMutation({
+        variables: { deleteScanId: scanId },
+        onCompleted: () => {
+            toast.success("Scan deleted successfully");
+        },
+        onError: (error) => {
+            console.error("Error deleting scan:", error);
+            toast.error("Failed to delete scan");
+        }
+    });
+
+    // Pause/Resume scan
+    const [pauseOrRestartScan] = usePauseOrRestartScanMutation({
+        variables: { id: scanId },
+        onCompleted: (data) => {
+            setIsPause(data.pauseOrRestartScan.isPause);
+            toast.success(`Scan ${data.pauseOrRestartScan.isPause ? 'paused' : 'resumed'} successfully`);
+        },
+        onError: (error) => {
+            console.error("Error pausing/resuming scan:", error);
+            toast.error("Failed to pause/resume scan");
+        }
+    });
+
     if (loading) return <p>Loading...</p>
     if (error) return <p>There is an error: {error.message}</p>
+
+    const scanHistory = historyData?.getScanHistory || [];
+    const scan = data?.getScanById;
+
+    if (!scan) {
+        return (
+            <div className="p-4">
+                <Alert>
+                    <Activity className="h-4 w-4" />
+                    <AlertDescription>
+                        Scan not found
+                    </AlertDescription>
+                </Alert>
+            </div>
+        );
+    }
+
+    // Format date
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
+    // Determine status icon and color based on scan results
+    const getStatusIcon = (isOnline: boolean) => {
+        return isOnline ? CheckCircle : XCircle;
+    };
+
+    const getStatusColor = (isOnline: boolean) => {
+        return isOnline ? 'text-green-600' : 'text-red-600';
+    };
+
+    // Handle favorite toggle
+    const handleFavoriteClick = () => {
+        setIsFavorite(!isFavorite);
+    };
+    // if (!data?.getScanById) return null;
 
     return (
         <>
@@ -195,7 +309,7 @@ const ScanDetailsPage = () => {
 
                         {/*** HC-51 ***/}
                         {/*** HC-50 ***/}
-                        <ScanDetailsCards />
+                        <ScanDetailsCards scan={scan} />
                         {/*** HC-53 ***/}
                         <h2 className=" mb-6 text-2xl text-black text-left font-bold">Scan History</h2>
                         {historyLoading ? <p>Loading...</p> :
