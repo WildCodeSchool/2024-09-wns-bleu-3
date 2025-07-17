@@ -1,12 +1,12 @@
 import ScanDetailsCards from "@/components/scan-details/ScanDetailsCards"
 import { ScanDetailsChart } from "@/components/scan-details/ScanDetailsChart"
 import { Button } from "@/components/ui/button"
-import { useGetScanByIdQuery } from "@/generated/graphql-types"
+import { GetScanByIdQuery, useGetScanByIdQuery } from "@/generated/graphql-types"
 import { useGetScanHistoryQuery } from "@/generated/graphql-types"
 import { ArrowLeft } from "lucide-react"
 import { Link, useParams } from "react-router"
 
-import { SetStateAction, useEffect, useState } from 'react'
+export type IScanDetails = GetScanByIdQuery["getScanById"]; import { SetStateAction, useEffect, useState } from 'react'
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -52,7 +52,7 @@ function ScanDetailsPage() {
     const [editedFrequency, setEditedFrequency] = useState("");
     const [editedTags, setEditedTags] = useState<string>("")
 
-    console.log("scanDetails ==>", data)
+    console.log("scanDetails ==>", data?.getScanById)
 
     // Initialize states from backend data
     useEffect(() => {
@@ -144,6 +144,7 @@ function ScanDetailsPage() {
     const handleFavoriteClick = () => {
         setIsFavorite(!isFavorite);
     };
+    // if (!data?.getScanById) return null;
 
     return (
         <>
@@ -308,8 +309,7 @@ function ScanDetailsPage() {
 
                         {/*** HC-51 ***/}
                         {/*** HC-50 ***/}
-                        <ScanDetailsCards />
-
+                        <ScanDetailsCards scan={scan} />
                         {/*** HC-53 ***/}
                         <h2 className=" mb-6 text-2xl text-black text-left font-bold">Scan History</h2>
                         {historyLoading ? <p>Loading...</p> :
