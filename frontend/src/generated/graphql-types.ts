@@ -216,6 +216,7 @@ export type Scan = {
   frequency: Frequency;
   history: Array<ScanHistory>;
   id: Scalars['Float']['output'];
+  isFavorite: Scalars['Boolean']['output'];
   isOnline: Scalars['Boolean']['output'];
   isPause: Scalars['Boolean']['output'];
   lastScannedAt?: Maybe<Scalars['DateTimeISO']['output']>;

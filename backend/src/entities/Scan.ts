@@ -44,6 +44,10 @@ export class Scan extends BaseEntity {
     @Column({ type: 'boolean', default: false })
     isPause: boolean
 
+    @Field(() => Boolean)
+    @Column({ type: 'boolean', default: false })
+    isFavorite: boolean
+
     // Relation Many-to-One avec Frequency
     // Frequency is required - every scan must have a frequency
     @Field(() => Frequency)
