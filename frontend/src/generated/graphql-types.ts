@@ -157,12 +157,30 @@ export type MutationUpdateUserArgs = {
   id: Scalars['Float']['input'];
 };
 
+export type PaginationInput = {
+  limit?: Scalars['Int']['input'];
+  offset?: Scalars['Int']['input'];
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PaginationOutput = {
+  __typename?: 'PaginationOutput';
+  hasMore: Scalars['Boolean']['output'];
+  issues: Array<Issue>;
+  limit: Scalars['Int']['output'];
+  page: Scalars['Int']['output'];
+  scans: Array<Scan>;
+  total: Scalars['Int']['output'];
+  totalIssues: Scalars['Int']['output'];
+  totalScans: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   getAllFrequences: Array<Frequency>;
   getAllRoles: Array<Role>;
   getAllScans: Array<Scan>;
-  getAllScansByUserId: ScanByUserId;
+  getAllScansByUserId: PaginationOutput;
   getAllTags: Array<Tag>;
   getFrequenceById: Frequency;
   getScanById: Scan;
@@ -170,6 +188,11 @@ export type Query = {
   getTagById: Tag;
   getUserInfo?: Maybe<UserInfo>;
   previewScan: ScanPreview;
+};
+
+
+export type QueryGetAllScansByUserIdArgs = {
+  data: PaginationInput;
 };
 
 
@@ -229,15 +252,6 @@ export type Scan = {
   updatedAt: Scalars['DateTimeISO']['output'];
   url: Scalars['String']['output'];
   user: User;
-};
-
-export type ScanByUserId = {
-  __typename?: 'ScanByUserId';
-  issues: Array<Issue>;
-  scans: Array<Scan>;
-  totalIssues: Scalars['Int']['output'];
-  totalScans: Scalars['Int']['output'];
-  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type ScanHistory = {
@@ -468,10 +482,12 @@ export type GetScanHistoryQueryVariables = Exact<{
 
 export type GetScanHistoryQuery = { __typename?: 'Query', getScanHistory: Array<{ __typename?: 'ScanHistory', id: number, url: string, statusCode: number, statusMessage: string, responseTime: number, isOnline: boolean, createdAt: any }> };
 
-export type GetAllScansByUserIdQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllScansByUserIdQueryVariables = Exact<{
+  data: PaginationInput;
+}>;
 
 
-export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'ScanByUserId', totalIssues: number, totalScans: number, username?: string | null, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
+export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'PaginationOutput', totalIssues: number, totalScans: number, total: number, page: number, limit: number, hasMore: boolean, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
 
 export type ScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -1202,8 +1218,8 @@ export type GetScanHistoryLazyQueryHookResult = ReturnType<typeof useGetScanHist
 export type GetScanHistorySuspenseQueryHookResult = ReturnType<typeof useGetScanHistorySuspenseQuery>;
 export type GetScanHistoryQueryResult = Apollo.QueryResult<GetScanHistoryQuery, GetScanHistoryQueryVariables>;
 export const GetAllScansByUserIdDocument = gql`
-    query GetAllScansByUserId {
-  getAllScansByUserId {
+    query GetAllScansByUserId($data: PaginationInput!) {
+  getAllScansByUserId(data: $data) {
     issues {
       id
       scanId
@@ -1235,7 +1251,10 @@ export const GetAllScansByUserIdDocument = gql`
       }
     }
     totalScans
-    username
+    total
+    page
+    limit
+    hasMore
   }
 }
     `;
@@ -1252,10 +1271,11 @@ export const GetAllScansByUserIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllScansByUserIdQuery({
  *   variables: {
+ *      data: // value for 'data'
  *   },
  * });
  */
-export function useGetAllScansByUserIdQuery(baseOptions?: Apollo.QueryHookOptions<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables>) {
+export function useGetAllScansByUserIdQuery(baseOptions: Apollo.QueryHookOptions<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables> & ({ variables: GetAllScansByUserIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables>(GetAllScansByUserIdDocument, options);
       }

@@ -47,12 +47,12 @@ export class Scan extends BaseEntity {
     // Relation Many-to-One avec Frequency
     // Frequency is required - every scan must have a frequency
     @Field(() => Frequency)
-    @ManyToOne(() => Frequency, frequency => frequency.scans, { nullable: false, eager: true })
+    @ManyToOne(() => Frequency, frequency => frequency.scans, { nullable: false })
     frequency: Frequency
 
     // Relation Many-to-Many avec Tag
     @Field(() => [Tag])
-    @ManyToMany(() => Tag, tag => tag.scans, { nullable: true, eager: true })
+    @ManyToMany(() => Tag, tag => tag.scans, { nullable: true })
     @JoinTable()
     tags: Tag[]
 
@@ -62,7 +62,7 @@ export class Scan extends BaseEntity {
 
     // Relation Many-to-One avec Scan
     @Field(() => User)
-    @ManyToOne(() => User, user => user.scans, { nullable: true, onDelete: 'CASCADE', eager: true })
+    @ManyToOne(() => User, user => user.scans, { nullable: true, onDelete: 'CASCADE' })
     user: User
 
     @Field(() => Date)

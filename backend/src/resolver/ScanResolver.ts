@@ -7,10 +7,11 @@ import { Tag } from '../entities/Tag'
 import { scanUrl } from '../utils/scanUrl'
 import { Frequency } from '../entities/Frequency'
 import { pubSub } from '../utils/pubSub'
-import { ScanByUserId } from '../inputs/ScanById'
 import { User } from '../entities/User'
 import { ContextType } from '../schema/context'
 import { issuesArray } from '../utils/issuesArray'
+import { PaginationInput, PaginationOutput } from '../inputs/PaginationInput'
+import { FindOptionsWhere, ILike } from 'typeorm'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -55,32 +56,63 @@ class ScanResolver {
         }
     }
 
+    // TODO: add pagination and filters in the backend
+    // FIRST STEP: add pagination
+    //  - Input and Output types DONE
+    // - USE limit and offset in the query
     // @Authorized("Admin", "User")
-    @Query(() => ScanByUserId)
-    async getAllScansByUserId(@Ctx() context: ContextType) {
+    @Query(() => PaginationOutput)
+    async getAllScansByUserId(@Arg('data', () => PaginationInput) data: PaginationInput, @Ctx() context: ContextType): Promise<PaginationOutput> {
         const userId = context.id
 
         if (!userId) {
             throw new Error('You are not authorized to view this user\'s scans')
         }
+        const { limit, offset } = data
         try {
-            const user = await User.findOneByOrFail({ id: userId })
+            const search = data.search
+            const parsedSearchNumber = Number(search)
+            const isSearchNumber = !Number.isNaN(parsedSearchNumber)
 
-            const scans = await Scan.find({
-                where: { user: { id: userId } },
+            const where: FindOptionsWhere<Scan>[] = search
+                ? [
+                        {
+                            user: { id: userId },
+                            title: ILike(`%${search}%`),
+                        },
+                        {
+                            user: { id: userId },
+                            url: ILike(`%${search}%`),
+                        },
+                        ...(isSearchNumber
+                            ? [{ user: { id: userId }, statusCode: parsedSearchNumber }]
+                            : []),
+                    ]
+                : [{ user: { id: userId } }]
+
+            const [scans, total] = await Scan.findAndCount({
+                where,
                 order: {
                     id: 'DESC',
                 },
+                take: limit,
+                skip: offset,
             })
 
             const issues = issuesArray(scans)
+
+            const page = Math.floor(offset / limit) + 1
+            const hasMore = offset + limit < total
 
             return {
                 scans,
                 issues,
                 totalIssues: issues.length,
                 totalScans: scans.length,
-                username: user?.username ?? null,
+                total,
+                page,
+                limit,
+                hasMore,
             }
         }
         catch (error) {
@@ -173,7 +205,7 @@ class ScanResolver {
         }
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => String)
     async deleteScan(@Arg('id', () => Int) id: number) {
         try {
@@ -205,7 +237,7 @@ class ScanResolver {
         return scan
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => Scan)
     async pauseOrRestartScan(@Arg('id', () => Int) id: number) {
         const scan = await Scan.findOne({
@@ -222,7 +254,7 @@ class ScanResolver {
         return scan
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => String)
     async updateScan(@Arg('data', () => UpdateScanInput) updateScanData: UpdateScanInput) {
         try {
