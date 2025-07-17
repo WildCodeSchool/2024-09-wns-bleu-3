@@ -3,7 +3,7 @@ import { ScanDetailsChart } from "@/components/scan-details/ScanDetailsChart"
 import { Button } from "@/components/ui/button"
 import { GetScanByIdQuery, useGetScanByIdQuery } from "@/generated/graphql-types"
 import { useGetScanHistoryQuery } from "@/generated/graphql-types"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Copy } from "lucide-react"
 import { Link, useParams } from "react-router"
 
 export type IScanDetails = GetScanByIdQuery["getScanById"]; import { SetStateAction, useEffect, useState } from 'react'
@@ -21,7 +21,9 @@ import {
     Settings,
     Star,
     Pause,
-    Play
+    Play,
+    Monitor,
+    Link2
 } from "lucide-react"
 import { useDeleteScanMutation, usePauseOrRestartScanMutation, useUpdateScanMutation, useGetAllFrequencesQuery, useGetAllTagsQuery } from '../generated/graphql-types'
 
@@ -31,6 +33,7 @@ import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHe
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'sonner'
 
 function ScanDetailsPage() {
@@ -40,7 +43,7 @@ function ScanDetailsPage() {
     const [isFavorite, setIsFavorite] = useState(false);
     const [isPause, setIsPause] = useState(false);
 
-    const { data, loading, error } = useGetScanByIdQuery({ variables: { getScanByIdId: Number(id) } })
+    const { data, loading, error, refetch } = useGetScanByIdQuery({ variables: { getScanByIdId: Number(id) } })
     const { data: historyData, loading: historyLoading } = useGetScanHistoryQuery({
         variables: { scanId: Number(id) },
     });
@@ -50,7 +53,7 @@ function ScanDetailsPage() {
 
     const [editedTitle, setEditedTitle] = useState("");
     const [editedFrequency, setEditedFrequency] = useState("");
-    const [editedTags, setEditedTags] = useState<string>("")
+    const [editedTags, setEditedTags] = useState<number[]>([]);
 
     console.log("scanDetails ==>", data?.getScanById)
 
@@ -60,7 +63,7 @@ function ScanDetailsPage() {
             const scan = data.getScanById;
             setEditedTitle(scan.title);
             setEditedFrequency(scan.frequency?.id.toString() || "");
-            setEditedTags(scan.tags.length > 0 ? scan.tags[0].id.toString() : "");
+            setEditedTags(scan.tags.map(tag => tag.id));
             setIsPause(scan.isPause);
         }
     }, [data?.getScanById]);
@@ -69,6 +72,7 @@ function ScanDetailsPage() {
     const [updateScan] = useUpdateScanMutation({
         onCompleted: () => {
             toast.success("Scan updated successfully");
+            refetch();
         },
         onError: (error) => {
             console.error("Error updating scan:", error);
@@ -144,6 +148,18 @@ function ScanDetailsPage() {
     const handleFavoriteClick = () => {
         setIsFavorite(!isFavorite);
     };
+
+    // Handle URL copy
+    const handleCopyUrl = async () => {
+        try {
+            await navigator.clipboard.writeText(scan.url);
+            toast.success("URL copied to clipboard!");
+        } catch (err) {
+            console.error('Failed to copy URL:', err);
+            toast.error("Failed to copy URL");
+        }
+    };
+
     // if (!data?.getScanById) return null;
 
     return (
@@ -153,7 +169,7 @@ function ScanDetailsPage() {
                     <div className=" py-8 px-6">
                         {/* back to dashboard */}
                         <div className="flex items-center mb-6">
-                            <Button variant="ghost" size="sm" asChild>
+                            <Button variant="lightBlue" size="sm" asChild>
                                 <Link to="/dashboard">
                                     <ArrowLeft className="h-4 w-4 mr-2" /> Back to Scans
                                 </Link>
@@ -161,10 +177,38 @@ function ScanDetailsPage() {
                         </div>
 
                         {/* Scan details header */}
-                        <div className="flex space-around bg-white rounded-xl p-6 mb-6">
+                        <div className="flex space-around rounded-xl p-6 mb-6">
                             <div className="text-left flex-1">
-                                <h1 className="text-3xl font-bold text-gray-800">{scan.title}</h1>
-                                <p className="text-gray-600">{scan.url}</p>
+                                <div className="flex items-center gap-3">
+                                    {(() => {
+                                        const StatusIcon = getStatusIcon(scan.isOnline);
+                                        const statusColor = getStatusColor(scan.isOnline);
+                                        const bgColor = scan.isOnline ? 'bg-green-100' : 'bg-red-100';
+                                        return (
+                                            <div className={`p-2 rounded-full ${bgColor}`}>
+                                                <StatusIcon className={`h-5 w-5 ${statusColor}`} />
+                                            </div>
+                                        );
+                                    })()}
+                                    <div className="flex flex-col gap-2">
+                                        <h1 className="text-3xl font-bold text-gray-800 leading-none">{scan.title}</h1>
+                                        <div className="flex items-center gap-2">
+                                            <a
+                                                href={scan.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-gray-600 hover:underline leading-none cursor-pointer"
+                                            >
+                                                {scan.url}
+                                            </a>
+                                            <Copy
+                                                className="h-3 w-3 text-gray-500 cursor-pointer hover:text-gray-400 transition-colors flex-shrink-0"
+                                                onClick={handleCopyUrl}
+                                                title="Cliquer pour copier l'URL"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div className="flex gap-2">
                                 <Button
@@ -217,20 +261,21 @@ function ScanDetailsPage() {
                                                     id="scan-title"
                                                     value={editedTitle}
                                                     onChange={(e) => setEditedTitle(e.target.value)}
+                                                    className="bg-gray-50 border-gray-200 focus:bg-blue-50 focus:border-blue-400 focus:ring-blue-400"
                                                 />
                                             </div>
 
                                             <div className="grid gap-3">
                                                 <Label htmlFor="scan-frequency">Check Frequency</Label>
                                                 <Select value={editedFrequency} onValueChange={(value: SetStateAction<string>) => setEditedFrequency(value)}>
-                                                    <SelectTrigger>
+                                                    <SelectTrigger className="cursor-pointer">
                                                         <SelectValue placeholder="Select frequency" />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectGroup>
                                                             <SelectLabel>Frequency Options</SelectLabel>
                                                             {frequencyData?.getAllFrequences?.map((frequency) => (
-                                                                <SelectItem key={frequency.id} value={frequency.id.toString()}>
+                                                                <SelectItem className="cursor-pointer" key={frequency.id} value={frequency.id.toString()}>
                                                                     {frequency.name}
                                                                 </SelectItem>
                                                             ))}
@@ -240,26 +285,37 @@ function ScanDetailsPage() {
                                             </div>
 
                                             <div className="grid gap-3">
-                                                <Label htmlFor="scan-tags">Tag</Label>
-                                                <Select value={editedTags} onValueChange={(value: SetStateAction<string>) => setEditedTags(value)}>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select tags" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            <SelectLabel>Available Tags</SelectLabel>
-                                                            {tagsData?.getAllTags?.map((tag) => (
-                                                                <SelectItem key={tag.id} value={tag.id.toString()}>
-                                                                    {tag.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
+                                                <Label htmlFor="scan-tags">Tags</Label>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    {tagsData?.getAllTags?.map((tag) => (
+                                                        <div key={tag.id} className="flex items-center space-x-2">
+                                                            <Checkbox
+                                                                id={`tag-${tag.id}`}
+                                                                checked={editedTags.includes(tag.id)}
+                                                                onCheckedChange={(checked) => {
+                                                                    if (checked) {
+                                                                        setEditedTags([...editedTags, tag.id]);
+                                                                    } else {
+                                                                        setEditedTags(editedTags.filter(id => id !== tag.id));
+                                                                    }
+                                                                }}
+                                                                className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 data-[state=checked]:text-white border-gray-300 focus:ring-blue-500 focus:ring-2 cursor-pointer"
+                                                            />
+                                                            <Label
+                                                                htmlFor={`tag-${tag.id}`}
+                                                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                                            >
+                                                                {tag.name}
+                                                            </Label>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                         <SheetFooter>
                                             <Button
+                                                className="cursor-pointer"
+                                                variant="lightBlue"
                                                 onClick={() => {
                                                     updateScan({
                                                         variables: {
@@ -267,6 +323,7 @@ function ScanDetailsPage() {
                                                                 id: scan.id,
                                                                 title: editedTitle,
                                                                 frequencyId: editedFrequency ? parseInt(editedFrequency) : null,
+                                                                tagIds: editedTags,
                                                             },
                                                         },
                                                     });
@@ -276,7 +333,12 @@ function ScanDetailsPage() {
                                                 Save changes
                                             </Button>
                                             <SheetClose asChild>
-                                                <Button variant="outline">Close</Button>
+                                                <Button
+                                                    variant="outline"
+                                                    className="bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 cursor-pointer"
+                                                >
+                                                    Close
+                                                </Button>
                                             </SheetClose>
                                         </SheetFooter>
                                     </SheetContent>
@@ -321,7 +383,7 @@ function ScanDetailsPage() {
                             <Tabs defaultValue="history">
                                 <TabsList className="mb-4 cursor-pointer">
                                     <TabsTrigger className="cursor-pointer" value="history">Detailed History</TabsTrigger>
-                                    <TabsTrigger className="cursor-pointer" value="settings">Settings</TabsTrigger>
+                                    <TabsTrigger className="cursor-pointer" value="notifications">Notifications</TabsTrigger>
                                 </TabsList>
 
                                 <TabsContent value="history">
@@ -395,12 +457,12 @@ function ScanDetailsPage() {
                                     </div>
                                 </TabsContent>
 
-                                <TabsContent value="settings">
+                                <TabsContent value="notifications">
                                     <div className="space-y-4">
-                                        <h3 className="text-lg font-medium mb-4">Settings</h3>
+                                        <h3 className="text-lg font-medium mb-4">Notifications</h3>
                                         <div className="bg-gray-50 p-4 rounded-lg">
                                             <p className="text-gray-600 text-center">
-                                                Notification settings are not yet implemented.
+                                                Notifications are not yet implemented.
                                             </p>
                                         </div>
                                     </div>
