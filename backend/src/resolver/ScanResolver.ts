@@ -173,7 +173,7 @@ class ScanResolver {
         }
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => String)
     async deleteScan(@Arg('id', () => Int) id: number) {
         try {
@@ -205,7 +205,7 @@ class ScanResolver {
         return scan
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => Scan)
     async pauseOrRestartScan(@Arg('id', () => Int) id: number) {
         const scan = await Scan.findOne({
@@ -222,7 +222,7 @@ class ScanResolver {
         return scan
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => String)
     async updateScan(@Arg('data', () => UpdateScanInput) updateScanData: UpdateScanInput) {
         try {
@@ -278,6 +278,40 @@ class ScanResolver {
             console.error('Error updating scan:', error)
             throw new Error('Failed to update scan')
         }
+    }
+
+    // === FAVORITES METHODS ===
+    // 1 - get all favorite scans
+    @Authorized('Admin', 'User')
+    @Query(() => [Scan])
+    async getAllFavoritesScans(@Ctx() context: ContextType) {
+        const userId = context.id
+        // valide userid
+        if (!userId) {
+            throw new Error('You are not authorized to view this user\'s scans')
+        }
+        // find user matching this id and isFavorite == true
+        const favoristes = await Scan.find({ where: { user: { id: userId }, isFavorite: true } })
+
+        // return empty array if no scan favorite
+        return favoristes
+    }
+    // 2 - toggle favorite : add  scan to favorites OR remove scan from favorites
+
+    @Authorized('Admin', 'User')
+    @Mutation(() => Scan)
+    async toggleFavoritesScan(@Arg('id', () => Int) id: number) {
+        // find scan to update (addind or removing in/from favorites)
+        const scan = await Scan.findOne({ where: { id } })
+
+        if (!scan) {
+            throw new Error(`Scan id ${id} not found`)
+        }
+
+        scan.isFavorite = !scan.isFavorite
+        await scan.save()
+
+        return scan
     }
 }
 
