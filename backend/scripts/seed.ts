@@ -48,7 +48,7 @@ async function mockScanUrl(frequency: Frequency, user: User, allTags: Tag[]): Pr
         lastScannedAt: new Date(),
         nextScanAt: new Date(Date.now() + 15 * 60 * 1000),
         isPause: false,
-        isFavorite: false,
+        isFavorite: faker.datatype.boolean({ probability: 0.2 }), // [80% false - 20% true]
         user,
     }
 }
