@@ -12,6 +12,7 @@ import { ContextType } from '../schema/context'
 import { issuesArray } from '../utils/issuesArray'
 import { PaginationInput, PaginationOutput } from '../inputs/PaginationInput'
 import { FindOptionsWhere, ILike } from 'typeorm'
+import { paginationSchema } from '../schema/paginationSchema'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -56,11 +57,6 @@ class ScanResolver {
         }
     }
 
-    // TODO: add pagination and filters in the backend
-    // FIRST STEP: add pagination
-    //  - Input and Output types DONE
-    // - USE limit and offset in the query
-    // @Authorized("Admin", "User")
     @Query(() => PaginationOutput)
     async getAllScansByUserId(@Arg('data', () => PaginationInput) data: PaginationInput, @Ctx() context: ContextType): Promise<PaginationOutput> {
         const userId = context.id
@@ -68,10 +64,18 @@ class ScanResolver {
         if (!userId) {
             throw new Error('You are not authorized to view this user\'s scans')
         }
-        const { limit, offset } = data
+
+        const result = paginationSchema.safeParse(data)
+
+        if (!result.success) {
+            throw new Error(`Invalid pagination data: ${JSON.stringify(result.error.format())}`)
+        }
+
+        const { limit, offset, search } = result.data
+
         try {
-            const search = data.search
-            const parsedSearchNumber = Number(search)
+            const searchTerm = search
+            const parsedSearchNumber = Number(searchTerm)
             const isSearchNumber = !Number.isNaN(parsedSearchNumber)
 
             const where: FindOptionsWhere<Scan>[] = search
