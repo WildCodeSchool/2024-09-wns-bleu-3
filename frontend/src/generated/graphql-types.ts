@@ -56,6 +56,7 @@ export type Mutation = {
   logout: Scalars['String']['output'];
   pauseOrRestartScan: Scan;
   register: Scalars['String']['output'];
+  toggleFavoritesScan: Scan;
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
   updateTag: Scalars['String']['output'];
@@ -135,6 +136,11 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationToggleFavoritesScanArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type MutationUpdateFrequenceArgs = {
   data: UpdateFrequencyInput;
   id: Scalars['Float']['input'];
@@ -159,6 +165,7 @@ export type MutationUpdateUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  getAllFavoritesScans: Array<Scan>;
   getAllFrequences: Array<Frequency>;
   getAllRoles: Array<Role>;
   getAllScans: Array<Scan>;
@@ -427,6 +434,13 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: string };
 
+export type ToggleFavoritesScanMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type ToggleFavoritesScanMutation = { __typename?: 'Mutation', toggleFavoritesScan: { __typename?: 'Scan', id: number, isFavorite: boolean } };
+
 export type PreviewScanQueryVariables = Exact<{
   url: Scalars['String']['input'];
 }>;
@@ -444,7 +458,7 @@ export type GetScanByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetScanByIdQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isPause: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, name: string, intervalMinutes: number }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> } };
+export type GetScanByIdQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isPause: boolean, isFavorite: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, name: string, intervalMinutes: number }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> } };
 
 export type GetAllFrequencesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -472,7 +486,7 @@ export type GetScanHistoryQuery = { __typename?: 'Query', getScanHistory: Array<
 export type GetAllScansByUserIdQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'ScanByUserId', totalIssues: number, totalScans: number, username?: string | null, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
+export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'ScanByUserId', totalIssues: number, totalScans: number, username?: string | null, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isFavorite: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
 
 export type ScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -876,6 +890,40 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const ToggleFavoritesScanDocument = gql`
+    mutation toggleFavoritesScan($id: Int!) {
+  toggleFavoritesScan(id: $id) {
+    id
+    isFavorite
+  }
+}
+    `;
+export type ToggleFavoritesScanMutationFn = Apollo.MutationFunction<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>;
+
+/**
+ * __useToggleFavoritesScanMutation__
+ *
+ * To run a mutation, you first call `useToggleFavoritesScanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useToggleFavoritesScanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [toggleFavoritesScanMutation, { data, loading, error }] = useToggleFavoritesScanMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useToggleFavoritesScanMutation(baseOptions?: Apollo.MutationHookOptions<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>(ToggleFavoritesScanDocument, options);
+      }
+export type ToggleFavoritesScanMutationHookResult = ReturnType<typeof useToggleFavoritesScanMutation>;
+export type ToggleFavoritesScanMutationResult = Apollo.MutationResult<ToggleFavoritesScanMutation>;
+export type ToggleFavoritesScanMutationOptions = Apollo.BaseMutationOptions<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>;
 export const PreviewScanDocument = gql`
     query PreviewScan($url: String!) {
   previewScan(url: $url) {
@@ -982,6 +1030,7 @@ export const GetScanByIdDocument = gql`
     sslCertificate
     isOnline
     isPause
+    isFavorite
     createdAt
     updatedAt
     lastScannedAt
@@ -1221,6 +1270,7 @@ export const GetAllScansByUserIdDocument = gql`
       responseTime
       sslCertificate
       isOnline
+      isFavorite
       createdAt
       updatedAt
       lastScannedAt
