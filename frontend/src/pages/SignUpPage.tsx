@@ -4,11 +4,11 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@apollo/client";
-import { REGISTER } from "@/graphql/mutations";
+
 import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRegisterMutation } from "@/generated/graphql-types";
 
 
 const scanFormSchema = z.object({
@@ -31,25 +31,14 @@ type ScanFormValues = z.infer<typeof scanFormSchema>;
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const [registerMutation] = useMutation(REGISTER, {
-    onCompleted: (data) => {
-      console.log("Inscription réussie :", data);
-      navigate("/");
-      toast.success("You’ve successfully signed up! Please login to continue.")
-    },
-    onError: (err) => {
-      console.error("An error occurred. Please check your details.", err);
-      const errorMessage = err.message
-      toast.error(errorMessage);
-    }
-  });
+  const [registerMutation] =useRegisterMutation();
 
   const form = useForm({
     resolver: zodResolver(scanFormSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      password: "",
+      username: "amadou",
+      email: "bailloamadou92@gmail.com",
+      password: "Password123!",
     },
     mode: "onChange"
   });
@@ -63,6 +52,16 @@ const SignupPage = () => {
           password: data.password,
           username: data.username
         }
+      },
+      onCompleted: (data) => {
+        console.log("Inscription réussie :", data);
+        navigate("/");
+        toast.success("You’ve successfully signed up! Please login to continue.")
+      },
+      onError: (err) => {
+        console.error("An error occurred. Please check your details.", err);
+        const errorMessage = err.message
+        toast.error(errorMessage);
       }
     });
   };
