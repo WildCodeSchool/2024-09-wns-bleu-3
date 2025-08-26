@@ -3,10 +3,10 @@ import { ScanByUserId } from './ScanById'
 
 @InputType()
 export class PaginationInput {
-    @Field(() => Int, { defaultValue: 1 })
+    @Field(() => Int)
     limit: number
 
-    @Field(() => Int, { defaultValue: 10 })
+    @Field(() => Int)
     offset: number
 
     @Field(() => String, { nullable: true })
@@ -26,4 +26,7 @@ export class PaginationOutput extends ScanByUserId {
 
     @Field(() => Boolean)
     hasMore: boolean
+
+    @Field(() => Int)
+    activeScans: number
 }

@@ -1,17 +1,13 @@
 
-import { useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
 import ActiveIssues from "../components/ActiveIssues";
 import AuthScanForm from "../components/AuthScanForm";
-import { useState } from "react";
 import ScanListHistory from "@/components/dashborad/ScanListHistory";
+import { useScansContext } from "../hooks/useScansContext";
 
 const DashboardPage = () => {
-    const [resolvedIssues, setResolvedIssues] = useState<string[]>([])
-    // ID variable not necessary, ID check by context
-    const { data, loading, error } = useGetAllScansByUserIdQuery({})
+    const { scans, totalScans, loading, error, activeIssueCount } = useScansContext()
 
-    const scans = data?.getAllScansByUserId.scans ?? []
-    const totalScans = data?.getAllScansByUserId.totalScans ?? 0
+    // Number of active Scans between 200 and 300 status code
 
     const activeScans = scans.filter(
         (scan) => scan.statusCode >= 200 && scan.statusCode < 300
@@ -22,10 +18,6 @@ const DashboardPage = () => {
         ? Math.round(scans.reduce((sum, scan) => sum + scan.responseTime, 0) / scans.length)
         : 0
 
-    const allIssues = data?.getAllScansByUserId.issues ?? []
-    const activeIssues = allIssues.filter(issue => !resolvedIssues.includes(issue.id))
-
-    const activeIssueCount = activeIssues.length
 
     if (loading) return (
         <div className="min-h-screen bg-slate-950 text-slate-300 font-mono flex items-center justify-center">
@@ -39,7 +31,7 @@ const DashboardPage = () => {
     if (error) return (
         <div className="min-h-screen bg-slate-950 text-slate-300 font-mono flex items-center justify-center">
             <div className="text-center">
-                <div className="text-red-400 mb-2">◖ ERROR</div>
+                <div className="text-red-400 mb-2">ERROR</div>
                 <p className="text-slate-400">{error.message}</p>
             </div>
         </div>
@@ -77,17 +69,11 @@ const DashboardPage = () => {
                     {/* Add Scan Form and Active Issues Side by Side */}
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
                         <AuthScanForm />
-                        <ActiveIssues
-                            issues={activeIssues}
-                            scans={scans.map(({ id, title }) => ({ id, title }))}
-                            setResolvedIssues={setResolvedIssues}
-                        />
+                        <ActiveIssues />
                     </div>
 
                     {/* Scans list */}
-                    <ScanListHistory
-                        scans={scans}
-                    />
+                    <ScanListHistory />
 
                     {/* Footer */}
                     <div className="mt-6 pt-4 border-t border-slate-800/30">

@@ -3,7 +3,7 @@ import { Arg, Query, Resolver } from 'type-graphql'
 
 @Resolver(ScanHistory)
 class ScanHistoryResolver {
-    // @Authorized("Admin", "User") // à décommenté lorsque sera retiré de la homepage scan history 
+    // @Authorized("Admin", "User") // à décommenté lorsque sera retiré de la homepage scan history
     @Query(() => [ScanHistory])
     async getScanHistory(@Arg('scanId') scanId: number, @Arg('limit', { nullable: true }) limit: number = 6) {
         try {
@@ -11,6 +11,7 @@ class ScanHistoryResolver {
                 where: { scan: { id: scanId } },
                 order: { createdAt: 'DESC' },
                 take: limit,
+                relations: ['scan'],
             })
 
             return history

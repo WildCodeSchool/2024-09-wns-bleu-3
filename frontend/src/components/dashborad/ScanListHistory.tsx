@@ -18,12 +18,8 @@ import {
 import { useDashboardPage } from "@/hooks/useDashboardPage";
 import { GetAllScansByUserIdQuery } from "@/generated/graphql-types";
 import HistoryScanCard from "./HistoryScanCard";
-import { useQuery } from "@apollo/client";
-import { GET_DASHBOARD_USER_DATA } from "@/graphql/queries";
+import { useScansContext } from "../../hooks/useScansContext";
 
-export type ScanListHistoryProps = {
-    scans: GetAllScansByUserIdQuery["getAllScansByUserId"]["scans"];
-};
 
 type ScanTabConfig = {
     value: string;
@@ -36,7 +32,8 @@ type ScanTabConfig = {
 export type IScan = GetAllScansByUserIdQuery["getAllScansByUserId"]["scans"][number];
 
 
-const ScanListHistory = ({ scans }: ScanListHistoryProps) => {
+const ScanListHistory = () => {
+    const { refetch, loading, error, scans } = useScansContext()
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const { uniqueStatusCodes } = useDashboardPage(scans)
@@ -67,10 +64,6 @@ const ScanListHistory = ({ scans }: ScanListHistoryProps) => {
             (scan) => scan.statusCode.toString() === statusFilter
         );
     };
-
-    {/* Fetch user scans data with refresh capability */ }
-    const { loading, error, data, refetch } = useQuery(GET_DASHBOARD_USER_DATA);
-    const allScans = data?.getAllScansByUserId?.scans || [];
 
     if (loading) return (
         <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-6 rounded-lg">
@@ -150,9 +143,9 @@ const ScanListHistory = ({ scans }: ScanListHistoryProps) => {
                         ))}
                     </TabsList>
 
-                    {allScans.length > 0 ? (
+                    {scans.length > 0 ? (
                         scanTabs.map((tab) => {
-                            const filtered = allScans
+                            const filtered = scans
                                 .filter(tab.filter)
                                 .filter((scan: IScan) => {
                                     const q = searchQuery.toLowerCase();

@@ -101,18 +101,32 @@ function ScanDetailsPage() {
         }
     });
 
-    if (loading) return <p>Loading...</p>
-    if (error) return <p>There is an error: {error.message}</p>
+    if (loading) return (
+        <div className="min-h-screen bg-dark-blue-900 text-slate-300 font-mono flex items-center justify-center">
+            <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-slate-700 border-t-blue-400 rounded-full animate-spin"></div>
+                <span className="text-slate-400">Loading scan details...</span>
+            </div>
+        </div>
+    )
+    if (error) return (
+        <div className="min-h-screen bg-dark-blue-900 text-slate-300 font-mono flex items-center justify-center">
+            <div className="text-center">
+                <div className="text-red-400 mb-2">ERROR</div>
+                <p className="text-slate-400">{error.message}</p>
+            </div>
+        </div>
+    )
 
     const scanHistory = historyData?.getScanHistory || [];
     const scan = data?.getScanById;
 
     if (!scan) {
         return (
-            <div className="p-4">
-                <Alert>
-                    <Activity className="h-4 w-4" />
-                    <AlertDescription>
+            <div className="min-h-screen bg-dark-blue-900 text-slate-300 font-mono p-4">
+                <Alert className="border-red-400/20 bg-red-400/10">
+                    <Activity className="h-4 w-4 text-red-400" />
+                    <AlertDescription className="text-red-400">
                         Scan not found
                     </AlertDescription>
                 </Alert>
@@ -148,12 +162,12 @@ function ScanDetailsPage() {
 
     return (
         <>
-            <div className="flex min-h-screen flex-col">
-                <main className="flex-1 bg-gray-50">
-                    <div className=" py-8 px-6">
+            <div className="flex min-h-screen flex-col bg-dark-blue-900 text-slate-300 font-mono">
+                <main className="flex-1">
+                    <div className="py-8 px-6">
                         {/* back to dashboard */}
                         <div className="flex items-center mb-6">
-                            <Button variant="ghost" size="sm" asChild>
+                            <Button variant="outline" size="sm" asChild className="bg-slate-800/50 border-white/10 text-slate-300 hover:text-white hover:bg-slate-700/50 hover:border-white/20">
                                 <Link to="/dashboard">
                                     <ArrowLeft className="h-4 w-4 mr-2" /> Back to Scans
                                 </Link>
@@ -161,29 +175,29 @@ function ScanDetailsPage() {
                         </div>
 
                         {/* Scan details header */}
-                        <div className="flex space-around bg-white rounded-xl p-6 mb-6">
+                        <div className="flex space-around border border-white/10 bg-main-400/5 backdrop-blur-xl rounded-xl p-6 mb-6">
                             <div className="text-left flex-1">
-                                <h1 className="text-3xl font-bold text-gray-800">{scan.title}</h1>
-                                <p className="text-gray-600">{scan.url}</p>
+                                <h1 className="text-3xl font-bold text-white">{scan.title}</h1>
+                                <p className="text-slate-400">{scan.url}</p>
                             </div>
                             <div className="flex gap-2">
                                 <Button
                                     variant="outline"
-                                    className={`gap-2 border-gray-200 cursor-pointer hover:text-yellow-600 ${isFavorite ? 'text-yellow-600 bg-yellow-50 border-yellow-200 hover:bg-yellow-100' : ''}`}
+                                    className={`gap-2 border-white/10 bg-slate-800/50 text-slate-300 hover:text-yellow-400 hover:bg-slate-700/50 ${isFavorite ? 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20' : ''}`}
                                     onClick={handleFavoriteClick}
                                 >
-                                    <Star className={`h-4 w-4 ${isFavorite ? 'fill-yellow-600' : ''}`} />
+                                    <Star className={`h-4 w-4 ${isFavorite ? 'fill-yellow-400' : ''}`} />
                                     {isFavorite ? 'Favorited' : 'Favorite'}
                                 </Button>
                                 <Button
                                     variant="outline"
                                     onClick={() => pauseOrRestartScan()}
-                                    className={`gap-2 border-gray-200 cursor-pointer hover:text-blue-700 ${isPause ? 'text-blue-600 bg-blue-50 border-blue-200 hover:bg-blue-100' : ''
+                                    className={`gap-2 border-white/10 bg-slate-800/50 text-slate-300 hover:text-blue-400 hover:bg-slate-700/50 ${isPause ? 'text-blue-400 bg-blue-400/10 border-blue-400/20' : ''
                                         }`}
                                 >
                                     {isPause ? (
                                         <>
-                                            <Play className="h-4 w-4 fill-blue-500" />
+                                            <Play className="h-4 w-4 fill-blue-400" />
                                             <span>Resume</span>
                                         </>
                                     ) : (
@@ -193,13 +207,13 @@ function ScanDetailsPage() {
                                         </>
                                     )}
                                 </Button>
-                                <Button variant="outline" className="gap-2 border-gray-200 cursor-pointer">
+                                <Button variant="outline" className="gap-2 border-white/10 bg-slate-800/50 text-slate-300 hover:text-white hover:bg-slate-700/50">
                                     <RefreshCw className="h-4 w-4" /> Refresh Now
                                 </Button>
 
                                 <Sheet>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" className="gap-2 border-gray-200 cursor-pointer">
+                                        <Button variant="outline" className="gap-2 border-white/10 bg-slate-800/50 text-slate-300 hover:text-white hover:bg-slate-700/50">
                                             <Settings className="h-4 w-4" /> Edit
                                         </Button>
                                     </SheetTrigger>
@@ -284,7 +298,7 @@ function ScanDetailsPage() {
 
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button variant="outline" className="gap-2 border-gray-200 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50">
+                                        <Button variant="outline" className="gap-2 border-red-400/20 bg-red-400/10 text-red-400 hover:text-red-300 hover:bg-red-400/20">
                                             <Trash2 className="h-4 w-4" /> Delete
                                         </Button>
                                     </AlertDialogTrigger>
@@ -297,7 +311,7 @@ function ScanDetailsPage() {
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
-                                            <AlertDialogCancel className="border border-gray-200 text-gray-600 bg-white hover:bg-gray-100 hover:text-gray-800 transition-colors cursor-pointer px-4 py-2 rounded-md">Cancel</AlertDialogCancel>
+                                            <AlertDialogCancel className="border border-white/10 text-slate-300 bg-slate-800/50 hover:bg-slate-700/50 hover:text-white transition-colors cursor-pointer px-4 py-2 rounded-md">Cancel</AlertDialogCancel>
                                             <AlertDialogAction onClick={() => deleteScan()}
                                                 disabled={deleteLoading} className="bg-red-600 text-white hover:bg-red-700 cursor-pointer">
                                                 {deleteLoading ? "Deleting..." : "Continue"}</AlertDialogAction>
@@ -311,25 +325,25 @@ function ScanDetailsPage() {
                         {/*** HC-50 ***/}
                         <ScanDetailsCards scan={scan} />
                         {/*** HC-53 ***/}
-                        <h2 className=" mb-6 text-2xl text-black text-left font-bold">Scan History</h2>
-                        {historyLoading ? <p>Loading...</p> :
+                        <h2 className="mb-6 text-2xl text-white text-left font-bold">Scan History</h2>
+                        {historyLoading ? <p className="text-slate-400">Loading...</p> :
                             <ScanDetailsChart history={scanHistory} />}
 
                         {/*** HC-52 ***/}
                         {/* Tabs for additional details */}
-                        <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
+                        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl rounded-xl p-6 mt-6">
                             <Tabs defaultValue="history">
-                                <TabsList className="mb-4 cursor-pointer">
-                                    <TabsTrigger className="cursor-pointer" value="history">Detailed History</TabsTrigger>
-                                    <TabsTrigger className="cursor-pointer" value="settings">Settings</TabsTrigger>
+                                <TabsList className="mb-4 cursor-pointer bg-slate-800/50 border-white/10">
+                                    <TabsTrigger className="cursor-pointer text-slate-300 data-[state=active]:text-white data-[state=active]:bg-slate-700/50" value="history">Detailed History</TabsTrigger>
+                                    <TabsTrigger className="cursor-pointer text-slate-300 data-[state=active]:text-white data-[state=active]:bg-slate-700/50" value="settings">Settings</TabsTrigger>
                                 </TabsList>
 
                                 <TabsContent value="history">
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between mb-4">
-                                            <h3 className="text-lg font-medium">Recent Checks</h3>
+                                            <h3 className="text-lg font-medium text-white">Recent Checks</h3>
                                             <div className="flex items-center gap-2">
-                                                <Badge variant="outline" className="gap-1">
+                                                <Badge variant="outline" className="gap-1 border-white/20 bg-slate-800/50 text-slate-300">
                                                     <BarChart4 className="h-3.5 w-3.5" />
                                                     {scanHistory.length === 10 ? 'Last 10 checks' : `${scanHistory.length} ${scanHistory.length === 1 ? 'check' : 'checks'}`}
                                                 </Badge>
@@ -339,11 +353,11 @@ function ScanDetailsPage() {
                                         <div className="overflow-x-auto">
                                             <table className="w-full border-collapse">
                                                 <thead>
-                                                    <tr className="border-b border-gray-200">
-                                                        <th className="py-2 px-4 text-left font-medium text-gray-500">Time</th>
-                                                        <th className="py-2 px-4 text-center font-medium text-gray-500">Status</th>
-                                                        <th className="py-2 px-4 text-center font-medium text-gray-500">Status Code</th>
-                                                        <th className="py-2 px-4 text-center font-medium text-gray-500">Response Time</th>
+                                                    <tr className="border-b border-white/10">
+                                                        <th className="py-2 px-4 text-left font-medium text-slate-400">Time</th>
+                                                        <th className="py-2 px-4 text-center font-medium text-slate-400">Status</th>
+                                                        <th className="py-2 px-4 text-center font-medium text-slate-400">Status Code</th>
+                                                        <th className="py-2 px-4 text-center font-medium text-slate-400">Response Time</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -352,11 +366,11 @@ function ScanDetailsPage() {
                                                         const statusColor = getStatusColor(entry.isOnline);
 
                                                         return (
-                                                            <tr key={entry.id} className="border-b border-gray-200 hover:bg-gray-50">
+                                                            <tr key={entry.id} className="border-b border-white/10 hover:bg-slate-800/30">
                                                                 <td className="py-3 px-4 text-sm">
                                                                     <div className="flex items-center gap-2">
-                                                                        <Clock className="h-4 w-4 text-gray-400" />
-                                                                        {formatDate(entry.createdAt)}
+                                                                        <Clock className="h-4 w-4 text-slate-400" />
+                                                                        <span className="text-slate-300">{formatDate(entry.createdAt)}</span>
                                                                     </div>
                                                                 </td>
                                                                 <td className="py-3 px-4 text-center">
@@ -369,14 +383,14 @@ function ScanDetailsPage() {
                                                                 </td>
                                                                 <td className="py-3 px-4 text-center">
                                                                     <div className="flex items-center justify-center gap-2">
-                                                                        <span className="text-sm font-medium">{entry.statusCode}</span>
-                                                                        <span className="text-xs text-gray-500">{entry.statusMessage}</span>
+                                                                        <span className="text-sm font-medium text-slate-300">{entry.statusCode}</span>
+                                                                        <span className="text-xs text-slate-400">{entry.statusMessage}</span>
                                                                     </div>
                                                                 </td>
                                                                 <td className="py-3 px-4 text-center">
                                                                     <div className="flex items-center justify-center gap-1">
-                                                                        <Zap className="h-3 w-3 text-blue-500" />
-                                                                        <span className="text-sm font-medium">{entry.responseTime}ms</span>
+                                                                        <Zap className="h-3 w-3 text-blue-400" />
+                                                                        <span className="text-sm font-medium text-slate-300">{entry.responseTime}ms</span>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -384,7 +398,7 @@ function ScanDetailsPage() {
                                                     })}
                                                     {scanHistory.length === 0 && (
                                                         <tr>
-                                                            <td colSpan={4} className="py-8 text-center text-gray-500">
+                                                            <td colSpan={4} className="py-8 text-center text-slate-400">
                                                                 No scan history available
                                                             </td>
                                                         </tr>
@@ -397,9 +411,9 @@ function ScanDetailsPage() {
 
                                 <TabsContent value="settings">
                                     <div className="space-y-4">
-                                        <h3 className="text-lg font-medium mb-4">Settings</h3>
-                                        <div className="bg-gray-50 p-4 rounded-lg">
-                                            <p className="text-gray-600 text-center">
+                                        <h3 className="text-lg font-medium mb-4 text-white">Settings</h3>
+                                        <div className="bg-slate-800/50 border border-white/10 p-4 rounded-lg">
+                                            <p className="text-slate-400 text-center">
                                                 Notification settings are not yet implemented.
                                             </p>
                                         </div>

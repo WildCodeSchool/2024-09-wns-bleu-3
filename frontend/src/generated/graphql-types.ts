@@ -158,13 +158,14 @@ export type MutationUpdateUserArgs = {
 };
 
 export type PaginationInput = {
-  limit?: Scalars['Int']['input'];
-  offset?: Scalars['Int']['input'];
+  limit: Scalars['Int']['input'];
+  offset: Scalars['Int']['input'];
   search?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PaginationOutput = {
   __typename?: 'PaginationOutput';
+  activeScans: Scalars['Int']['output'];
   hasMore: Scalars['Boolean']['output'];
   issues: Array<Issue>;
   limit: Scalars['Int']['output'];
@@ -487,7 +488,7 @@ export type GetAllScansByUserIdQueryVariables = Exact<{
 }>;
 
 
-export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'PaginationOutput', totalIssues: number, totalScans: number, total: number, page: number, limit: number, hasMore: boolean, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
+export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'PaginationOutput', totalIssues: number, totalScans: number, total: number, page: number, limit: number, hasMore: boolean, activeScans: number, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
 
 export type ScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -1255,6 +1256,7 @@ export const GetAllScansByUserIdDocument = gql`
     page
     limit
     hasMore
+    activeScans
   }
 }
     `;

@@ -2,22 +2,16 @@
 
 import { AlertTriangle, XCircle, ShieldAlert, Link2Icon } from "lucide-react"
 import { Link } from "react-router"
-import { ScanIssues } from "../@types/scan"
-import { Issue } from "../@types/issue"
 import { Separator } from "./ui/separator"
+import { useScansContext } from "../hooks/useScansContext"
 
-interface ActiveIssuesProps {
-    issues: Issue[]
-    scans: ScanIssues[]
-    setResolvedIssues: React.Dispatch<React.SetStateAction<string[]>>
-}
+export default function ActiveIssues() {
+    const { setResolvedIssues, activeIssueCount, activeIssues, scans } = useScansContext()
 
-export default function ActiveIssues({ issues, scans, setResolvedIssues }: ActiveIssuesProps) {
     const handleResolveIssue = (id: string) => {
         setResolvedIssues((prev) => [...prev, id])
     }
 
-    const activeIssueCount = issues.length
 
     return (
         <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl rounded-lg p-6 flex flex-col h-[450px] overflow-y-scroll custom-scrollbar">
@@ -35,7 +29,7 @@ export default function ActiveIssues({ issues, scans, setResolvedIssues }: Activ
                     </div>
                 ) : (
                     <div className="space-y-3">
-                        {issues.map((issue) => {
+                        {activeIssues.map((issue) => {
                             const issueDisplay =
                                 issue.issueType === "STATUS_CODE"
                                     ? {

@@ -96,6 +96,7 @@ class ScanResolver {
 
             const [scans, total] = await Scan.findAndCount({
                 where,
+                relations: ['frequency', 'tags'],
                 order: {
                     id: 'DESC',
                 },
@@ -108,6 +109,8 @@ class ScanResolver {
             const page = Math.floor(offset / limit) + 1
             const hasMore = offset + limit < total
 
+            const activeScans = scans.filter(scan => scan.statusCode >= 200 && scan.statusCode < 300).length
+
             return {
                 scans,
                 issues,
@@ -117,6 +120,7 @@ class ScanResolver {
                 page,
                 limit,
                 hasMore,
+                activeScans,
             }
         }
         catch (error) {
@@ -234,6 +238,7 @@ class ScanResolver {
         const scan = await Scan.findOne({
             where: { id },
             order: { id: 'DESC' },
+            relations: ['frequency', 'tags'],
         })
         if (scan === null) {
             throw new Error(`Cannot find scan with id ${id}`)
@@ -246,6 +251,7 @@ class ScanResolver {
     async pauseOrRestartScan(@Arg('id', () => Int) id: number) {
         const scan = await Scan.findOne({
             where: { id },
+            relations: ['frequency', 'tags'],
         })
 
         if (!scan) {

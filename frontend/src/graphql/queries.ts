@@ -148,6 +148,7 @@ export const GET_DASHBOARD_USER_DATA = gql`
       page
       limit
       hasMore
+      activeScans
     }
   }
 `;
