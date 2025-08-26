@@ -1,21 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { ForwardRefExoticComponent, RefAttributes, useState } from "react"
 import { Link } from "react-router"
 import {
     Bell,
     Clock,
-    Server,
     Gauge,
     Shield,
-    Wifi,
-    WifiOff,
-    Database,
     ExternalLink,
     CheckCircle2,
     AlertTriangle,
     XCircle,
     Info,
+    LucideProps,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -24,97 +21,41 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
+import { useGetAllScanHistoryQuery } from "@/generated/graphql-types"
 
-// Notifications data
-const notifications = [
-    {
-        id: 1,
-        type: "critical",
-        title: "Monitor Down",
-        message: "PAYMENT_GATEWAY is returning HTTP 500 errors",
-        time: "2 minutes ago",
-        read: false,
-        scanId: "M-006",
-        scanName: "Payment Gateway",
-        icon: Server,
-        details:
-            "Multiple consecutive failures detected. Last successful check was 15 minutes ago. This affects payment processing for all customers.",
-        actions: ["View Monitor", "Check Logs", "Create Incident"],
-    },
-    {
-        id: 2,
-        type: "warning",
-        title: "High Response Time",
-        message: "API_ENDPOINT response time exceeded threshold",
-        time: "8 minutes ago",
-        read: false,
-        scanId: "M-002",
-        scanName: "API Endpoint",
-        icon: Gauge,
-        details:
-            "Average response time: 1,247ms (threshold: 1000ms). Consider investigating server performance or scaling resources.",
-        actions: ["View Monitor", "Check Performance", "Scale Resources"],
-    },
-    {
-        id: 3,
-        type: "critical",
-        title: "SSL Certificate Expiring",
-        message: "MAIN_WEBSITE SSL certificate expires in 3 days",
-        time: "1 hour ago",
-        read: false,
-        scanId: "M-001",
-        scanName: "Main Website",
-        icon: Shield,
-        details:
-            "Certificate expires on July 14, 2025. Renewal required to avoid service disruption and security warnings.",
-        actions: ["Renew Certificate", "View Details", "Set Reminder"],
-    },
-    {
-        id: 4,
-        type: "error",
-        title: "Monitor Offline",
-        message: "STAGING_ENV returning HTTP 404 errors",
-        time: "2 hours ago",
-        read: true,
-        scanId: "M-003",
-        scanName: "Staging Environment",
-        icon: WifiOff,
-        details: "Service appears to be completely offline. Last successful response was 3 hours ago.",
-        actions: ["Restart Service", "Check Deployment", "View Logs"],
-    },
-    {
-        id: 5,
-        type: "info",
-        title: "Monitor Recovered",
-        message: "AUTH_SERVICE is back online and responding normally",
-        time: "3 hours ago",
-        read: true,
-        scanId: "M-005",
-        scanName: "Auth Service",
-        icon: Wifi,
-        details: "Service recovered after 45 minutes of downtime. All authentication systems are now operational.",
-        actions: ["View Report", "Check Metrics"],
-    },
-    {
-        id: 6,
-        type: "warning",
-        title: "Database Connection Issues",
-        message: "DOCS_SITE experiencing intermittent timeouts",
-        time: "4 hours ago",
-        read: true,
-        scanId: "M-004",
-        scanName: "Documentation Site",
-        icon: Database,
-        details: "Sporadic connection timeouts detected. Monitor for potential database performance issues.",
-        actions: ["Check Database", "View Metrics", "Optimize Queries"],
-    },
-]
+interface NotificationItem {
+    id: string
+    type: string
+    title: string
+    message: string
+    time: string
+    read: boolean
+    scanId: number
+    scanName: string
+    icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>
+    details: string
+    actions: string[]
+}
+
+interface scanHistorySimplified {
+    id: number
+    createdAt: string | Date
+    url: string
+    isOnline: boolean
+    responseTime: number
+    sslCertificate: string
+    statusCode: number
+    statusMessage: string
+    scan: {
+        id: number
+        url: string
+        title: string
+    }
+}
 
 export default function ModernNotifications() {
-    const [selectedNotification, setSelectedNotification] = useState<(typeof notifications)[0] | null>(null)
+    const [selectedNotification, setSelectedNotification] = useState<(typeof realNotifications)[0] | null>(null)
     const [isSheetOpen, setIsSheetOpen] = useState(false)
-
-    const unreadCount = notifications.filter((n) => !n.read).length
 
     const getNotificationIcon = (type: string) => {
         switch (type) {
@@ -131,10 +72,98 @@ export default function ModernNotifications() {
         }
     }
 
-    const handleNotificationClick = (notification: (typeof notifications)[0]) => {
+    const handleNotificationClick = (notification: NotificationItem) => {
         setSelectedNotification(notification)
         setIsSheetOpen(true)
     }
+
+    const { data: historyData } = useGetAllScanHistoryQuery()
+
+    const allHistory = historyData?.getAllScanHistory
+
+    const formatTimeAgo = (date: Date | string) => {
+        const now = new Date()
+        const scanDate = new Date(date)
+        const diff = now.getTime() - scanDate.getTime()
+        const minutes = Math.floor(diff / 60000)
+        const hours = Math.floor(minutes / 60)
+        const days = Math.floor(hours / 24)
+
+        if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`
+        if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`
+        if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
+        return 'Just now'
+    }
+
+    const isSSLExpired = (sslCertificate: string) => {
+        // Simple vérification si le certificat contient des mots-clés d'expiration
+        const lowerCert = sslCertificate.toLowerCase()
+        return lowerCert.includes('expired') || lowerCert.includes('invalid') || lowerCert.includes('error')
+    }
+
+    const generateNotificationsFromHistory = (history: scanHistorySimplified[]): NotificationItem[] => {
+        const notifications: NotificationItem[] = []
+
+        history.forEach(scan => {
+            // Notification pour temps de réponse élevé
+            if (scan.responseTime > 350) {
+                notifications.push({
+                    id: `response-${scan.id}`,
+                    type: "warning",
+                    title: "High Response Time",
+                    message: `${scan.url} response time: ${scan.responseTime}ms`,
+                    time: formatTimeAgo(scan.createdAt),
+                    read: false,
+                    scanId: scan.scan.id,
+                    scanName: scan.scan.title,
+                    icon: Gauge,
+                    details: `Response time ${scan.responseTime}ms exceeded threshold of 350ms`,
+                    actions: ["View Monitor", "Check Performance"]
+                })
+            }
+
+            // Notification pour erreur de status code
+            if (scan.statusCode >= 400) {
+                notifications.push({
+                    id: `status-${scan.id}`,
+                    type: "error",
+                    title: "Status Code Error",
+                    message: `${scan.url} returned ${scan.statusCode}`,
+                    time: formatTimeAgo(scan.createdAt),
+                    read: false,
+                    scanId: scan.scan.id,
+                    scanName: scan.scan.title,
+                    icon: XCircle,
+                    details: `HTTP ${scan.statusCode}: ${scan.statusMessage}`,
+                    actions: ["View Monitor", "Check Logs"]
+                })
+            }
+
+            // Notification pour certificat SSL expiré
+            if (scan.sslCertificate && isSSLExpired(scan.sslCertificate)) {
+                notifications.push({
+                    id: `ssl-${scan.id}`,
+                    type: "critical",
+                    title: "SSL Certificate Issue",
+                    message: `${scan.url} SSL certificate expired`,
+                    time: formatTimeAgo(scan.createdAt),
+                    read: false,
+                    scanId: scan.scan.id,
+                    scanName: scan.scan.title,
+                    icon: Shield,
+                    details: `SSL certificate needs renewal`,
+                    actions: ["Renew Certificate", "View Details"]
+                })
+            }
+        })
+
+        return notifications
+    }
+    console.log("historic", allHistory)
+
+    const realNotifications = allHistory ? generateNotificationsFromHistory(allHistory) : []
+
+    const unreadCount = realNotifications.filter((n) => !n.read).length
 
     return (
         <>
@@ -172,7 +201,7 @@ export default function ModernNotifications() {
 
                     <ScrollArea className="h-[400px]">
                         <div className="p-2 space-y-2">
-                            {notifications.map((notification) => {
+                            {realNotifications.map((notification) => {
                                 const iconConfig = getNotificationIcon(notification.type)
                                 const IconComponent = notification.icon
 
@@ -271,7 +300,6 @@ export default function ModernNotifications() {
                                             <div className="flex items-center justify-between">
                                                 <div>
                                                     <p className="font-medium text-white">{selectedNotification.scanName}</p>
-                                                    <p className="text-sm text-slate-400">{selectedNotification.scanId}</p>
                                                 </div>
                                                 <Button
                                                     variant="outline"

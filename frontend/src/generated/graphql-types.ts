@@ -161,6 +161,7 @@ export type Query = {
   __typename?: 'Query';
   getAllFrequences: Array<Frequency>;
   getAllRoles: Array<Role>;
+  getAllScanHistory: Array<ScanHistory>;
   getAllScans: Array<Scan>;
   getAllScansByUserId: ScanByUserId;
   getAllTags: Array<Tag>;
@@ -432,6 +433,11 @@ export type PreviewScanQueryVariables = Exact<{
 
 
 export type PreviewScanQuery = { __typename?: 'Query', previewScan: { __typename?: 'ScanPreview', url: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean } };
+
+export type GetAllScanHistoryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllScanHistoryQuery = { __typename?: 'Query', getAllScanHistory: Array<{ __typename?: 'ScanHistory', id: number, createdAt: any, url: string, isOnline: boolean, responseTime: number, sslCertificate: string, statusCode: number, statusMessage: string, scan: { __typename?: 'Scan', id: number, url: string, title: string } }> };
 
 export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -920,6 +926,57 @@ export type PreviewScanQueryHookResult = ReturnType<typeof usePreviewScanQuery>;
 export type PreviewScanLazyQueryHookResult = ReturnType<typeof usePreviewScanLazyQuery>;
 export type PreviewScanSuspenseQueryHookResult = ReturnType<typeof usePreviewScanSuspenseQuery>;
 export type PreviewScanQueryResult = Apollo.QueryResult<PreviewScanQuery, PreviewScanQueryVariables>;
+export const GetAllScanHistoryDocument = gql`
+    query GetAllScanHistory {
+  getAllScanHistory {
+    id
+    createdAt
+    url
+    isOnline
+    responseTime
+    sslCertificate
+    statusCode
+    statusMessage
+    scan {
+      id
+      url
+      title
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAllScanHistoryQuery__
+ *
+ * To run a query within a React component, call `useGetAllScanHistoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllScanHistoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllScanHistoryQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllScanHistoryQuery(baseOptions?: Apollo.QueryHookOptions<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>(GetAllScanHistoryDocument, options);
+      }
+export function useGetAllScanHistoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>(GetAllScanHistoryDocument, options);
+        }
+export function useGetAllScanHistorySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>(GetAllScanHistoryDocument, options);
+        }
+export type GetAllScanHistoryQueryHookResult = ReturnType<typeof useGetAllScanHistoryQuery>;
+export type GetAllScanHistoryLazyQueryHookResult = ReturnType<typeof useGetAllScanHistoryLazyQuery>;
+export type GetAllScanHistorySuspenseQueryHookResult = ReturnType<typeof useGetAllScanHistorySuspenseQuery>;
+export type GetAllScanHistoryQueryResult = Apollo.QueryResult<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>;
 export const GetAllScansDocument = gql`
     query GetAllScans {
   getAllScans {

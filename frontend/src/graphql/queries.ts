@@ -15,6 +15,25 @@ query PreviewScan($url: String!) {
   }
 }`
 
+export const GET_ALL_SCANHISTORY = gql`
+query GetAllScanHistory {
+  getAllScanHistory {
+    id
+    createdAt 
+    url 
+    isOnline
+    responseTime
+    sslCertificate
+    statusCode
+    statusMessage
+    scan {
+        id
+        url
+        title
+    }
+  }
+}`
+
 export const GET_ALL_SCANS = gql`
 query GetAllScans {
   getAllScans {

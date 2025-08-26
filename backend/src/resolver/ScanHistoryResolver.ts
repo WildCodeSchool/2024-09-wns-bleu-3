@@ -1,5 +1,6 @@
+import { ContextType } from 'src/schema/context'
 import { ScanHistory } from '../entities/ScanHistory'
-import { Arg, Query, Resolver } from 'type-graphql'
+import { Arg, Ctx, Query, Resolver } from 'type-graphql'
 
 @Resolver(ScanHistory)
 class ScanHistoryResolver {
@@ -14,6 +15,29 @@ class ScanHistoryResolver {
             })
 
             return history
+        }
+        catch (error) {
+            console.error({ 'Error getting scan history': error })
+            throw new Error('Something wrong happened')
+        }
+    }
+
+    @Query(() => [ScanHistory])
+    async getAllScanHistory(@Ctx() context: ContextType) {
+        try {
+            const histories = await ScanHistory.find({
+                where: {
+                    scan: {
+                        user: {
+                            id: context.id
+                        }
+                    }
+                },
+                relations: ['scan', 'scan.user'],
+                order: { createdAt: 'DESC' },
+            })
+
+            return histories
         }
         catch (error) {
             console.error({ 'Error getting scan history': error })

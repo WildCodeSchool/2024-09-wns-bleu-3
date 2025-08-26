@@ -8,7 +8,7 @@ import { Link, useParams } from "react-router"
 
 export type IScanDetails = GetScanByIdQuery["getScanById"]; import { SetStateAction, useEffect, useState } from 'react'
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent } from "@/components/ui/tabs"
 import {
     BarChart4,
     Clock,
@@ -22,8 +22,6 @@ import {
     Star,
     Pause,
     Play,
-    Monitor,
-    Link2
 } from "lucide-react"
 import { useDeleteScanMutation, usePauseOrRestartScanMutation, useUpdateScanMutation, useGetAllFrequencesQuery, useGetAllTagsQuery } from '../generated/graphql-types'
 
@@ -175,7 +173,6 @@ function ScanDetailsPage() {
                                 </Link>
                             </Button>
                         </div>
-
                         {/* Scan details header */}
                         <div className="flex space-around rounded-xl p-6 mb-6">
                             <div className="text-left flex-1">
@@ -204,7 +201,6 @@ function ScanDetailsPage() {
                                             <Copy
                                                 className="h-3 w-3 text-gray-500 cursor-pointer hover:text-gray-400 transition-colors flex-shrink-0"
                                                 onClick={handleCopyUrl}
-                                                title="Cliquer pour copier l'URL"
                                             />
                                         </div>
                                     </div>
@@ -240,7 +236,6 @@ function ScanDetailsPage() {
                                 <Button variant="outline" className="gap-2 border-gray-200 cursor-pointer">
                                     <RefreshCw className="h-4 w-4" /> Refresh Now
                                 </Button>
-
                                 <Sheet>
                                     <SheetTrigger asChild>
                                         <Button variant="outline" className="gap-2 border-gray-200 cursor-pointer">
@@ -264,7 +259,6 @@ function ScanDetailsPage() {
                                                     className="bg-gray-50 border-gray-200 focus:bg-blue-50 focus:border-blue-400 focus:ring-blue-400"
                                                 />
                                             </div>
-
                                             <div className="grid gap-3">
                                                 <Label htmlFor="scan-frequency">Check Frequency</Label>
                                                 <Select value={editedFrequency} onValueChange={(value: SetStateAction<string>) => setEditedFrequency(value)}>
@@ -283,7 +277,6 @@ function ScanDetailsPage() {
                                                     </SelectContent>
                                                 </Select>
                                             </div>
-
                                             <div className="grid gap-3">
                                                 <Label htmlFor="scan-tags">Tags</Label>
                                                 <div className="grid grid-cols-2 gap-3">
@@ -343,7 +336,6 @@ function ScanDetailsPage() {
                                         </SheetFooter>
                                     </SheetContent>
                                 </Sheet>
-
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
                                         <Button variant="outline" className="gap-2 border-gray-200 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50">
@@ -368,7 +360,6 @@ function ScanDetailsPage() {
                                 </AlertDialog>
                             </div>
                         </div>
-
                         {/*** HC-51 ***/}
                         {/*** HC-50 ***/}
                         <ScanDetailsCards scan={scan} />
@@ -376,16 +367,10 @@ function ScanDetailsPage() {
                         <h2 className=" mb-6 text-2xl text-black text-left font-bold">Scan History</h2>
                         {historyLoading ? <p>Loading...</p> :
                             <ScanDetailsChart history={scanHistory} />}
-
                         {/*** HC-52 ***/}
                         {/* Tabs for additional details */}
                         <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
                             <Tabs defaultValue="history">
-                                <TabsList className="mb-4 cursor-pointer">
-                                    <TabsTrigger className="cursor-pointer" value="history">Detailed History</TabsTrigger>
-                                    <TabsTrigger className="cursor-pointer" value="notifications">Notifications</TabsTrigger>
-                                </TabsList>
-
                                 <TabsContent value="history">
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between mb-4">
@@ -397,7 +382,6 @@ function ScanDetailsPage() {
                                                 </Badge>
                                             </div>
                                         </div>
-
                                         <div className="overflow-x-auto">
                                             <table className="w-full border-collapse">
                                                 <thead>
@@ -412,7 +396,6 @@ function ScanDetailsPage() {
                                                     {scanHistory.map((entry) => {
                                                         const StatusIcon = getStatusIcon(entry.isOnline);
                                                         const statusColor = getStatusColor(entry.isOnline);
-
                                                         return (
                                                             <tr key={entry.id} className="border-b border-gray-200 hover:bg-gray-50">
                                                                 <td className="py-3 px-4 text-sm">
@@ -453,17 +436,6 @@ function ScanDetailsPage() {
                                                     )}
                                                 </tbody>
                                             </table>
-                                        </div>
-                                    </div>
-                                </TabsContent>
-
-                                <TabsContent value="notifications">
-                                    <div className="space-y-4">
-                                        <h3 className="text-lg font-medium mb-4">Notifications</h3>
-                                        <div className="bg-gray-50 p-4 rounded-lg">
-                                            <p className="text-gray-600 text-center">
-                                                Notifications are not yet implemented.
-                                            </p>
                                         </div>
                                     </div>
                                 </TabsContent>
