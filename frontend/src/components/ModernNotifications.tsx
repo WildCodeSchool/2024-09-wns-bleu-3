@@ -1,6 +1,6 @@
 "use client"
 
-import { ForwardRefExoticComponent, RefAttributes, useState } from "react"
+import { ForwardRefExoticComponent, RefAttributes, useEffect, useState } from "react"
 import { Link } from "react-router"
 import {
     Bell,
@@ -54,8 +54,10 @@ interface scanHistorySimplified {
 }
 
 export default function ModernNotifications() {
-    const [selectedNotification, setSelectedNotification] = useState<(typeof realNotifications)[0] | null>(null)
+    const [selectedNotification, setSelectedNotification] = useState<(typeof notifications)[0] | null>(null)
     const [isSheetOpen, setIsSheetOpen] = useState(false)
+    const [readNotificationIds, setReadNotificationIds] = useState<string[]>([])
+    const [notifications, setNotifications] = useState<NotificationItem[]>([])
 
     const getNotificationIcon = (type: string) => {
         switch (type) {
@@ -75,6 +77,12 @@ export default function ModernNotifications() {
     const handleNotificationClick = (notification: NotificationItem) => {
         setSelectedNotification(notification)
         setIsSheetOpen(true)
+        if (!readNotificationIds.includes(notification.id)) {
+            setReadNotificationIds(prevIds => [...prevIds, notification.id]);
+        }
+        setNotifications(prev =>
+            prev.filter(n => n.id !== notification.id)
+        )
     }
 
     const { data: historyData } = useGetAllScanHistoryQuery()
@@ -159,11 +167,18 @@ export default function ModernNotifications() {
 
         return notifications
     }
-    console.log("historic", allHistory)
 
-    const realNotifications = allHistory ? generateNotificationsFromHistory(allHistory) : []
+    useEffect(() => {
+        if (allHistory) {
+            setNotifications(generateNotificationsFromHistory(allHistory))
+        }
+    }, [allHistory])
 
-    const unreadCount = realNotifications.filter((n) => !n.read).length
+    // const realNotifications = allHistory ? generateNotificationsFromHistory(allHistory) : []
+
+    const unreadCount = notifications.filter(n => !readNotificationIds.includes(n.id)).length
+
+    console.log(notifications)
 
     return (
         <>
@@ -201,7 +216,7 @@ export default function ModernNotifications() {
 
                     <ScrollArea className="h-[400px]">
                         <div className="p-2 space-y-2">
-                            {realNotifications.map((notification) => {
+                            {notifications.map((notification) => {
                                 const iconConfig = getNotificationIcon(notification.type)
                                 const IconComponent = notification.icon
 
