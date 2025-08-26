@@ -4,7 +4,7 @@ import { Frequency } from './Frequency'
 import { Tag } from './Tag'
 import { User } from './User'
 import { ScanHistory } from './ScanHistory'
-import { IsUrl, Length, Max, Min } from 'class-validator'
+import { IsUrl, Length } from 'class-validator'
 
 @ObjectType()
 @Entity()
