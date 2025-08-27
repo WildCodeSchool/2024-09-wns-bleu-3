@@ -91,7 +91,7 @@ jobs:
   zap-scan:
     needs: [deploy-server, deploy-client]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/staging'
+    if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/zap-security'
     steps:
       - name: Run OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.10.0
