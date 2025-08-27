@@ -1,6 +1,6 @@
 import { ContextType } from 'src/schema/context'
 import { ScanHistory } from '../entities/ScanHistory'
-import { Arg, Ctx, Query, Resolver } from 'type-graphql'
+import { Arg, Ctx, Query, Resolver, Root, Subscription } from 'type-graphql'
 
 @Resolver(ScanHistory)
 class ScanHistoryResolver {
@@ -20,6 +20,14 @@ class ScanHistoryResolver {
             console.error({ 'Error getting scan history': error })
             throw new Error('Something wrong happened')
         }
+    }
+
+    @Subscription(() => ScanHistory, {
+        topics: 'SCAN_HISTORY_ADDED',
+    })
+    scanHistoryAdded(@Root() scanHistoryAdd: ScanHistory): ScanHistory {
+        console.log('New scanHistory created:', scanHistoryAdd)
+        return scanHistoryAdd
     }
 
     @Query(() => [ScanHistory])

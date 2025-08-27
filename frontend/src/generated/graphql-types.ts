@@ -274,6 +274,7 @@ export type ScanPreview = {
 export type Subscription = {
   __typename?: 'Subscription';
   newScan: Scan;
+  scanHistoryAdded: ScanHistory;
 };
 
 export type Tag = {
@@ -483,6 +484,11 @@ export type ScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
 export type ScanCreatedSubscription = { __typename?: 'Subscription', newScan: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null } };
+
+export type ScanHistoryCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ScanHistoryCreatedSubscription = { __typename?: 'Subscription', scanHistoryAdded: { __typename?: 'ScanHistory', id: number, url: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, scan: { __typename?: 'Scan', id: number, url: string, title: string } } };
 
 
 export const CreateNewScanDocument = gql`
@@ -1367,3 +1373,44 @@ export function useScanCreatedSubscription(baseOptions?: Apollo.SubscriptionHook
       }
 export type ScanCreatedSubscriptionHookResult = ReturnType<typeof useScanCreatedSubscription>;
 export type ScanCreatedSubscriptionResult = Apollo.SubscriptionResult<ScanCreatedSubscription>;
+export const ScanHistoryCreatedDocument = gql`
+    subscription ScanHistoryCreated {
+  scanHistoryAdded {
+    id
+    url
+    statusCode
+    statusMessage
+    responseTime
+    sslCertificate
+    isOnline
+    createdAt
+    scan {
+      id
+      url
+      title
+    }
+  }
+}
+    `;
+
+/**
+ * __useScanHistoryCreatedSubscription__
+ *
+ * To run a query within a React component, call `useScanHistoryCreatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useScanHistoryCreatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useScanHistoryCreatedSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useScanHistoryCreatedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ScanHistoryCreatedSubscription, ScanHistoryCreatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ScanHistoryCreatedSubscription, ScanHistoryCreatedSubscriptionVariables>(ScanHistoryCreatedDocument, options);
+      }
+export type ScanHistoryCreatedSubscriptionHookResult = ReturnType<typeof useScanHistoryCreatedSubscription>;
+export type ScanHistoryCreatedSubscriptionResult = Apollo.SubscriptionResult<ScanHistoryCreatedSubscription>;

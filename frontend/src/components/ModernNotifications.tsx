@@ -1,5 +1,3 @@
-"use client"
-
 import { ForwardRefExoticComponent, RefAttributes, useEffect, useState } from "react"
 import { Link } from "react-router"
 import {
@@ -21,7 +19,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
-import { useGetAllScanHistoryQuery } from "@/generated/graphql-types"
+import { useGetAllScanHistoryQuery, useScanHistoryCreatedSubscription } from "@/generated/graphql-types"
 
 interface NotificationItem {
     id: string
@@ -58,6 +56,21 @@ export default function ModernNotifications() {
     const [isSheetOpen, setIsSheetOpen] = useState(false)
     const [readNotificationIds, setReadNotificationIds] = useState<string[]>([])
     const [notifications, setNotifications] = useState<NotificationItem[]>([])
+
+
+    useScanHistoryCreatedSubscription({
+        onData: ({ data }) => {
+            const newScan = data?.data?.scanHistoryAdded
+            if (!newScan) return
+
+            // On transforme le scan en NotificationItem(s)
+            const newNotifications = generateNotificationsFromHistory([newScan])
+
+            if (newNotifications.length > 0) {
+                setNotifications(prev => [...newNotifications, ...prev])
+            }
+        },
+    })
 
     const getNotificationIcon = (type: string) => {
         switch (type) {
