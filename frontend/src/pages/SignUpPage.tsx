@@ -31,7 +31,7 @@ type ScanFormValues = z.infer<typeof scanFormSchema>;
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const [registerMutation] =useRegisterMutation();
+  const [registerMutation] = useRegisterMutation();
 
   const form = useForm({
     resolver: zodResolver(scanFormSchema),

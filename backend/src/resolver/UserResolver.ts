@@ -14,12 +14,14 @@ import { UserLoginInput } from '../inputs/UserLoginInput'
 import { v4 as uuidv4 } from 'uuid'
 import { Resend } from 'resend'
 import { ForgotPassword } from '../entities/ForgotPassword'
-import { emailHtml } from '../utils/user'
+
 import { UpdateUserInput } from '../inputs/UpdateUserInput'
 import { ContextType } from '../schema/context'
 import UserInfo from '../inputs/UserInfo'
 import { isPasswordValid } from '../utils/isPasswordValid'
 import { Role } from '../entities/Role'
+import { registerEmailConfirmation, resetPasswordEmail } from '../utils/user'
+import { TempUser } from '../entities/TempUser'
 
 @Resolver(() => User)
 class UserResolver {
@@ -51,6 +53,75 @@ class UserResolver {
             console.error('Error fetching user info:', error)
             return null
         }
+    }
+
+    // verify email before register
+    @Mutation(() => String)
+    async verifyEmail(@Arg('data', () => UserInput) newUserData: UserInput) {
+        const isUserExist = await User.findOneBy({ email: newUserData.email })
+
+        // Check if user already exists
+        if (isUserExist) {
+            throw new Error('An account with this email already exists.')
+        }
+
+        const roleUser = await Role.findOneBy({ name: 'User' })
+
+        if (!roleUser) {
+            throw new Error('Default role not found')
+        }
+
+        // Validate password strength
+        isPasswordValid(newUserData.password)
+
+        // uuid to veriy user
+        const randomCode = uuidv4()
+        // Generate verification code and expiry
+
+        const expiresAt = new Date()
+        // confirm link expires 24h after
+        expiresAt.setHours(expiresAt.getHours() + 24)
+        const hashedPassword = await argon2.hash(newUserData.password)
+        const tempUser = await TempUser.save({
+            username: newUserData.username,
+            email: newUserData.email,
+            hashedPassword,
+            randomCode,
+            expiresAt,
+        })
+        if (!tempUser) {
+            throw new Error('An error occurred, please try again.')
+        }
+
+        // Check if email service API key is set
+        if (!process.env.RESEND_API_KEY) {
+            throw new Error('RESEND_API_KEY is missing in the environment variables.')
+        }
+
+        const resend = new Resend(process.env.RESEND_API_KEY)
+
+        // send confirmation email with the uuid
+        try {
+            const { data, error } = await resend.emails.send({
+                from: 'Sonar <no-reply@sonar.ovh>',
+                to: [tempUser.email],
+                subject: 'Email confirmation',
+                html: registerEmailConfirmation(tempUser.randomCode),
+            })
+
+            if (error) {
+                console.error('Email sending failed:', error)
+                throw new Error('Failed to send verification email.')
+            }
+
+            console.log({ data })
+        }
+        catch (err) {
+            console.error('Unexpected error:', err)
+            throw new Error('An error occurred while sending the email.')
+        }
+
+        return 'Email confirmation successfully sended'
     }
 
     @Mutation(() => String)
@@ -216,7 +287,7 @@ class UserResolver {
                 from: 'Sonar <no-reply@sonar.ovh>',
                 to: [user.email],
                 subject: 'Password Reset Request',
-                html: emailHtml(randomCode),
+                html: resetPasswordEmail(randomCode),
             })
 
             if (error) {

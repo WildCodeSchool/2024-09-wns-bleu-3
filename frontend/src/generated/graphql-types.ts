@@ -60,6 +60,7 @@ export type Mutation = {
   updateScan: Scalars['String']['output'];
   updateTag: Scalars['String']['output'];
   updateUser: Scalars['String']['output'];
+  verifyEmail: Scalars['String']['output'];
 };
 
 
@@ -155,6 +156,11 @@ export type MutationUpdateTagArgs = {
 export type MutationUpdateUserArgs = {
   data: UpdateUserInput;
   id: Scalars['Float']['input'];
+};
+
+
+export type MutationVerifyEmailArgs = {
+  data: UserInput;
 };
 
 export type Query = {

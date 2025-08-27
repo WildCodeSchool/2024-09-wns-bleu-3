@@ -88,3 +88,8 @@ export const UPDATE_USER = gql`
 mutation UpdateUser($data: UpdateUserInput!, $updateUserId: Float!) {
   updateUser(data: $data, id: $updateUserId)
 }`
+
+export const VERIFY_EMAIL = gql`
+ mutation VerifyEmail($data: UserInput!) {
+  verifyEmail(data: $data)
+`
