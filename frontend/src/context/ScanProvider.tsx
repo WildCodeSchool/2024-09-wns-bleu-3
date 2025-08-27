@@ -10,8 +10,8 @@ const ScansProvider = ({ children }: { children: ReactNode }) => {
     const [resolvedIssues, setResolvedIssues] = useState<string[]>([])
     const { isLoggedIn, loading: authLoading } = useAuth();
 
-    const { data, loading, error, refetch } = useGetAllScansByUserIdQuery({
-        variables: { data: { limit: 10, offset: 0 } },
+    const { data, loading, error, refetch, fetchMore } = useGetAllScansByUserIdQuery({
+        variables: { data: { limit: 5, offset: 0 } },
         fetchPolicy: 'cache-and-network',
         skip: !isLoggedIn || authLoading, // Only execute when user is authenticated
     })
@@ -24,7 +24,7 @@ const ScansProvider = ({ children }: { children: ReactNode }) => {
         updatedAt: scan.updatedAt.toString(),
         lastScannedAt: scan.lastScannedAt?.toString() ?? '',
     }));
-    const totalScans = data?.getAllScansByUserId.totalScans || 0
+    const totalScans = data?.getAllScansByUserId.total || 0
 
     const hasMore = data?.getAllScansByUserId.hasMore || false
     const page = data?.getAllScansByUserId.page || 1
@@ -35,6 +35,42 @@ const ScansProvider = ({ children }: { children: ReactNode }) => {
 
     const activeIssueCount = activeIssues.length
     const activeScans = data?.getAllScansByUserId.activeScans || 0
+
+
+    const loadMore = async () => {
+        if (!hasMore) return;
+
+        try {
+            await fetchMore({
+                variables: {
+                    data: {
+                        limit,
+                        offset: scans.length,
+                    },
+                },
+                updateQuery: (prev, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev;
+
+                    const mergedScans = [
+                        ...prev.getAllScansByUserId.scans,
+                        ...fetchMoreResult.getAllScansByUserId.scans,
+                    ];
+
+                    return {
+                        getAllScansByUserId: {
+                            ...fetchMoreResult.getAllScansByUserId,
+                            scans: mergedScans,
+                            hasMore: fetchMoreResult.getAllScansByUserId.hasMore,
+                            issues: [...prev.getAllScansByUserId.issues, ...fetchMoreResult.getAllScansByUserId.issues],
+                        },
+                    };
+                }
+            });
+
+        } catch (error) {
+            console.error("Error loading more scans:", error);
+        }
+    };
 
 
     const contextValue: ScansContextType = {
@@ -51,6 +87,7 @@ const ScansProvider = ({ children }: { children: ReactNode }) => {
         resolvedIssues,
         setResolvedIssues,
         activeScans,
+        loadMore,
     };
 
     return (

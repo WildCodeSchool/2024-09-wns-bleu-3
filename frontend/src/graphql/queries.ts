@@ -143,7 +143,6 @@ export const GET_DASHBOARD_USER_DATA = gql`
           color
         }
       }
-      totalScans
       total
       page
       limit

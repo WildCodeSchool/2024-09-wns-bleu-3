@@ -111,11 +111,12 @@ class ScanResolver {
 
             const activeScans = scans.filter(scan => scan.statusCode >= 200 && scan.statusCode < 300).length
 
+            console.log('this is issue', issues.length)
+
             return {
                 scans,
                 issues,
                 totalIssues: issues.length,
-                totalScans: scans.length,
                 total,
                 page,
                 limit,

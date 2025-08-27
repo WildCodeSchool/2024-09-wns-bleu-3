@@ -33,7 +33,7 @@ export type IScan = GetAllScansByUserIdQuery["getAllScansByUserId"]["scans"][num
 
 
 const ScanListHistory = () => {
-    const { refetch, loading, error, scans } = useScansContext()
+    const { refetch, loading, error, scans, loadMore, hasMore } = useScansContext()
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const { uniqueStatusCodes } = useDashboardPage(scans)
@@ -169,6 +169,16 @@ const ScanListHistory = () => {
                                             {statusFiltered.map((scan) => (
                                                 <HistoryScanCard key={scan.id} scan={scan} />
                                             ))}
+                                        </div>
+                                        <div className=" p-4">
+                                            <Button
+                                                onClick={loadMore}
+                                                disabled={loading || !hasMore}
+                                                className="w-full h-24 flex items-center justify-center border border-dashed border-slate-600 text-slate-400 hover:text-white hover:border-slate-400 bg-transparent cursor-pointer"
+                                            >
+                                                {loading ? "Loading..." : "Load More"}
+                                            </Button>
+
                                         </div>
                                     </div>
                                 </TabsContent>

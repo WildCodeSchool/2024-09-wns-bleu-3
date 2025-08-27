@@ -173,7 +173,6 @@ export type PaginationOutput = {
   scans: Array<Scan>;
   total: Scalars['Int']['output'];
   totalIssues: Scalars['Int']['output'];
-  totalScans: Scalars['Int']['output'];
 };
 
 export type Query = {
@@ -488,7 +487,7 @@ export type GetAllScansByUserIdQueryVariables = Exact<{
 }>;
 
 
-export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'PaginationOutput', totalIssues: number, totalScans: number, total: number, page: number, limit: number, hasMore: boolean, activeScans: number, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
+export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'PaginationOutput', totalIssues: number, total: number, page: number, limit: number, hasMore: boolean, activeScans: number, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
 
 export type ScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -1251,7 +1250,6 @@ export const GetAllScansByUserIdDocument = gql`
         color
       }
     }
-    totalScans
     total
     page
     limit

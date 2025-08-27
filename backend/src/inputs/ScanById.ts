@@ -8,9 +8,6 @@ export class ScanByUserId {
     scans: Scan[]
 
     @Field(() => Int)
-    totalScans: number
-
-    @Field(() => Int)
     totalIssues: number
 
     @Field(() => [Issue])
