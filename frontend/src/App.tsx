@@ -16,7 +16,6 @@ import ScanDetailsPage from './pages/ScanDetailsPage';
 import NotFound from './not-found';
 
 function App() {
-
   return (
     <>
       <Routes>

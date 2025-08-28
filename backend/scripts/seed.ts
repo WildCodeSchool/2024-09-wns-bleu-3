@@ -21,6 +21,7 @@ interface ScanData {
     lastScannedAt: Date | null
     nextScanAt: Date | null
     isPause: boolean
+    isFavorite: boolean
     user: User
 }
 
@@ -47,6 +48,7 @@ async function mockScanUrl(frequency: Frequency, user: User, allTags: Tag[]): Pr
         lastScannedAt: new Date(),
         nextScanAt: new Date(Date.now() + 15 * 60 * 1000),
         isPause: false,
+        isFavorite: faker.datatype.boolean({ probability: 0.3 }), // [70% false - 30% true]
         user,
     }
 }

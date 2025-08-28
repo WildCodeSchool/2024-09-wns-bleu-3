@@ -1,7 +1,7 @@
 import ScanDetailsCards from "@/components/scan-details/ScanDetailsCards"
 import { ScanDetailsChart } from "@/components/scan-details/ScanDetailsChart"
 import { Button } from "@/components/ui/button"
-import { GetScanByIdQuery, useGetScanByIdQuery } from "@/generated/graphql-types"
+import { GetScanByIdQuery, useGetScanByIdQuery, useToggleFavoritesScanMutation } from "@/generated/graphql-types"
 import { useGetScanHistoryQuery } from "@/generated/graphql-types"
 import { ArrowLeft, Copy } from "lucide-react"
 import { Link, useNavigate, useParams } from "react-router"
@@ -22,6 +22,8 @@ import {
     Star,
     Pause,
     Play,
+    // Monitor,
+    // Link2
 } from "lucide-react"
 import { useDeleteScanMutation, usePauseOrRestartScanMutation, useUpdateScanMutation, useGetAllFrequencesQuery, useGetAllTagsQuery } from '../generated/graphql-types'
 
@@ -54,8 +56,6 @@ function ScanDetailsPage() {
     const [editedFrequency, setEditedFrequency] = useState("");
     const [editedTags, setEditedTags] = useState<number[]>([]);
 
-    console.log("scanDetails ==>", data?.getScanById)
-
     // Initialize states from backend data
     useEffect(() => {
         if (data?.getScanById) {
@@ -64,6 +64,7 @@ function ScanDetailsPage() {
             setEditedFrequency(scan.frequency?.id.toString() || "");
             setEditedTags(scan.tags.map(tag => tag.id));
             setIsPause(scan.isPause);
+            setIsFavorite(data.getScanById.isFavorite)
         }
     }, [data?.getScanById]);
 
@@ -105,6 +106,15 @@ function ScanDetailsPage() {
         }
     });
 
+    //Add Scan to favorites - Remove Scan from favorites
+    const [toggleFavorite] = useToggleFavoritesScanMutation({
+        variables: { id: Number(id) }, onCompleted: data => {
+            const updatedFavoriteStatus = data.toggleFavoritesScan.isFavorite;
+            setIsFavorite(updatedFavoriteStatus)
+        }
+    })
+
+
     if (loading) return (
         <div className="min-h-screen bg-dark-blue-900 text-slate-300 font-mono flex items-center justify-center">
             <div className="flex items-center gap-2">
@@ -124,6 +134,8 @@ function ScanDetailsPage() {
 
     const scanHistory = historyData?.getScanHistory || [];
     const scan = data?.getScanById;
+
+    console.log('scan details ==>', scan)
 
     if (!scan) {
         return (
@@ -158,10 +170,7 @@ function ScanDetailsPage() {
         return isOnline ? 'text-green-600' : 'text-red-600';
     };
 
-    // Handle favorite toggle
-    const handleFavoriteClick = () => {
-        setIsFavorite(!isFavorite);
-    };
+
 
     // Handle URL copy
     const handleCopyUrl = async () => {
@@ -229,8 +238,8 @@ function ScanDetailsPage() {
                             <div className="flex gap-2">
                                 <Button
                                     variant="outline"
-                                    className={`gap-2 border-white/10 bg-slate-800/50 text-slate-300 hover:text-yellow-400 hover:bg-slate-700/50 ${isFavorite ? 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20' : ''}`}
-                                    onClick={handleFavoriteClick}
+                                    className={`gap-2 border-gray-200 cursor-pointer hover:text-yellow-600 ${isFavorite ? 'text-yellow-600 bg-yellow-50 border-yellow-200 hover:bg-yellow-100' : ''}`}
+                                    onClick={() => toggleFavorite()}
                                 >
                                     <Star className={`h-4 w-4 ${isFavorite ? 'fill-yellow-400' : ''}`} />
                                     {isFavorite ? 'Favorited' : 'Favorite'}
@@ -386,7 +395,7 @@ function ScanDetailsPage() {
                         </div>
 
                         {/*** HC-51 ***/}
-                        {/*** HC-50 ***/}
+                        {/*** HC-50 (amadou)***/}
                         <ScanDetailsCards scan={scan} />
                         {/*** HC-53 ***/}
                         <h2 className="mb-6 text-2xl text-white text-left font-bold">Scan History</h2>

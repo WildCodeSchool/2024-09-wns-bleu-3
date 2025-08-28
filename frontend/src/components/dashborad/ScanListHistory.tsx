@@ -66,7 +66,7 @@ const ScanListHistory = () => {
         {
             value: "favorites",
             label: "Favorites",
-            filter: () => false, //TODO
+            filter: (scan) => scan.isFavorite,
         },
     ], []);
 

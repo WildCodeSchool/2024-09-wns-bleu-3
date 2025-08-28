@@ -44,6 +44,7 @@ query GetScanById($getScanByIdId: Int!) {
     sslCertificate
     isOnline
     isPause
+    isFavorite
     createdAt
     updatedAt
     lastScannedAt
@@ -129,6 +130,7 @@ export const GET_DASHBOARD_USER_DATA = gql`
         responseTime
         sslCertificate
         isOnline
+        isFavorite
         createdAt
         updatedAt
         lastScannedAt
