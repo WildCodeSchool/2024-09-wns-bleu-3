@@ -226,17 +226,20 @@ function BaseScanForm({
                                             disabled={isLoading}
                                         >
                                             <SelectTrigger
-                                                className={inputClasses}
+                                                className={cn(inputClasses, "cursor-pointer")}
                                                 aria-label="Select frequency"
                                                 data-testid="frequency-selector"
                                             >
                                                 <SelectValue placeholder="Select scan frequency" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="cursor-pointer">
+
                                                 {availableFrequencies.map((frequency) => (
                                                     <SelectItem
                                                         key={frequency.id}
                                                         value={frequency.id.toString()}
+                                                        className="cursor-pointer"
+
                                                     >
                                                         {frequency.name}
                                                     </SelectItem>
@@ -264,17 +267,18 @@ function BaseScanForm({
                                             disabled={isLoading}
                                         >
                                             <SelectTrigger
-                                                className={inputClasses}
+                                                className={cn(inputClasses, "cursor-pointer")}
                                                 aria-label="Select tags"
                                                 data-testid="tag-selector"
                                             >
                                                 <SelectValue placeholder="Select a tag" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="cursor-pointer">
                                                 {availableTags.map((tag) => (
                                                     <SelectItem
                                                         key={tag.id}
                                                         value={tag.id.toString()}
+                                                        className="cursor-pointer"
                                                     >
                                                         <div className="flex items-center gap-2">
                                                             <div
@@ -300,7 +304,7 @@ function BaseScanForm({
                         <Button
                             type="submit"
                             className={cn(
-                                "w-full transition-colors",
+                                "w-full transition-colors cursor-pointer",
                                 isDark
                                     ? "bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 text-blue-400 backdrop-blur-sm"
                                     : "bg-blue-500 hover:bg-blue-600 text-white"

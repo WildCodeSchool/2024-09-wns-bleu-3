@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { GetScanByIdQuery, useGetScanByIdQuery } from "@/generated/graphql-types"
 import { useGetScanHistoryQuery } from "@/generated/graphql-types"
 import { ArrowLeft, Copy } from "lucide-react"
-import { Link, useParams } from "react-router"
+import { Link, useNavigate, useParams } from "react-router"
 
 export type IScanDetails = GetScanByIdQuery["getScanById"]; import { SetStateAction, useEffect, useState } from 'react'
 import { Badge } from "@/components/ui/badge"
@@ -22,8 +22,6 @@ import {
     Star,
     Pause,
     Play,
-    Monitor,
-    Link2
 } from "lucide-react"
 import { useDeleteScanMutation, usePauseOrRestartScanMutation, useUpdateScanMutation, useGetAllFrequencesQuery, useGetAllTagsQuery } from '../generated/graphql-types'
 
@@ -39,6 +37,7 @@ import { toast } from 'sonner'
 function ScanDetailsPage() {
     const { id } = useParams();
     const scanId = id ? parseInt(id) : 0;
+    const navigate = useNavigate();
 
     const [isFavorite, setIsFavorite] = useState(false);
     const [isPause, setIsPause] = useState(false);
@@ -85,6 +84,7 @@ function ScanDetailsPage() {
         variables: { deleteScanId: scanId },
         onCompleted: () => {
             toast.success("Scan deleted successfully");
+            navigate('/dashboard');
         },
         onError: (error) => {
             console.error("Error deleting scan:", error);
@@ -201,11 +201,13 @@ function ScanDetailsPage() {
                                             >
                                                 {scan.url}
                                             </a>
-                                            <Copy
-                                                className="h-3 w-3 text-gray-500 cursor-pointer hover:text-gray-400 transition-colors flex-shrink-0"
+                                            <div
+                                                className="cursor-pointer hover:text-gray-400 transition-colors"
                                                 onClick={handleCopyUrl}
                                                 title="Cliquer pour copier l'URL"
-                                            />
+                                            >
+                                                <Copy className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
