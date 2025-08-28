@@ -4,6 +4,7 @@ import { Frequency } from './Frequency'
 import { Tag } from './Tag'
 import { User } from './User'
 import { ScanHistory } from './ScanHistory'
+import { IsUrl, Length } from 'class-validator'
 
 @ObjectType()
 @Entity()
@@ -13,10 +14,12 @@ export class Scan extends BaseEntity {
     id: number
 
     @Field(() => String)
+    @IsUrl({}, { message: 'Invalid URL format' })
     @Column({ type: 'varchar' })
     url: string
 
     @Field(() => String)
+    @Length(1, 30, { message: 'Title must be between 1 and 30 characters' })
     @Column({ type: 'varchar' })
     title: string
 
