@@ -10,7 +10,7 @@ const ScansProvider = ({ children }: { children: ReactNode }) => {
     const { isLoggedIn, loading: authLoading } = useAuth();
 
     const { data, loading, error, refetch, fetchMore } = useGetAllScansByUserIdQuery({
-        variables: { data: { limit: 5, offset: 0 } },
+        variables: { data: { limit: 10, offset: 0 } },
         fetchPolicy: 'cache-and-network',
         skip: !isLoggedIn || authLoading, // Only execute when user is authenticated
     })
