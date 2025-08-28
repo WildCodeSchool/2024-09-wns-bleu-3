@@ -1,10 +1,10 @@
 import ScanDetailsCards from "@/components/scan-details/ScanDetailsCards"
 import { ScanDetailsChart } from "@/components/scan-details/ScanDetailsChart"
 import { Button } from "@/components/ui/button"
-import { GetScanByIdQuery, useGetScanByIdQuery } from "@/generated/graphql-types"
+import { GetScanByIdQuery, useGetScanByIdQuery, useToggleFavoritesScanMutation } from "@/generated/graphql-types"
 import { useGetScanHistoryQuery } from "@/generated/graphql-types"
 import { ArrowLeft, Copy } from "lucide-react"
-import { Link, useParams } from "react-router"
+import { Link, useNavigate, useParams } from "react-router"
 
 export type IScanDetails = GetScanByIdQuery["getScanById"]; import { SetStateAction, useEffect, useState } from 'react'
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +22,8 @@ import {
     Star,
     Pause,
     Play,
+    // Monitor,
+    // Link2
 } from "lucide-react"
 import { useDeleteScanMutation, usePauseOrRestartScanMutation, useUpdateScanMutation, useGetAllFrequencesQuery, useGetAllTagsQuery } from '../generated/graphql-types'
 
@@ -37,6 +39,7 @@ import { toast } from 'sonner'
 function ScanDetailsPage() {
     const { id } = useParams();
     const scanId = id ? parseInt(id) : 0;
+    const navigate = useNavigate();
 
     const [isFavorite, setIsFavorite] = useState(false);
     const [isPause, setIsPause] = useState(false);
@@ -53,8 +56,6 @@ function ScanDetailsPage() {
     const [editedFrequency, setEditedFrequency] = useState("");
     const [editedTags, setEditedTags] = useState<number[]>([]);
 
-    console.log("scanDetails ==>", data?.getScanById)
-
     // Initialize states from backend data
     useEffect(() => {
         if (data?.getScanById) {
@@ -63,6 +64,7 @@ function ScanDetailsPage() {
             setEditedFrequency(scan.frequency?.id.toString() || "");
             setEditedTags(scan.tags.map(tag => tag.id));
             setIsPause(scan.isPause);
+            setIsFavorite(data.getScanById.isFavorite)
         }
     }, [data?.getScanById]);
 
@@ -83,6 +85,7 @@ function ScanDetailsPage() {
         variables: { deleteScanId: scanId },
         onCompleted: () => {
             toast.success("Scan deleted successfully");
+            navigate('/dashboard');
         },
         onError: (error) => {
             console.error("Error deleting scan:", error);
@@ -103,18 +106,43 @@ function ScanDetailsPage() {
         }
     });
 
-    if (loading) return <p>Loading...</p>
-    if (error) return <p>There is an error: {error.message}</p>
+    //Add Scan to favorites - Remove Scan from favorites
+    const [toggleFavorite] = useToggleFavoritesScanMutation({
+        variables: { id: Number(id) }, onCompleted: data => {
+            const updatedFavoriteStatus = data.toggleFavoritesScan.isFavorite;
+            setIsFavorite(updatedFavoriteStatus)
+        }
+    })
+
+
+    if (loading) return (
+        <div className="min-h-screen bg-dark-blue-900 text-slate-300 font-mono flex items-center justify-center">
+            <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-slate-700 border-t-blue-400 rounded-full animate-spin"></div>
+                <span className="text-slate-400">Loading scan details...</span>
+            </div>
+        </div>
+    )
+    if (error) return (
+        <div className="min-h-screen bg-dark-blue-900 text-slate-300 font-mono flex items-center justify-center">
+            <div className="text-center">
+                <div className="text-red-400 mb-2">ERROR</div>
+                <p className="text-slate-400">{error.message}</p>
+            </div>
+        </div>
+    )
 
     const scanHistory = historyData?.getScanHistory || [];
     const scan = data?.getScanById;
 
+    console.log('scan details ==>', scan)
+
     if (!scan) {
         return (
-            <div className="p-4">
-                <Alert>
-                    <Activity className="h-4 w-4" />
-                    <AlertDescription>
+            <div className="min-h-screen bg-dark-blue-900 text-slate-300 font-mono p-4">
+                <Alert className="border-red-400/20 bg-red-400/10">
+                    <Activity className="h-4 w-4 text-red-400" />
+                    <AlertDescription className="text-red-400">
                         Scan not found
                     </AlertDescription>
                 </Alert>
@@ -142,10 +170,7 @@ function ScanDetailsPage() {
         return isOnline ? 'text-green-600' : 'text-red-600';
     };
 
-    // Handle favorite toggle
-    const handleFavoriteClick = () => {
-        setIsFavorite(!isFavorite);
-    };
+
 
     // Handle URL copy
     const handleCopyUrl = async () => {
@@ -162,9 +187,9 @@ function ScanDetailsPage() {
 
     return (
         <>
-            <div className="flex min-h-screen flex-col">
-                <main className="flex-1 bg-gray-50">
-                    <div className=" py-8 px-6">
+            <div className="flex min-h-screen flex-col bg-dark-blue-900 text-slate-300 font-mono">
+                <main className="flex-1">
+                    <div className="py-8 px-6">
                         {/* back to dashboard */}
                         <div className="flex items-center mb-6">
                             <Button variant="lightBlue" size="sm" asChild>
@@ -188,7 +213,7 @@ function ScanDetailsPage() {
                                         );
                                     })()}
                                     <div className="flex flex-col gap-2">
-                                        <h1 className="text-3xl font-bold text-gray-800 leading-none">{scan.title}</h1>
+                                        <h1 className="text-3xl font-bold text-amber-50 leading-none">{scan.title}</h1>
                                         <div className="flex items-center gap-2">
                                             <a
                                                 href={scan.url}
@@ -198,10 +223,13 @@ function ScanDetailsPage() {
                                             >
                                                 {scan.url}
                                             </a>
-                                            <Copy
-                                                className="h-3 w-3 text-gray-500 cursor-pointer hover:text-gray-400 transition-colors flex-shrink-0"
+                                            <div
+                                                className="cursor-pointer hover:text-gray-400 transition-colors"
                                                 onClick={handleCopyUrl}
-                                            />
+                                                title="Cliquer pour copier l'URL"
+                                            >
+                                                <Copy className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -210,20 +238,20 @@ function ScanDetailsPage() {
                                 <Button
                                     variant="outline"
                                     className={`gap-2 border-gray-200 cursor-pointer hover:text-yellow-600 ${isFavorite ? 'text-yellow-600 bg-yellow-50 border-yellow-200 hover:bg-yellow-100' : ''}`}
-                                    onClick={handleFavoriteClick}
+                                    onClick={() => toggleFavorite()}
                                 >
-                                    <Star className={`h-4 w-4 ${isFavorite ? 'fill-yellow-600' : ''}`} />
+                                    <Star className={`h-4 w-4 ${isFavorite ? 'fill-yellow-400' : ''}`} />
                                     {isFavorite ? 'Favorited' : 'Favorite'}
                                 </Button>
                                 <Button
                                     variant="outline"
                                     onClick={() => pauseOrRestartScan()}
-                                    className={`gap-2 border-gray-200 cursor-pointer hover:text-blue-700 ${isPause ? 'text-blue-600 bg-blue-50 border-blue-200 hover:bg-blue-100' : ''
+                                    className={`gap-2 border-white/10 bg-slate-800/50 text-slate-300 hover:text-blue-400 hover:bg-slate-700/50 ${isPause ? 'text-blue-400 bg-blue-400/10 border-blue-400/20' : ''
                                         }`}
                                 >
                                     {isPause ? (
                                         <>
-                                            <Play className="h-4 w-4 fill-blue-500" />
+                                            <Play className="h-4 w-4 fill-blue-400" />
                                             <span>Resume</span>
                                         </>
                                     ) : (
@@ -233,12 +261,12 @@ function ScanDetailsPage() {
                                         </>
                                     )}
                                 </Button>
-                                <Button variant="outline" className="gap-2 border-gray-200 cursor-pointer">
+                                <Button variant="outline" className="gap-2 border-white/10 bg-slate-800/50 text-slate-300 hover:text-white hover:bg-slate-700/50">
                                     <RefreshCw className="h-4 w-4" /> Refresh Now
                                 </Button>
                                 <Sheet>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" className="gap-2 border-gray-200 cursor-pointer">
+                                        <Button variant="outline" className="gap-2 border-white/10 bg-slate-800/50 text-slate-300 hover:text-white hover:bg-slate-700/50">
                                             <Settings className="h-4 w-4" /> Edit
                                         </Button>
                                     </SheetTrigger>
@@ -338,7 +366,7 @@ function ScanDetailsPage() {
                                 </Sheet>
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
-                                        <Button variant="outline" className="gap-2 border-gray-200 cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50">
+                                        <Button variant="outline" className="gap-2 border-red-400/20 bg-red-400/10 text-red-400 hover:text-red-300 hover:bg-red-400/20">
                                             <Trash2 className="h-4 w-4" /> Delete
                                         </Button>
                                     </AlertDialogTrigger>
@@ -351,7 +379,7 @@ function ScanDetailsPage() {
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
-                                            <AlertDialogCancel className="border border-gray-200 text-gray-600 bg-white hover:bg-gray-100 hover:text-gray-800 transition-colors cursor-pointer px-4 py-2 rounded-md">Cancel</AlertDialogCancel>
+                                            <AlertDialogCancel className="border border-white/10 text-slate-300 bg-slate-800/50 hover:bg-slate-700/50 hover:text-white transition-colors cursor-pointer px-4 py-2 rounded-md">Cancel</AlertDialogCancel>
                                             <AlertDialogAction onClick={() => deleteScan()}
                                                 disabled={deleteLoading} className="bg-red-600 text-white hover:bg-red-700 cursor-pointer">
                                                 {deleteLoading ? "Deleting..." : "Continue"}</AlertDialogAction>
@@ -361,22 +389,22 @@ function ScanDetailsPage() {
                             </div>
                         </div>
                         {/*** HC-51 ***/}
-                        {/*** HC-50 ***/}
+                        {/*** HC-50 (amadou)***/}
                         <ScanDetailsCards scan={scan} />
                         {/*** HC-53 ***/}
-                        <h2 className=" mb-6 text-2xl text-black text-left font-bold">Scan History</h2>
-                        {historyLoading ? <p>Loading...</p> :
+                        <h2 className="mb-6 text-2xl text-white text-left font-bold">Scan History</h2>
+                        {historyLoading ? <p className="text-slate-400">Loading...</p> :
                             <ScanDetailsChart history={scanHistory} />}
                         {/*** HC-52 ***/}
                         {/* Tabs for additional details */}
-                        <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
+                        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl rounded-xl p-6 mt-6">
                             <Tabs defaultValue="history">
                                 <TabsContent value="history">
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between mb-4">
-                                            <h3 className="text-lg font-medium">Recent Checks</h3>
+                                            <h3 className="text-lg font-medium text-white">Recent Checks</h3>
                                             <div className="flex items-center gap-2">
-                                                <Badge variant="outline" className="gap-1">
+                                                <Badge variant="outline" className="gap-1 border-white/20 bg-slate-800/50 text-slate-300">
                                                     <BarChart4 className="h-3.5 w-3.5" />
                                                     {scanHistory.length === 10 ? 'Last 10 checks' : `${scanHistory.length} ${scanHistory.length === 1 ? 'check' : 'checks'}`}
                                                 </Badge>
@@ -385,11 +413,11 @@ function ScanDetailsPage() {
                                         <div className="overflow-x-auto">
                                             <table className="w-full border-collapse">
                                                 <thead>
-                                                    <tr className="border-b border-gray-200">
-                                                        <th className="py-2 px-4 text-left font-medium text-gray-500">Time</th>
-                                                        <th className="py-2 px-4 text-center font-medium text-gray-500">Status</th>
-                                                        <th className="py-2 px-4 text-center font-medium text-gray-500">Status Code</th>
-                                                        <th className="py-2 px-4 text-center font-medium text-gray-500">Response Time</th>
+                                                    <tr className="border-b border-white/10">
+                                                        <th className="py-2 px-4 text-left font-medium text-slate-400">Time</th>
+                                                        <th className="py-2 px-4 text-center font-medium text-slate-400">Status</th>
+                                                        <th className="py-2 px-4 text-center font-medium text-slate-400">Status Code</th>
+                                                        <th className="py-2 px-4 text-center font-medium text-slate-400">Response Time</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -397,11 +425,11 @@ function ScanDetailsPage() {
                                                         const StatusIcon = getStatusIcon(entry.isOnline);
                                                         const statusColor = getStatusColor(entry.isOnline);
                                                         return (
-                                                            <tr key={entry.id} className="border-b border-gray-200 hover:bg-gray-50">
+                                                            <tr key={entry.id} className="border-b border-white/10 hover:bg-slate-800/30">
                                                                 <td className="py-3 px-4 text-sm">
                                                                     <div className="flex items-center gap-2">
-                                                                        <Clock className="h-4 w-4 text-gray-400" />
-                                                                        {formatDate(entry.createdAt)}
+                                                                        <Clock className="h-4 w-4 text-slate-400" />
+                                                                        <span className="text-slate-300">{formatDate(entry.createdAt)}</span>
                                                                     </div>
                                                                 </td>
                                                                 <td className="py-3 px-4 text-center">
@@ -414,14 +442,14 @@ function ScanDetailsPage() {
                                                                 </td>
                                                                 <td className="py-3 px-4 text-center">
                                                                     <div className="flex items-center justify-center gap-2">
-                                                                        <span className="text-sm font-medium">{entry.statusCode}</span>
-                                                                        <span className="text-xs text-gray-500">{entry.statusMessage}</span>
+                                                                        <span className="text-sm font-medium text-slate-300">{entry.statusCode}</span>
+                                                                        <span className="text-xs text-slate-400">{entry.statusMessage}</span>
                                                                     </div>
                                                                 </td>
                                                                 <td className="py-3 px-4 text-center">
                                                                     <div className="flex items-center justify-center gap-1">
-                                                                        <Zap className="h-3 w-3 text-blue-500" />
-                                                                        <span className="text-sm font-medium">{entry.responseTime}ms</span>
+                                                                        <Zap className="h-3 w-3 text-blue-400" />
+                                                                        <span className="text-sm font-medium text-slate-300">{entry.responseTime}ms</span>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -429,7 +457,7 @@ function ScanDetailsPage() {
                                                     })}
                                                     {scanHistory.length === 0 && (
                                                         <tr>
-                                                            <td colSpan={4} className="py-8 text-center text-gray-500">
+                                                            <td colSpan={4} className="py-8 text-center text-slate-400">
                                                                 No scan history available
                                                             </td>
                                                         </tr>

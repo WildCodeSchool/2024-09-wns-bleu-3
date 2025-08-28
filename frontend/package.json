@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "test update": "vitest --update"
+    "test update": "vitest --update",
+    "scan": "npx react-scan@latest localhost:3030"
   },
   "dependencies": {
     "@apollo/client": "^3.13.0",
@@ -47,6 +48,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
     "react-router": "^7.1.5",
+    "react-scan": "^0.4.3",
     "recharts": "^2.15.1",
     "sonner": "^2.0.1",
     "tailwind-merge": "^3.0.1",

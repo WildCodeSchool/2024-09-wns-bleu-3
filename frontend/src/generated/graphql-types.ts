@@ -56,6 +56,7 @@ export type Mutation = {
   logout: Scalars['String']['output'];
   pauseOrRestartScan: Scan;
   register: Scalars['String']['output'];
+  toggleFavoritesScan: Scan;
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
   updateTag: Scalars['String']['output'];
@@ -135,6 +136,11 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationToggleFavoritesScanArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type MutationUpdateFrequenceArgs = {
   data: UpdateFrequencyInput;
   id: Scalars['Float']['input'];
@@ -157,13 +163,32 @@ export type MutationUpdateUserArgs = {
   id: Scalars['Float']['input'];
 };
 
+export type PaginationInput = {
+  limit: Scalars['Int']['input'];
+  offset: Scalars['Int']['input'];
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PaginationOutput = {
+  __typename?: 'PaginationOutput';
+  activeScans: Scalars['Int']['output'];
+  hasMore: Scalars['Boolean']['output'];
+  issues: Array<Issue>;
+  limit: Scalars['Int']['output'];
+  page: Scalars['Int']['output'];
+  scans: Array<Scan>;
+  total: Scalars['Int']['output'];
+  totalIssues: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
+  getAllFavoritesScans: Array<Scan>;
   getAllFrequences: Array<Frequency>;
   getAllRoles: Array<Role>;
   getAllScanHistory: Array<ScanHistory>;
   getAllScans: Array<Scan>;
-  getAllScansByUserId: ScanByUserId;
+  getAllScansByUserId: PaginationOutput;
   getAllTags: Array<Tag>;
   getFrequenceById: Frequency;
   getScanById: Scan;
@@ -171,6 +196,11 @@ export type Query = {
   getTagById: Tag;
   getUserInfo?: Maybe<UserInfo>;
   previewScan: ScanPreview;
+};
+
+
+export type QueryGetAllScansByUserIdArgs = {
+  data: PaginationInput;
 };
 
 
@@ -217,6 +247,7 @@ export type Scan = {
   frequency: Frequency;
   history: Array<ScanHistory>;
   id: Scalars['Float']['output'];
+  isFavorite: Scalars['Boolean']['output'];
   isOnline: Scalars['Boolean']['output'];
   isPause: Scalars['Boolean']['output'];
   lastScannedAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -230,15 +261,6 @@ export type Scan = {
   updatedAt: Scalars['DateTimeISO']['output'];
   url: Scalars['String']['output'];
   user: User;
-};
-
-export type ScanByUserId = {
-  __typename?: 'ScanByUserId';
-  issues: Array<Issue>;
-  scans: Array<Scan>;
-  totalIssues: Scalars['Int']['output'];
-  totalScans: Scalars['Int']['output'];
-  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type ScanHistory = {
@@ -428,6 +450,13 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: string };
 
+export type ToggleFavoritesScanMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type ToggleFavoritesScanMutation = { __typename?: 'Mutation', toggleFavoritesScan: { __typename?: 'Scan', id: number, isFavorite: boolean } };
+
 export type PreviewScanQueryVariables = Exact<{
   url: Scalars['String']['input'];
 }>;
@@ -450,7 +479,7 @@ export type GetScanByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetScanByIdQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isPause: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, name: string, intervalMinutes: number }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> } };
+export type GetScanByIdQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isPause: boolean, isFavorite: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, name: string, intervalMinutes: number }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> } };
 
 export type GetAllFrequencesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -475,10 +504,12 @@ export type GetScanHistoryQueryVariables = Exact<{
 
 export type GetScanHistoryQuery = { __typename?: 'Query', getScanHistory: Array<{ __typename?: 'ScanHistory', id: number, url: string, statusCode: number, statusMessage: string, responseTime: number, isOnline: boolean, createdAt: any }> };
 
-export type GetAllScansByUserIdQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllScansByUserIdQueryVariables = Exact<{
+  data: PaginationInput;
+}>;
 
 
-export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'ScanByUserId', totalIssues: number, totalScans: number, username?: string | null, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
+export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'PaginationOutput', totalIssues: number, total: number, page: number, limit: number, hasMore: boolean, activeScans: number, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isFavorite: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
 
 export type OnScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -887,6 +918,40 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const ToggleFavoritesScanDocument = gql`
+    mutation toggleFavoritesScan($id: Int!) {
+  toggleFavoritesScan(id: $id) {
+    id
+    isFavorite
+  }
+}
+    `;
+export type ToggleFavoritesScanMutationFn = Apollo.MutationFunction<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>;
+
+/**
+ * __useToggleFavoritesScanMutation__
+ *
+ * To run a mutation, you first call `useToggleFavoritesScanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useToggleFavoritesScanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [toggleFavoritesScanMutation, { data, loading, error }] = useToggleFavoritesScanMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useToggleFavoritesScanMutation(baseOptions?: Apollo.MutationHookOptions<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>(ToggleFavoritesScanDocument, options);
+      }
+export type ToggleFavoritesScanMutationHookResult = ReturnType<typeof useToggleFavoritesScanMutation>;
+export type ToggleFavoritesScanMutationResult = Apollo.MutationResult<ToggleFavoritesScanMutation>;
+export type ToggleFavoritesScanMutationOptions = Apollo.BaseMutationOptions<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>;
 export const PreviewScanDocument = gql`
     query PreviewScan($url: String!) {
   previewScan(url: $url) {
@@ -1044,6 +1109,7 @@ export const GetScanByIdDocument = gql`
     sslCertificate
     isOnline
     isPause
+    isFavorite
     createdAt
     updatedAt
     lastScannedAt
@@ -1265,8 +1331,8 @@ export type GetScanHistoryLazyQueryHookResult = ReturnType<typeof useGetScanHist
 export type GetScanHistorySuspenseQueryHookResult = ReturnType<typeof useGetScanHistorySuspenseQuery>;
 export type GetScanHistoryQueryResult = Apollo.QueryResult<GetScanHistoryQuery, GetScanHistoryQueryVariables>;
 export const GetAllScansByUserIdDocument = gql`
-    query GetAllScansByUserId {
-  getAllScansByUserId {
+    query GetAllScansByUserId($data: PaginationInput!) {
+  getAllScansByUserId(data: $data) {
     issues {
       id
       scanId
@@ -1283,6 +1349,7 @@ export const GetAllScansByUserIdDocument = gql`
       responseTime
       sslCertificate
       isOnline
+      isFavorite
       createdAt
       updatedAt
       lastScannedAt
@@ -1297,8 +1364,11 @@ export const GetAllScansByUserIdDocument = gql`
         color
       }
     }
-    totalScans
-    username
+    total
+    page
+    limit
+    hasMore
+    activeScans
   }
 }
     `;
@@ -1315,10 +1385,11 @@ export const GetAllScansByUserIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllScansByUserIdQuery({
  *   variables: {
+ *      data: // value for 'data'
  *   },
  * });
  */
-export function useGetAllScansByUserIdQuery(baseOptions?: Apollo.QueryHookOptions<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables>) {
+export function useGetAllScansByUserIdQuery(baseOptions: Apollo.QueryHookOptions<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables> & ({ variables: GetAllScansByUserIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables>(GetAllScansByUserIdDocument, options);
       }
