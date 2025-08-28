@@ -89,9 +89,9 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKER_HUB_CLIENT_IMAGE_NAME }}:${{ env.COMMIT_SHORT_SHA }}
 
   zap-scan:
-    # needs: [deploy-server, deploy-client]
+    needs: [deploy-server, deploy-client]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/HC-35/zap-security'
+    if: github.ref == 'refs/heads/staging'
     steps:
       - name: Run OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.14.0

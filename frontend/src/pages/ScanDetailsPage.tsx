@@ -205,7 +205,7 @@ function ScanDetailsPage() {
                                         );
                                     })()}
                                     <div className="flex flex-col gap-2">
-                                        <h1 className="text-3xl font-bold text-gray-800 leading-none">{scan.title}</h1>
+                                        <h1 className="text-3xl font-bold text-amber-50 leading-none">{scan.title}</h1>
                                         <div className="flex items-center gap-2">
                                             <a
                                                 href={scan.url}
