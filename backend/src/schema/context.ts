@@ -9,4 +9,3 @@ export const ContextSchema = z.object({
 
 export type ContextType = z.infer<typeof ContextSchema>
 export type Context = ContextType
-

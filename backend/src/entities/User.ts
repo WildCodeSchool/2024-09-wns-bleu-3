@@ -40,6 +40,6 @@ export class User extends BaseEntity {
     scans: Scan[]
 
     @Field(() => Role)
-    @ManyToOne(() => Role, role => role.users, { nullable: true, onDelete: "SET NULL" })
+    @ManyToOne(() => Role, role => role.users, { nullable: true, onDelete: 'SET NULL' })
     role: Role
 }

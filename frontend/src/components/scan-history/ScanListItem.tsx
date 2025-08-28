@@ -23,8 +23,8 @@ export const truncateUrl = (url: string, maxLength = 25) => {
 }
 
 const getIconBgColor = (_statusCode: number, isSelected = false) => {
-  if (isSelected) return "bg-white text-blue-900"
-  return "bg-gray-100 text-gray-700"
+  if (isSelected) return "bg-slate-800 text-blue-400"
+  return "bg-slate-700/50 text-slate-300"
 }
 
 interface ScanListItemProps {
@@ -39,9 +39,8 @@ export function ScanListItem({ scan, isSelected, onClick }: ScanListItemProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <div
-            className={`flex items-center justify-between p-3 mb-3 rounded-lg shadow-md cursor-pointer transition-all hover:shadow-lg ${
-              isSelected ? "bg-blue-900 shadow-lg" : "bg-white hover:border-gray-300"
-            }`}
+            className={`flex items-center justify-between p-3 mb-3 rounded-lg shadow-md cursor-pointer transition-all hover:shadow-lg border ${isSelected ? "bg-blue-900/20 border-blue-400/30 shadow-lg" : "bg-slate-800/30 border-white/10 hover:border-white/20 hover:bg-slate-800/50"
+              }`}
             onClick={onClick}
           >
             <div className="flex items-center gap-3 max-w-[70%]">
@@ -49,11 +48,11 @@ export function ScanListItem({ scan, isSelected, onClick }: ScanListItemProps) {
                 <BarChart2 className="h-5 w-5" />
               </div>
               <div className="overflow-hidden">
-                <span className={`font-barlow font-medium block ${isSelected ? "text-white" : "text-gray-900"}`}>
+                <span className={`font-barlow font-medium block ${isSelected ? "text-white" : "text-slate-200"}`}>
                   {scan.title}
                 </span>
                 <span
-                  className={`text-xs font-barlow truncate block max-w-full ${isSelected ? "text-gray-300" : "text-gray-500"}`}
+                  className={`text-xs font-barlow truncate block max-w-full ${isSelected ? "text-slate-300" : "text-slate-400"}`}
                   title={scan.url}
                 >
                   {truncateUrl(scan.url)}

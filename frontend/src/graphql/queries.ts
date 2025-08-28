@@ -111,8 +111,8 @@ export const GET_SCAN_HISTORY = gql`
 
 /******* DASHBOARD *********/
 export const GET_DASHBOARD_USER_DATA = gql`
-  query GetAllScansByUserId {
-    getAllScansByUserId {
+  query GetAllScansByUserId($data: PaginationInput!) {
+    getAllScansByUserId(data: $data) {
       issues {
         id
         scanId
@@ -143,8 +143,11 @@ export const GET_DASHBOARD_USER_DATA = gql`
           color
         }
       }
-      totalScans
-      username
+      total
+      page
+      limit
+      hasMore
+      activeScans
     }
   }
 `;
