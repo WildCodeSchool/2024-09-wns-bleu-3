@@ -1,6 +1,7 @@
 import { RefreshCw, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
     Select,
     SelectContent,
@@ -16,9 +17,9 @@ import {
     TabsTrigger,
 } from "../ui/tabs";
 import { useDashboardPage } from "@/hooks/useDashboardPage";
-import { GetAllScansByUserIdQuery } from "@/generated/graphql-types";
+import { GetAllScansByUserIdQuery, Scan, useScanCreatedSubscription } from "@/generated/graphql-types";
 import HistoryScanCard from "./HistoryScanCard";
-import { useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
 import { GET_DASHBOARD_USER_DATA } from "@/graphql/queries";
 
 export type ScanListHistoryProps = {
@@ -41,6 +42,26 @@ const ScanListHistory = ({ scans }: ScanListHistoryProps) => {
     const [statusFilter, setStatusFilter] = useState("all");
     const { uniqueStatusCodes } = useDashboardPage(scans)
 
+    const client = useApolloClient()
+
+    useScanCreatedSubscription({
+        onData: ({ data }) => {
+            const newScan = data?.data?.newScan
+            if (!newScan) return
+
+            client.cache.updateQuery({ query: GET_DASHBOARD_USER_DATA }, (prev) => {
+                if (!prev?.getAllScansByUserId) return prev
+
+                const alreadyExists = prev.getAllScansByUserId.scans.some((scan: Scan) => scan.id === newScan.id)
+
+                if (alreadyExists) return prev
+                return {
+                    getAllScansByUserId: { ...prev.getAllScansByUserId, scans: [newScan, ...prev.getAllScansByUserId.scans] }
+                }
+
+            })
+        }
+    })
 
     const scanTabs: ScanTabConfig[] = [
         { value: "all", label: "All Scans", filter: () => true },

@@ -1,5 +1,6 @@
 import { ForwardRefExoticComponent, RefAttributes, useEffect, useState } from "react"
 import { Link } from "react-router"
+import { toast } from 'sonner';
 import {
     Bell,
     Clock,
@@ -68,13 +69,26 @@ export default function ModernNotifications() {
 
     useScanHistoryAddedSubscription({
         onData: ({ data }) => {
-            console.log('🔔 Subscription data received:', data);
-            const newScan = data?.data?.scanHistoryAdded;
-            if (!newScan) {
+            console.log('🔔 Subscription history data received:', data);
+            const newScanHistory = data?.data?.scanHistoryAdded;
+            if (!newScanHistory) {
                 console.warn('❌ No scanHistoryAdded in subscription data');
                 return;
             }
-            console.log('✅ Processing new scan:', newScan);
+            console.log('✅ Processing new scan:', newScanHistory);
+            const newNotifications = generateNotificationsFromHistory([newScanHistory], readNotificationIds)
+
+            if (newNotifications.length > 0) {
+                console.log("adding new notifications", newNotifications)
+
+                setNotifications(prevNotifications => {
+                    const existingIds = prevNotifications.map(n => n.id);
+                    const uniqueNotifications = newNotifications.filter(n => !existingIds.includes(n.id))
+                    return [...uniqueNotifications, ...prevNotifications]
+                });
+                console.log('🎉 Notifications updated in real-time!');
+                toast.success(`New notification for ${newScanHistory.url}!`)
+            }
         },
         onError: (error) => {
             console.error('❌ Subscription error:', error);

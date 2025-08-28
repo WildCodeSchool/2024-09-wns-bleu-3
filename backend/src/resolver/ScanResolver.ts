@@ -93,7 +93,7 @@ class ScanResolver {
         topics: 'SCAN_CREATED',
     })
     newScan(@Root() scan: Scan): Scan {
-        console.log('New scan created:', scan)
+        console.log('🔔 Subscription scan resolver called with:', scan)
         return scan
     }
 

@@ -26,7 +26,7 @@ class ScanHistoryResolver {
         topics: 'SCAN_HISTORY_ADDED',
     })
     scanHistoryAdded(@Root() scanHistoryAdd: ScanHistory): ScanHistory {
-        console.log('🔔 Subscription resolver called with:', {
+        console.log('🔔 Subscription HistoryScan resolver called with:', {
             id: scanHistoryAdd.id,
             scanId: scanHistoryAdd.scan?.id,
             timestamp: new Date().toISOString()
