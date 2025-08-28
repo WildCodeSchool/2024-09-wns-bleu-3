@@ -6,7 +6,6 @@ import { ScansContextType } from "../@types/scanContext";
 import { useAuth } from "@/hooks/useAuth";
 
 const ScansProvider = ({ children }: { children: ReactNode }) => {
-    // TODO: ajouter fetchMore et aussi fetch policy (cache)
     const [resolvedIssues, setResolvedIssues] = useState<string[]>([])
     const { isLoggedIn, loading: authLoading } = useAuth();
 
@@ -76,7 +75,7 @@ const ScansProvider = ({ children }: { children: ReactNode }) => {
     const contextValue: ScansContextType = {
         scans,
         totalScans,
-        loading: loading || authLoading, // Include auth loading state
+        loading: loading || authLoading,
         error,
         refetch,
         hasMore,

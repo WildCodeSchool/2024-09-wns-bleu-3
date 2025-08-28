@@ -1,14 +1,4 @@
-import { RefreshCw, Search } from "lucide-react";
-import { Input } from "../ui/input";
-import { useState } from "react";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "../ui/select";
-import { Button } from "../ui/button";
+import { useCallback, useMemo, useState } from "react";
 import {
     Tabs,
     TabsContent,
@@ -16,63 +6,112 @@ import {
     TabsTrigger,
 } from "../ui/tabs";
 import { useDashboardPage } from "@/hooks/useDashboardPage";
-import { GetAllScansByUserIdQuery } from "@/generated/graphql-types";
-import HistoryScanCard from "./HistoryScanCard";
+import { GetAllScansByUserIdQuery, useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
 import { useScansContext } from "../../hooks/useScansContext";
+import { useAuth } from "@/hooks/useAuth";
+import useDebounce from "@/hooks/useDebounce";
+import ScanList from "../ScanList";
+import ScanListFilter from "../ScanListFilter";
 
 
-type ScanTabConfig = {
-    value: string;
-    label: string;
-    filter: (
-        scan: GetAllScansByUserIdQuery["getAllScansByUserId"]["scans"][number]
-    ) => boolean;
-};
+// type ScanTabConfig = {
+//     value: string;
+//     label: string;
+//     filter: (
+//         scan: GetAllScansByUserIdQuery["getAllScansByUserId"]["scans"][number]
+//     ) => boolean;
+// };
 
 export type IScan = GetAllScansByUserIdQuery["getAllScansByUserId"]["scans"][number];
 
 
 const ScanListHistory = () => {
-    const { refetch, loading, error, scans, loadMore, hasMore } = useScansContext()
-    const [searchQuery, setSearchQuery] = useState("");
+    const { refetch, loading, error, scans, loadMore, hasMore } = useScansContext();
+    const [searchQuery, setSearchQuery] = useState<string>("");
+    const { isLoggedIn, loading: authLoading } = useAuth()
     const [statusFilter, setStatusFilter] = useState("all");
     const { uniqueStatusCodes } = useDashboardPage(scans)
 
+    const debounceSearch = useDebounce(searchQuery, 600)
 
-    const scanTabs: ScanTabConfig[] = [
+
+    const memoizedRefetch = useCallback(() => refetch(), [refetch]);
+    const memoizedLoadMore = useCallback(() => loadMore(), [loadMore]);
+    const memoizedSetSearchQuery = useCallback((value: any) => setSearchQuery(value), []);
+    const memoizedSetStatusFilter = useCallback((value: any) => setStatusFilter(value), []);
+
+    const memoizedUniqueStatusCodes = useMemo(() => uniqueStatusCodes, [uniqueStatusCodes]);
+    const { data: DataSearch, loading: loadingSearch, error: errorSearch } = useGetAllScansByUserIdQuery({
+        variables: { data: { limit: 100, offset: 0, search: debounceSearch } },
+        fetchPolicy: 'cache-and-network',
+        skip: !isLoggedIn || authLoading, // Only execute when user is authenticated
+    })
+
+
+
+    const displayedScans = useMemo(() => (searchQuery
+        ? DataSearch?.getAllScansByUserId.scans ?? []
+        : scans), [searchQuery, DataSearch, scans]);
+
+
+    // const scanTabs: ScanTabConfig[] = [
+    //     { value: "all", label: "All Scans", filter: () => true },
+    //     {
+    //         value: "active",
+    //         label: "Active",
+    //         filter: (scan) => scan.statusCode === 200,
+    //     },
+    //     {
+    //         value: "issues",
+    //         label: "Issues",
+    //         filter: (scan) => scan.statusCode !== 200,
+    //     },
+    //     {
+    //         value: "favorites",
+    //         label: "Favorites",
+    //         filter: () => false, //TODO
+    //     },
+    // ];
+    const scanTabs = useMemo(() => [
         { value: "all", label: "All Scans", filter: () => true },
         {
             value: "active",
             label: "Active",
-            filter: (scan) => scan.statusCode === 200,
+            filter: (scan: any) => scan.statusCode === 200,
         },
         {
             value: "issues",
             label: "Issues",
-            filter: (scan) => scan.statusCode !== 200,
+            filter: (scan: any) => scan.statusCode !== 200,
         },
         {
             value: "favorites",
             label: "Favorites",
             filter: () => false, //TODO
         },
-    ];
+    ], []);
 
-    const applyStatusFilter = (filtered: typeof scans) => {
+
+    const applyStatusFilter = useCallback((filtered: typeof scans) => {
         if (statusFilter === "all") return filtered;
         return filtered.filter(
             (scan) => scan.statusCode.toString() === statusFilter
         );
-    };
+    }, [statusFilter]);
 
-    if (loading) return (
-        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-6 rounded-lg">
-            <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-slate-700 border-t-blue-400 rounded-full animate-spin"></div>
-                <span className="text-slate-400 font-mono">Loading scans...</span>
-            </div>
-        </div>
-    );
+    const filteredTabs = useMemo(() => {
+        return scanTabs.map((tab) => ({
+            ...tab,
+            filteredScans: applyStatusFilter(displayedScans.filter(tab.filter))
+            // const filtered = displayedScans
+            //     .filter(tab.filter)
+
+            // const statusFiltered = applyStatusFilter(filtered);
+        }))
+    }, [scanTabs, displayedScans, applyStatusFilter]);
+
+
+
 
     if (error) return (
         <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-6 rounded-lg">
@@ -83,50 +122,27 @@ const ScanListHistory = () => {
         </div>
     );
 
+    if (errorSearch) return (
+        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-6 rounded-lg">
+            <div className="text-center">
+                <div className="text-red-400 mb-2 font-mono">◖ ERROR</div>
+                <p className="text-slate-400 font-mono">No scan detected with {searchQuery}.</p>
+            </div>
+        </div>
+    )
+
     return (
         <>
             <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-6 rounded-lg">
                 <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
                     <h2 className="text-xl font-bold text-white font-mono tracking-wider">YOUR SCANS</h2>
-                    <div className="flex gap-2 flex-1 md:max-w-md">
-                        {/* Search bar */}
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                            <Input
-                                placeholder="Search scans..."
-                                className="pl-9 bg-slate-900/50 border-slate-700 text-slate-300 placeholder-slate-500 focus:border-blue-400 focus:ring-blue-400/20"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                        {/* Status filter */}
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
-                            <SelectTrigger className="w-[180px] cursor-pointer bg-slate-900/50 border-slate-700 text-slate-300 hover:bg-slate-800/50">
-                                <SelectValue placeholder="Status" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-slate-900 border-slate-700">
-                                <SelectItem value="all" className="text-slate-300 hover:bg-slate-800">All Status Codes</SelectItem>
-                                {uniqueStatusCodes.map((scan) => (
-                                    <SelectItem
-                                        key={scan.statusCode}
-                                        value={scan.statusCode.toString()}
-                                        className="text-slate-300 hover:bg-slate-800"
-                                    >
-                                        {scan.statusCode} - {scan.statusMessage}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {/* Refresh button */}
-                        <Button
-                            variant="outline"
-                            className="gap-2 border-slate-700 bg-slate-900/50 text-slate-300 hover:bg-slate-800/50 hover:text-white cursor-pointer"
-                            onClick={() => refetch()}
-                        >
-                            <RefreshCw className="h-4 w-4" />
-                            <span className="hidden md:inline">Refresh</span>
-                        </Button>
-                    </div>
+                    <ScanListFilter
+                        refetch={memoizedRefetch}
+                        searchQuery={searchQuery}
+                        setSearchQuery={memoizedSetSearchQuery}
+                        statusFilter={statusFilter}
+                        setStatusFilter={memoizedSetStatusFilter}
+                        uniqueStatusCodes={memoizedUniqueStatusCodes} />
                 </div>
 
                 <Tabs defaultValue="all" className="w-full">
@@ -143,44 +159,30 @@ const ScanListHistory = () => {
                         ))}
                     </TabsList>
 
-                    {scans.length > 0 ? (
-                        scanTabs.map((tab) => {
-                            const filtered = scans
-                                .filter(tab.filter)
-                                .filter((scan: IScan) => {
-                                    const q = searchQuery.toLowerCase();
-                                    return (
-                                        scan.title.toLowerCase().includes(q) ||
-                                        scan.url.toLowerCase().includes(q)
-                                    );
-                                });
-
-                            const statusFiltered = applyStatusFilter(filtered);
-
+                    {displayedScans.length > 0 ? (
+                        filteredTabs.map((tab) => {
                             return (
                                 <TabsContent
                                     key={tab.value}
                                     value={tab.value}
                                     className="mt-0"
                                 >
-                                    {/* Container card for all scan cards */}
-                                    <div className="border border-white/20 bg-slate-800/30 backdrop-blur-xl rounded-lg p-4">
-                                        <div className="max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-track-slate-700 scrollbar-thumb-slate-500 hover:scrollbar-thumb-slate-400">
-                                            {statusFiltered.map((scan) => (
-                                                <HistoryScanCard key={scan.id} scan={scan} />
-                                            ))}
+                                    {(loading || loadingSearch) && (
+                                        <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-6 rounded-lg">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-4 h-4 border-2 border-slate-700 border-t-blue-400 rounded-full animate-spin"></div>
+                                                <span className="text-slate-400 font-mono">Loading scans...</span>
+                                            </div>
                                         </div>
-                                        <div className=" p-4">
-                                            <Button
-                                                onClick={loadMore}
-                                                disabled={loading || !hasMore}
-                                                className="w-full h-24 flex items-center justify-center border border-dashed border-slate-600 text-slate-400 hover:text-white hover:border-slate-400 bg-transparent cursor-pointer"
-                                            >
-                                                {loading ? "Loading..." : "Load More"}
-                                            </Button>
+                                    )}
+                                    <ScanList
+                                        scans={tab.filteredScans}
+                                        loading={loading}
+                                        hasMore={hasMore}
+                                        onLoadMore={memoizedLoadMore}
+                                        showLoadMore={!searchQuery}
+                                    />
 
-                                        </div>
-                                    </div>
                                 </TabsContent>
                             );
                         })

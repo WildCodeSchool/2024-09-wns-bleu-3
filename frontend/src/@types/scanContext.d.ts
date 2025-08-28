@@ -12,5 +12,5 @@ export interface ScansContextType {
     resolvedIssues: string[]
     setResolvedIssues: React.Dispatch<React.SetStateAction<string[]>>
     activeScans: number,
-    loadMore: () => Promise<void>
+    loadMore: () => Promise<void>,
 }

@@ -5,13 +5,7 @@ import ScanListHistory from "@/components/dashborad/ScanListHistory";
 import { useScansContext } from "../hooks/useScansContext";
 
 const DashboardPage = () => {
-    const { scans, totalScans, loading, error, activeIssueCount } = useScansContext()
-
-    // Number of active Scans between 200 and 300 status code
-
-    const activeScans = scans.filter(
-        (scan) => scan.statusCode >= 200 && scan.statusCode < 300
-    ).length
+    const { scans, totalScans, activeScans, loading, error, activeIssueCount } = useScansContext()
 
     // Calculate average response time from all scans
     const averageResponseTime = scans.length > 0

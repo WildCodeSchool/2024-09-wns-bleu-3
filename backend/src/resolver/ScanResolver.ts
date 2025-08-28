@@ -11,7 +11,7 @@ import { User } from '../entities/User'
 import { ContextType } from '../schema/context'
 import { issuesArray } from '../utils/issuesArray'
 import { PaginationInput, PaginationOutput } from '../inputs/PaginationInput'
-import { FindOptionsWhere, ILike } from 'typeorm'
+import { Between, FindOptionsWhere, ILike } from 'typeorm'
 import { paginationSchema } from '../schema/paginationSchema'
 
 @Resolver(Scan)
@@ -94,14 +94,17 @@ class ScanResolver {
                     ]
                 : [{ user: { id: userId } }]
 
+            const take = search ? undefined : limit
+            const skip = search ? undefined : offset
+
             const [scans, total] = await Scan.findAndCount({
                 where,
                 relations: ['frequency', 'tags'],
                 order: {
                     id: 'DESC',
                 },
-                take: limit,
-                skip: offset,
+                take,
+                skip,
             })
 
             const issues = issuesArray(scans)
@@ -109,7 +112,12 @@ class ScanResolver {
             const page = Math.floor(offset / limit) + 1
             const hasMore = offset + limit < total
 
-            const activeScans = scans.filter(scan => scan.statusCode >= 200 && scan.statusCode < 300).length
+            const activeScans = await Scan.count({
+                where: {
+                    user: { id: userId },
+                    statusCode: Between(200, 299),
+                },
+            })
 
             console.log('this is issue', issues.length)
 
