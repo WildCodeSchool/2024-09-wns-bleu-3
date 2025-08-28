@@ -15,10 +15,10 @@ export const STATUS_FILTERS = [
 // Get color for filter badge
 // eslint-disable-next-line react-refresh/only-export-components
 export const getFilterColor = (filter: string) => {
-  if (filter === "200") return "bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
-  if (filter === "400") return "bg-amber-100 text-amber-800 hover:bg-amber-200"
-  if (filter === "500") return "bg-rose-100 text-rose-800 hover:bg-rose-200"
-  return "bg-gray-200 text-gray-800 hover:bg-gray-300"
+  if (filter === "200") return "bg-emerald-400/20 text-emerald-400 hover:bg-emerald-400/30"
+  if (filter === "400") return "bg-amber-400/20 text-amber-400 hover:bg-amber-400/30"
+  if (filter === "500") return "bg-rose-400/20 text-rose-400 hover:bg-rose-400/30"
+  return "bg-slate-600/20 text-slate-300 hover:bg-slate-600/30"
 }
 
 interface SearchFilterProps {
@@ -46,12 +46,12 @@ export function SearchFilter({ searchTerm, setSearchTerm, activeFilters, setActi
   }
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-white border-b border-gray-200">
+    <div className="flex flex-col gap-4 p-4 bg-slate-900/50 border-b border-white/10">
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
           <Input
-            className="pl-10 bg-white border-gray-300 rounded-md focus:border-gray-500 focus:ring-1 focus:ring-gray-500 shadow-sm font-barlow"
+            className="pl-10 bg-slate-800/50 border-white/10 text-slate-300 placeholder:text-slate-400 rounded-md focus:border-blue-400/50 focus:ring-1 focus:ring-blue-400/50 shadow-sm font-barlow"
             placeholder="Rechercher..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -60,44 +60,42 @@ export function SearchFilter({ searchTerm, setSearchTerm, activeFilters, setActi
         <div className="relative">
           <button
             onClick={() => setFilterMenuOpen(!filterMenuOpen)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-900 text-white border border-blue-800 rounded-md shadow-sm hover:bg-blue-800 transition-colors font-barlow font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 text-slate-300 border border-white/10 rounded-md shadow-sm hover:bg-slate-700/50 hover:text-white transition-colors font-barlow font-medium"
           >
             <Filter className="h-4 w-4" />
             Filter
             {activeFilters.length > 0 && (
-              <span className="bg-blue-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              <span className="bg-blue-400/20 text-blue-400 text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 {activeFilters.length}
               </span>
             )}
           </button>
 
           {filterMenuOpen && (
-            <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg z-10 w-48 p-2">
-              <div className="text-xs font-barlow font-medium text-gray-700 mb-2 px-2">Status Code</div>
+            <div className="absolute top-full right-0 mt-2 bg-slate-800 border border-white/10 rounded-md shadow-lg z-10 w-48 p-2">
+              <div className="text-xs font-barlow font-medium text-slate-300 mb-2 px-2">Status Code</div>
               {STATUS_FILTERS.map((filter) => (
                 <div
                   key={filter.value}
-                  className={`flex items-center justify-between px-3 py-3 mb-1 rounded-md cursor-pointer transition-colors ${
-                    activeFilters.includes(filter.value)
-                      ? filter.value === "200"
-                        ? "bg-emerald-50 text-emerald-800"
-                        : filter.value === "400"
-                          ? "bg-amber-50 text-amber-800"
-                          : "bg-rose-50 text-rose-800"
-                      : "hover:bg-gray-50"
-                  }`}
+                  className={`flex items-center justify-between px-3 py-3 mb-1 rounded-md cursor-pointer transition-colors ${activeFilters.includes(filter.value)
+                    ? filter.value === "200"
+                      ? "bg-emerald-400/20 text-emerald-400"
+                      : filter.value === "400"
+                        ? "bg-amber-400/20 text-amber-400"
+                        : "bg-rose-400/20 text-rose-400"
+                    : "hover:bg-slate-700/50 text-slate-300"
+                    }`}
                   onClick={() => toggleFilter(filter.value)}
                 >
                   <span className="font-barlow">{filter.label}</span>
                   {activeFilters.includes(filter.value) && (
                     <CheckCircle
-                      className={`h-4 w-4 ${
-                        filter.value === "200"
-                          ? "text-emerald-600"
-                          : filter.value === "400"
-                            ? "text-amber-600"
-                            : "text-rose-600"
-                      }`}
+                      className={`h-4 w-4 ${filter.value === "200"
+                        ? "text-emerald-400"
+                        : filter.value === "400"
+                          ? "text-amber-400"
+                          : "text-rose-400"
+                        }`}
                     />
                   )}
                 </div>
@@ -115,7 +113,7 @@ export function SearchFilter({ searchTerm, setSearchTerm, activeFilters, setActi
             return (
               <Badge key={filter} className={`${getFilterColor(filter)} font-barlow px-3 py-1 flex items-center gap-1`}>
                 {filterLabel}
-                <button onClick={() => removeFilter(filter)} className="ml-1 rounded-full hover:bg-gray-400/20 p-0.5">
+                <button onClick={() => removeFilter(filter)} className="ml-1 rounded-full hover:bg-slate-600/30 p-0.5">
                   <X className="h-3 w-3" />
                 </button>
               </Badge>

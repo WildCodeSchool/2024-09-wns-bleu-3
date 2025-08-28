@@ -3,9 +3,8 @@ import { Clock, Globe, AlertCircle } from "lucide-react"
 import type { ScanItem } from "./types"
 import { getStatusStyle } from "./utils"
 import { StatusIndicator } from "./StatusIndicator"
-import { GET_SCAN_HISTORY } from "@/graphql/queries";
 import { ScanChart } from "./ScanChart"
-import { useQuery } from "@apollo/client";
+import { useGetScanHistoryQuery, GetScanByIdQuery } from "../../generated/graphql-types";
 
 // Format date for display
 const formatDate = (date: string) => {
@@ -18,15 +17,16 @@ const formatDate = (date: string) => {
 }
 
 interface ScanDetailsProps {
-  scan: ScanItem | null
+  scan: GetScanByIdQuery['getScanById'] | null
 }
 
 export function ScanDetails({ scan }: ScanDetailsProps) {
 
-  const { data: historyData, loading: historyLoading } = useQuery(GET_SCAN_HISTORY, {
-    variables: { scanId: scan?.id },
+  const { data: historyData, loading: historyLoading } = useGetScanHistoryQuery({
+    variables: { scanId: Number(scan?.id) },
     skip: !scan?.id,
   });
+
 
   const scanHistory = historyData?.getScanHistory || [];
 
@@ -72,7 +72,13 @@ export function ScanDetails({ scan }: ScanDetailsProps) {
       </div>
 
       {/* Status indicators */}
-      <StatusIndicator scan={scan} />
+      <StatusIndicator scan={{
+        ...scan,
+        id: scan.id.toString(),
+        createdAt: scan.createdAt.toString(),
+        updatedAt: scan.updatedAt.toString(),
+        lastScannedAt: scan.lastScannedAt?.toString() ?? '',
+      } as ScanItem} />
 
       {/* Chart */}
       {/* Graph */}

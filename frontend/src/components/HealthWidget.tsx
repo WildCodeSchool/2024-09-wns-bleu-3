@@ -1,12 +1,13 @@
 
-import { HealthWidgetProps } from '@/@types/sidebar';
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel } from './ui/sidebar';
+import { useScansContext } from '../hooks/useScansContext';
 
 
 
-function HealthWidget({ totalScans, activeScans, issueScans }: HealthWidgetProps) {
+function HealthWidget() {
+    const { totalScans, activeScans, activeIssueCount } = useScansContext()
     // Calculate health percentage based on active vs total scans
-    const healthPercentage = totalScans > 0 ? Math.round((activeScans / totalScans) * 100) : 0;
+    const healthPercentage = totalScans > 0 ? Math.min(Math.round((activeScans / totalScans) * 100), 100) : 0;
 
     // Calculate circle stroke properties for the progress circle
     const radius = 40;
@@ -86,12 +87,8 @@ function HealthWidget({ totalScans, activeScans, issueScans }: HealthWidgetProps
                         <div className="flex justify-between items-center">
                             <span className="text-dark-blue-400">ISSUES</span>
                             <span className="text-red-400 font-mono bg-red-500/10 px-2 py-1 rounded text-xs">
-                                {issueScans}
+                                {activeIssueCount}
                             </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-dark-blue-400">UPTIME</span>
-                            <span className="text-white font-mono bg-dark-blue-800/50 px-2 py-1 rounded text-xs">98.7%</span>
                         </div>
                     </div>
                 </div>

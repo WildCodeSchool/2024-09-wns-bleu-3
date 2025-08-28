@@ -5,47 +5,47 @@ import { Card, CardContent } from "@/components/ui/card"
 import type { ScanItem } from "./scan-history/types"
 import { SearchFilter } from "./scan-history/SearchFilter"
 import { ScanDetails } from "./scan-history/ScanDetails"
-import { useApolloClient, useQuery } from "@apollo/client"
-import { GET_ALL_SCANS, GET_SCAN_BY_ID } from "@/graphql/queries"
 import { ScanList } from "./scan-history/ScanList"
-import { Scan, useScanCreatedSubscription } from "@/generated/graphql-types"
+import { useScansContext } from "../hooks/useScansContext"
+import { useGetScanByIdQuery } from "@/generated/graphql-types"
+// import { Scan, useScanCreatedSubscription } from "@/generated/graphql-types"
 
 export default function ScanHistory() {
-  const [selectedScanId, setSelectedScanId] = useState<string | null>(null)
+
+  const { scans: allScansData, loading: allScansLoading, error: allScansError } = useScansContext()
+
+  const [selectedScanId, setSelectedScanId] = useState<number | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [activeFilters, setActiveFilters] = useState<string[]>([])
 
-  const client = useApolloClient()
+  // const client = useApolloClient()
 
   //  Function subscribption to new scans with SSE 
 
-  useScanCreatedSubscription({
-    onData: ({ data }) => {
-      const newScan = data?.data?.newScan
-      if (!newScan) return
+  // useScanCreatedSubscription({
+  //   onData: ({ data }) => {
+  //     const newScan = data?.data?.newScan
+  //     if (!newScan) return
 
-      client.cache.updateQuery({ query: GET_ALL_SCANS }, (prev) => {
-        if (!prev?.getAllScans) return prev
+  //     client.cache.updateQuery({ query: GET_ALL_SCANS }, (prev) => {
+  //       if (!prev?.getAllScans) return prev
 
-        const alreadyExists = prev.getAllScans.some((scan: Scan) => scan.id === newScan.id)
+  //       const alreadyExists = prev.getAllScans.some((scan: Scan) => scan.id === newScan.id)
 
-        if (alreadyExists) return prev
+  //       if (alreadyExists) return prev
 
-        return {
-          getAllScans: [newScan, ...prev.getAllScans]
-        }
+  //       return {
+  //         getAllScans: [newScan, ...prev.getAllScans]
+  //       }
 
-      })
-    }
-  })
+  //     })
+  //   }
+  // })
 
   console.log("selectedScanId", selectedScanId);
 
-  // fetch all Scans
-  const { loading: allScansLoading, error: allScansError, data: allScansData } = useQuery(GET_ALL_SCANS);
-
   // Expanded sample data with hourly history and longer URLs
-  const allScans: ScanItem[] = allScansData?.getAllScans || [];
+  const allScans: ScanItem[] = allScansData || [];
 
   // Filter scans based on search term and active filters
   const filteredScans = allScans.filter((scan) => {
@@ -77,21 +77,33 @@ export default function ScanHistory() {
     }
   }, [filteredScans, selectedScanId])
 
-  const { loading: scanByIdLoading, error: scanByIdError, data: scanByIdData } = useQuery(GET_SCAN_BY_ID, {
-    variables: { getScanByIdId: selectedScanId ? Number(selectedScanId) : 0 },
+  const { loading: scanByIdLoading, error: scanByIdError, data: scanByIdData } = useGetScanByIdQuery({
+    variables: { getScanByIdId: Number(selectedScanId) },
     skip: !selectedScanId,
   });
 
   const selectedScan = scanByIdData?.getScanById || null;
 
-  if (allScansLoading) return <p>Loading...</p>
+  if (allScansLoading) return (
+    <div className="flex items-center justify-center h-64">
+      <div className="flex items-center gap-2">
+        <div className="w-4 h-4 border-2 border-slate-700 border-t-blue-400 rounded-full animate-spin"></div>
+        <span className="text-slate-400">Loading scan history...</span>
+      </div>
+    </div>
+  )
 
-  if (allScansError) return <p>Error: {allScansError.message}</p>
+  if (allScansError) return (
+    <div className="text-center py-8">
+      <div className="text-red-400 mb-2">ERROR</div>
+      <p className="text-slate-400">{allScansError.message}</p>
+    </div>
+  )
 
   return (
     <div className="w-full mb-16 px-6" id="scan-history">
-      <h2 className=" text-2xl text-black text-center font-bold">Scan History</h2>
-      <Card className="w-full max-w-5xl mx-auto border-none shadow-xl rounded-xl overflow-hidden bg-white">
+      <h2 className="text-2xl text-white text-center font-bold">Scan History</h2>
+      <Card className="w-full max-w-5xl mx-auto border border-white/10 bg-main-400/5 backdrop-blur-xl shadow-xl rounded-xl overflow-hidden">
         <CardContent className="p-0">
           <div className="flex flex-col">
             {/* Search and filter section */}
@@ -108,13 +120,19 @@ export default function ScanHistory() {
               <ScanList scans={filteredScans} selectedScanId={selectedScanId} onSelectScan={setSelectedScanId} />
 
               {/* Scan details */}
-              <div className="md:col-span-2 p-4 bg-white h-full overflow-y-auto">
+              <div className="md:col-span-2 p-4 bg-slate-900/30 h-full overflow-y-auto">
                 {scanByIdLoading ? (
                   <div className="flex justify-center items-center h-full">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-slate-700 border-t-blue-400 rounded-full animate-spin"></div>
+                      <span className="text-slate-400">Loading scan details...</span>
+                    </div>
                   </div>
                 ) : scanByIdError ? (
-                  <div className="text-red-500">Error loading scan details: {scanByIdError.message}</div>
+                  <div className="text-center py-8">
+                    <div className="text-red-400 mb-2">ERROR</div>
+                    <p className="text-slate-400">Error loading scan details: {scanByIdError.message}</p>
+                  </div>
                 )
                   : (
                     <ScanDetails scan={selectedScan} />

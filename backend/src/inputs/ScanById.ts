@@ -8,12 +8,6 @@ export class ScanByUserId {
     scans: Scan[]
 
     @Field(() => Int)
-    totalScans: number
-
-    @Field(() => String, { nullable: true })
-    username?: string
-
-    @Field(() => Int)
     totalIssues: number
 
     @Field(() => [Issue])

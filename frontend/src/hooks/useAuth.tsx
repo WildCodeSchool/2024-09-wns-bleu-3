@@ -3,7 +3,8 @@ import { useGetUserInfoQuery } from '@/generated/graphql-types';
 export function useAuth() {
   const { data, loading, error, refetch } = useGetUserInfoQuery({
     fetchPolicy: 'cache-first',
-    errorPolicy: 'all',
+    errorPolicy: 'ignore', // Ignore errors to prevent failed query noise
+    notifyOnNetworkStatusChange: false, // Reduce unnecessary re-renders
   });
 
   return {

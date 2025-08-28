@@ -35,6 +35,11 @@ test-stop:
 clean:
 	docker system prune -f --volumes
 
+ultra-clean:
+	docker compose down -v --rmi all
+	docker compose build --no-cache
+	docker compose up --build
+
 
 start-preprod:
 	docker compose -f docker-compose.testprod.yml up --build
