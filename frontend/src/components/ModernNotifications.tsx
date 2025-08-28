@@ -19,7 +19,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
-import { useGetAllScanHistoryQuery, useScanHistoryCreatedSubscription } from "@/generated/graphql-types"
+import { useGetAllScanHistoryQuery, useScanHistoryAddedSubscription } from "@/generated/graphql-types"
 
 interface NotificationItem {
     id: string
@@ -54,23 +54,35 @@ interface scanHistorySimplified {
 export default function ModernNotifications() {
     const [selectedNotification, setSelectedNotification] = useState<(typeof notifications)[0] | null>(null)
     const [isSheetOpen, setIsSheetOpen] = useState(false)
-    const [readNotificationIds, setReadNotificationIds] = useState<string[]>([])
+    const [readNotificationIds, setReadNotificationIds] = useState<string[]>(() => {
+        if (typeof window !== "undefined") {
+            return JSON.parse(localStorage.getItem("readNotificationIds") || "[]")
+        }
+        return []
+    })
     const [notifications, setNotifications] = useState<NotificationItem[]>([])
 
+    useEffect(() => {
+        localStorage.setItem("readNotificationIds", JSON.stringify(readNotificationIds))
+    }, [readNotificationIds])
 
-    useScanHistoryCreatedSubscription({
+    useScanHistoryAddedSubscription({
         onData: ({ data }) => {
-            const newScan = data?.data?.scanHistoryAdded
-            if (!newScan) return
-
-            // On transforme le scan en NotificationItem(s)
-            const newNotifications = generateNotificationsFromHistory([newScan])
-
-            if (newNotifications.length > 0) {
-                setNotifications(prev => [...newNotifications, ...prev])
+            console.log('🔔 Subscription data received:', data);
+            const newScan = data?.data?.scanHistoryAdded;
+            if (!newScan) {
+                console.warn('❌ No scanHistoryAdded in subscription data');
+                return;
             }
+            console.log('✅ Processing new scan:', newScan);
         },
-    })
+        onError: (error) => {
+            console.error('❌ Subscription error:', error);
+        },
+        onComplete: () => {
+            console.log('🔚 Subscription completed');
+        }
+    });
 
     const getNotificationIcon = (type: string) => {
         switch (type) {
@@ -90,11 +102,29 @@ export default function ModernNotifications() {
     const handleNotificationClick = (notification: NotificationItem) => {
         setSelectedNotification(notification)
         setIsSheetOpen(true)
+
         if (!readNotificationIds.includes(notification.id)) {
-            setReadNotificationIds(prevIds => [...prevIds, notification.id]);
+            setReadNotificationIds(prevIds => {
+                const newIds = [...prevIds, notification.id]
+
+                setNotifications(prevNotifications =>
+                    prevNotifications.map(n =>
+                        n.id === notification.id ? { ...n, read: true } : n
+                    )
+                )
+                return newIds
+            })
         }
-        setNotifications(prev =>
-            prev.filter(n => n.id !== notification.id)
+    }
+
+    const handleAllReadClick = () => {
+        const allNotifsIds = notifications.map((el) => el.id)
+        setReadNotificationIds(prevIds => {
+            const combinedIds = [...prevIds, ...allNotifsIds]
+            return [...new Set(combinedIds)]
+        })
+        setNotifications(prevNotifications =>
+            prevNotifications.map(n => ({ ...n, read: true }))
         )
     }
 
@@ -122,19 +152,20 @@ export default function ModernNotifications() {
         return lowerCert.includes('expired') || lowerCert.includes('invalid') || lowerCert.includes('error')
     }
 
-    const generateNotificationsFromHistory = (history: scanHistorySimplified[]): NotificationItem[] => {
+    const generateNotificationsFromHistory = (history: scanHistorySimplified[], readNotificationIds: string[]): NotificationItem[] => {
         const notifications: NotificationItem[] = []
 
         history.forEach(scan => {
             // Notification pour temps de réponse élevé
             if (scan.responseTime > 350) {
+                const id = `response-${scan.id}`
                 notifications.push({
-                    id: `response-${scan.id}`,
+                    id,
                     type: "warning",
                     title: "High Response Time",
                     message: `${scan.url} response time: ${scan.responseTime}ms`,
                     time: formatTimeAgo(scan.createdAt),
-                    read: false,
+                    read: readNotificationIds.includes(id),
                     scanId: scan.scan.id,
                     scanName: scan.scan.title,
                     icon: Gauge,
@@ -145,13 +176,14 @@ export default function ModernNotifications() {
 
             // Notification pour erreur de status code
             if (scan.statusCode >= 400) {
+                const id = `status-${scan.id}`
                 notifications.push({
-                    id: `status-${scan.id}`,
+                    id,
                     type: "error",
                     title: "Status Code Error",
                     message: `${scan.url} returned ${scan.statusCode}`,
                     time: formatTimeAgo(scan.createdAt),
-                    read: false,
+                    read: readNotificationIds.includes(id),
                     scanId: scan.scan.id,
                     scanName: scan.scan.title,
                     icon: XCircle,
@@ -162,13 +194,14 @@ export default function ModernNotifications() {
 
             // Notification pour certificat SSL expiré
             if (scan.sslCertificate && isSSLExpired(scan.sslCertificate)) {
+                const id = `ssl-${scan.id}`
                 notifications.push({
-                    id: `ssl-${scan.id}`,
+                    id,
                     type: "critical",
                     title: "SSL Certificate Issue",
                     message: `${scan.url} SSL certificate expired`,
                     time: formatTimeAgo(scan.createdAt),
-                    read: false,
+                    read: readNotificationIds.includes(id),
                     scanId: scan.scan.id,
                     scanName: scan.scan.title,
                     icon: Shield,
@@ -177,17 +210,14 @@ export default function ModernNotifications() {
                 })
             }
         })
-
         return notifications
     }
 
     useEffect(() => {
         if (allHistory) {
-            setNotifications(generateNotificationsFromHistory(allHistory))
+            setNotifications(generateNotificationsFromHistory(allHistory, readNotificationIds))
         }
-    }, [allHistory])
-
-    // const realNotifications = allHistory ? generateNotificationsFromHistory(allHistory) : []
+    }, [allHistory, readNotificationIds])
 
     const unreadCount = notifications.filter(n => !readNotificationIds.includes(n.id)).length
 
@@ -222,7 +252,7 @@ export default function ModernNotifications() {
                                 </Badge>
                             )}
                         </div>
-                        <Button variant="ghost" size="sm" className="text-xs text-slate-400 hover:text-white hover:bg-white/10">
+                        <Button onClick={() => handleAllReadClick()} variant="ghost" size="sm" className="text-xs text-slate-400 hover:text-white hover:bg-white/10">
                             Mark all read
                         </Button>
                     </div>
@@ -273,12 +303,6 @@ export default function ModernNotifications() {
                             })}
                         </div>
                     </ScrollArea>
-
-                    <div className="p-3 border-t border-white/10">
-                        <Button variant="ghost" className="w-full text-sm text-slate-400 hover:text-white hover:bg-white/10">
-                            View all notifications
-                        </Button>
-                    </div>
                 </PopoverContent>
             </Popover>
 

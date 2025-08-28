@@ -1,4 +1,4 @@
-import { ContextType } from 'src/schema/context'
+import { ContextType } from '../schema/context'
 import { ScanHistory } from '../entities/ScanHistory'
 import { Arg, Ctx, Query, Resolver, Root, Subscription } from 'type-graphql'
 
@@ -26,8 +26,12 @@ class ScanHistoryResolver {
         topics: 'SCAN_HISTORY_ADDED',
     })
     scanHistoryAdded(@Root() scanHistoryAdd: ScanHistory): ScanHistory {
-        console.log('New scanHistory created:', scanHistoryAdd)
-        return scanHistoryAdd
+        console.log('🔔 Subscription resolver called with:', {
+            id: scanHistoryAdd.id,
+            scanId: scanHistoryAdd.scan?.id,
+            timestamp: new Date().toISOString()
+        });
+        return scanHistoryAdd;
     }
 
     @Query(() => [ScanHistory])

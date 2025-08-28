@@ -19,7 +19,7 @@ export const SCAN_CREATED_SUBSCRIPTION =
 `;
 
 export const SCAN_HISTORY_ADDED =
-  gql`subscription ScanHistoryCreated {
+  gql`subscription ScanHistoryAdded {
   scanHistoryAdded {
     id
     url
@@ -30,9 +30,9 @@ export const SCAN_HISTORY_ADDED =
     isOnline
     createdAt
     scan {
-        id
-        url
-        title
+      id
+      url
+      title
     }
   }
 }

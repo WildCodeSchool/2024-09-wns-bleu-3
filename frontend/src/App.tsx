@@ -20,7 +20,7 @@ import NotFound from './not-found';
 function App() {
   const { loading, error, data } = useQuery(GET_ALL_SCANS);
   console.log(data)
-
+  console.log('SSE URL:', import.meta.env.VITE_BACKEND_URL)
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error : {error.message}</p>;
