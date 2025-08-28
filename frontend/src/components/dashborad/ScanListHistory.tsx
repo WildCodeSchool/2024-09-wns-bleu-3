@@ -37,8 +37,8 @@ const ScanListHistory = () => {
 
     const memoizedRefetch = useCallback(() => refetch(), [refetch]);
     const memoizedLoadMore = useCallback(() => loadMore(), [loadMore]);
-    const memoizedSetSearchQuery = useCallback((value: any) => setSearchQuery(value), []);
-    const memoizedSetStatusFilter = useCallback((value: any) => setStatusFilter(value), []);
+    const memoizedSetSearchQuery = useCallback((value: string) => setSearchQuery(value), []);
+    const memoizedSetStatusFilter = useCallback((value: string) => setStatusFilter(value), []);
 
     const memoizedUniqueStatusCodes = useMemo(() => uniqueStatusCodes, [uniqueStatusCodes]);
     const { data: DataSearch, loading: loadingSearch, error: errorSearch } = useGetAllScansByUserIdQuery({
@@ -47,42 +47,21 @@ const ScanListHistory = () => {
         skip: !isLoggedIn || authLoading, // Only execute when user is authenticated
     })
 
-
-
     const displayedScans = useMemo(() => (searchQuery
         ? DataSearch?.getAllScansByUserId.scans ?? []
         : scans), [searchQuery, DataSearch, scans]);
 
-
-    // const scanTabs: ScanTabConfig[] = [
-    //     { value: "all", label: "All Scans", filter: () => true },
-    //     {
-    //         value: "active",
-    //         label: "Active",
-    //         filter: (scan) => scan.statusCode === 200,
-    //     },
-    //     {
-    //         value: "issues",
-    //         label: "Issues",
-    //         filter: (scan) => scan.statusCode !== 200,
-    //     },
-    //     {
-    //         value: "favorites",
-    //         label: "Favorites",
-    //         filter: () => false, //TODO
-    //     },
-    // ];
     const scanTabs = useMemo(() => [
         { value: "all", label: "All Scans", filter: () => true },
         {
             value: "active",
             label: "Active",
-            filter: (scan: any) => scan.statusCode === 200,
+            filter: (scan: IScan) => scan.statusCode === 200,
         },
         {
             value: "issues",
             label: "Issues",
-            filter: (scan: any) => scan.statusCode !== 200,
+            filter: (scan: IScan) => scan.statusCode !== 200,
         },
         {
             value: "favorites",
@@ -167,22 +146,24 @@ const ScanListHistory = () => {
                                     value={tab.value}
                                     className="mt-0"
                                 >
-                                    {(loading || loadingSearch) && (
+                                    {(loading || loadingSearch) ? (
                                         <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl p-6 rounded-lg">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-4 h-4 border-2 border-slate-700 border-t-blue-400 rounded-full animate-spin"></div>
                                                 <span className="text-slate-400 font-mono">Loading scans...</span>
                                             </div>
                                         </div>
-                                    )}
-                                    <ScanList
-                                        scans={tab.filteredScans}
-                                        loading={loading}
-                                        hasMore={hasMore}
-                                        onLoadMore={memoizedLoadMore}
-                                        showLoadMore={!searchQuery}
-                                    />
+                                    ) : (
+                                        <ScanList
+                                            scans={tab.filteredScans}
+                                            loading={loading}
+                                            hasMore={hasMore}
+                                            onLoadMore={memoizedLoadMore}
+                                            showLoadMore={!searchQuery}
+                                        />
 
+                                    )
+                                    }
                                 </TabsContent>
                             );
                         })

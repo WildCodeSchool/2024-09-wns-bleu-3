@@ -8,9 +8,9 @@ import { memo } from "react"
 interface ScanListFilterProps {
     refetch: () => void;
     searchQuery: string;
-    setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+    setSearchQuery: (value: string) => void;
     statusFilter: string;
-    setStatusFilter: React.Dispatch<React.SetStateAction<string>>;
+    setStatusFilter: (value: string) => void;
     uniqueStatusCodes: ScanStatusProps[];
 }
 
