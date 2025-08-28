@@ -1,3 +1,4 @@
+import CallToAction from "@/components/CallToAction"
 import Faq from "@/components/Faq"
 import FeaturesSection from "@/components/FeaturesSection"
 import Help from "@/components/Help"
@@ -16,9 +17,13 @@ const HomePage = () => {
             {/* <div className="w-full mb-16 px-6" id="scan-history">
                 <ScanHistory />
             </div> */}
+            <div>
+                <CallToAction />
+            </div>
             <div className="w-full mb-16 px-6" id="faq-section">
                 <Faq />
             </div>
+
             <div className="w-full" id="help-section">
                 <Help />
             </div>
