@@ -68,6 +68,7 @@ class ScanResolver {
 
             const scans = await Scan.find({
                 where: { user: { id: userId } },
+                relations: ['tags', 'frequency'],
                 order: {
                     id: 'DESC',
                 },

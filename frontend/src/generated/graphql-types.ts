@@ -480,10 +480,10 @@ export type GetAllScansByUserIdQueryVariables = Exact<{ [key: string]: never; }>
 
 export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'ScanByUserId', totalIssues: number, totalScans: number, username?: string | null, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
 
-export type ScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
+export type OnScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ScanCreatedSubscription = { __typename?: 'Subscription', newScan: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null } };
+export type OnScanCreatedSubscription = { __typename?: 'Subscription', newScan: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> } };
 
 export type ScanHistoryAddedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
@@ -1334,8 +1334,8 @@ export type GetAllScansByUserIdQueryHookResult = ReturnType<typeof useGetAllScan
 export type GetAllScansByUserIdLazyQueryHookResult = ReturnType<typeof useGetAllScansByUserIdLazyQuery>;
 export type GetAllScansByUserIdSuspenseQueryHookResult = ReturnType<typeof useGetAllScansByUserIdSuspenseQuery>;
 export type GetAllScansByUserIdQueryResult = Apollo.QueryResult<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables>;
-export const ScanCreatedDocument = gql`
-    subscription ScanCreated {
+export const OnScanCreatedDocument = gql`
+    subscription OnScanCreated {
   newScan {
     id
     url
@@ -1348,31 +1348,41 @@ export const ScanCreatedDocument = gql`
     createdAt
     updatedAt
     lastScannedAt
+    frequency {
+      id
+      intervalMinutes
+      name
+    }
+    tags {
+      id
+      name
+      color
+    }
   }
 }
     `;
 
 /**
- * __useScanCreatedSubscription__
+ * __useOnScanCreatedSubscription__
  *
- * To run a query within a React component, call `useScanCreatedSubscription` and pass it any options that fit your needs.
- * When your component renders, `useScanCreatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useOnScanCreatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useOnScanCreatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useScanCreatedSubscription({
+ * const { data, loading, error } = useOnScanCreatedSubscription({
  *   variables: {
  *   },
  * });
  */
-export function useScanCreatedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ScanCreatedSubscription, ScanCreatedSubscriptionVariables>) {
+export function useOnScanCreatedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<OnScanCreatedSubscription, OnScanCreatedSubscriptionVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<ScanCreatedSubscription, ScanCreatedSubscriptionVariables>(ScanCreatedDocument, options);
+        return Apollo.useSubscription<OnScanCreatedSubscription, OnScanCreatedSubscriptionVariables>(OnScanCreatedDocument, options);
       }
-export type ScanCreatedSubscriptionHookResult = ReturnType<typeof useScanCreatedSubscription>;
-export type ScanCreatedSubscriptionResult = Apollo.SubscriptionResult<ScanCreatedSubscription>;
+export type OnScanCreatedSubscriptionHookResult = ReturnType<typeof useOnScanCreatedSubscription>;
+export type OnScanCreatedSubscriptionResult = Apollo.SubscriptionResult<OnScanCreatedSubscription>;
 export const ScanHistoryAddedDocument = gql`
     subscription ScanHistoryAdded {
   scanHistoryAdded {
