@@ -89,8 +89,8 @@ mutation UpdateUser($data: UpdateUserInput!, $updateUserId: Float!) {
   updateUser(data: $data, id: $updateUserId)
 }`
 
-export const VERIFY_EMAIL = gql`
-  mutation VerifyEmail($data: UserInput!) {
+export const REGISTER_START = gql`
+  mutation RegisterStart($data: UserInput!) {
     verifyEmail(data: $data)
   }
 `;

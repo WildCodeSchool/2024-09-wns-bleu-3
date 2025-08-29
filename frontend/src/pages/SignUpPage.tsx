@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRegisterMutation } from "@/generated/graphql-types";
+import { useRegisterStartMutation } from "@/generated/graphql-types";
 
 
 const scanFormSchema = z.object({
@@ -31,7 +31,9 @@ type ScanFormValues = z.infer<typeof scanFormSchema>;
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const [registerMutation] = useRegisterMutation();
+  // const [registerMutation] = useRegisterMutation();
+
+  const [registerStart] = useRegisterStartMutation()
 
   const form = useForm({
     resolver: zodResolver(scanFormSchema),
@@ -45,7 +47,7 @@ const SignupPage = () => {
 
   const onSubmit = (data: ScanFormValues) => {
     console.log("données envoyées", data);
-    registerMutation({
+    registerStart({
       variables: {
         data: {
           email: data.email,
@@ -53,10 +55,10 @@ const SignupPage = () => {
           username: data.username
         }
       },
-      onCompleted: (data) => {
-        console.log("Inscription réussie :", data);
+      onCompleted: () => {
+        console.log("Demande de validation mail envoyé");
         navigate("/");
-        toast.success("You’ve successfully signed up! Please login to continue.")
+        toast.success("Registration started. Please check your inbox and confirm your email (link valid for 24h).")
       },
       onError: (err) => {
         console.error("An error occurred. Please check your details.", err);
@@ -66,6 +68,28 @@ const SignupPage = () => {
     });
   };
 
+  //  const onSubmit = (data: ScanFormValues) => {
+  //   console.log("données envoyées", data);
+  //   registerMutation({
+  //     variables: {
+  //       data: {
+  //         email: data.email,
+  //         password: data.password,
+  //         username: data.username
+  //       }
+  //     },
+  //     onCompleted: (data) => {
+  //       console.log("Inscription réussie :", data);
+  //       navigate("/");
+  //       toast.success("You’ve successfully signed up! Please login to continue.")
+  //     },
+  //     onError: (err) => {
+  //       console.error("An error occurred. Please check your details.", err);
+  //       const errorMessage = err.message
+  //       toast.error(errorMessage);
+  //     }
+  //   });
+  // };
 
 
   return (
