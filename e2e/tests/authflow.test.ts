@@ -23,9 +23,9 @@ test.describe('Authentication flow', () => {
         await page.getByRole('button', { name: 'Create Account' }).click()
 
         // Nouveau message de toast (tolérant)
-        await expect(
-            page.getByText(/Registration started|Confirmation email sent/i)
-        ).toBeVisible({ timeout: 10_000 })
+        await expect(page.getByText('Registration started. Please check your inbox and confirm your email (link valid for 24h).'))
+            .toBeVisible({ timeout: 10000 });
+
 
         // (optionnel) si l'app redirige vers la home après submit
         // await page.waitForURL('**/', { timeout: 10_000 })
