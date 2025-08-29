@@ -10,10 +10,10 @@ import { Role } from '../entities/Role'
 
 export const dataHealthCheck = new DataSource({
     type: 'postgres',
-    host: process.env.POSTGRES_HOST || "db",
-    username: process.env.POSTGRES_USER || "postgres",
-    database: process.env.POSTGRES_DB || "postgres",
-    password: process.env.POSTGRES_PASSWORD || "postgres",
+    host: 'db',
+    username: 'postgres',
+    database: 'postgres',
+    password: 'postgres',
     entities: [Scan, Tag, Frequency, User, ForgotPassword, ScanHistory, Role],
     synchronize: true,
     logging: ['error', 'query'],
