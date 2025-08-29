@@ -1,5 +1,6 @@
+import { ContextType } from '../schema/context'
 import { ScanHistory } from '../entities/ScanHistory'
-import { Arg, Query, Resolver } from 'type-graphql'
+import { Arg, Ctx, Query, Resolver, Root, Subscription } from 'type-graphql'
 
 @Resolver(ScanHistory)
 class ScanHistoryResolver {
@@ -15,6 +16,51 @@ class ScanHistoryResolver {
             })
 
             return history
+        }
+        catch (error) {
+            console.error({ 'Error getting scan history': error })
+            throw new Error('Something wrong happened')
+        }
+    }
+
+    @Subscription(() => ScanHistory, {
+        topics: 'SCAN_HISTORY_ADDED',
+    })
+    async scanHistoryAdded(@Root() scanHistoryAdd: ScanHistory): Promise<ScanHistory> {
+        console.log('🔔 Subscription HistoryScan resolver called with:', {
+            id: scanHistoryAdd.id,
+            scanId: scanHistoryAdd.scan?.id,
+            timestamp: new Date().toISOString()
+        });
+
+        const fullScanHistory = await ScanHistory.findOne({
+            where: { id: scanHistoryAdd.id },
+            relations: ['scan', 'scan.user'],
+        });
+
+        if (!fullScanHistory) {
+            throw new Error('ScanHistory not found');
+        }
+
+        return fullScanHistory;
+    }
+
+    @Query(() => [ScanHistory])
+    async getAllScanHistory(@Ctx() context: ContextType) {
+        try {
+            const histories = await ScanHistory.find({
+                where: {
+                    scan: {
+                        user: {
+                            id: context.id
+                        }
+                    }
+                },
+                relations: ['scan', 'scan.user'],
+                order: { createdAt: 'DESC' },
+            })
+
+            return histories
         }
         catch (error) {
             console.error({ 'Error getting scan history': error })

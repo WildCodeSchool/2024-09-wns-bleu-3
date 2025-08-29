@@ -6,7 +6,9 @@ import {
     TabsTrigger,
 } from "../ui/tabs";
 import { useDashboardPage } from "@/hooks/useDashboardPage";
-import { GetAllScansByUserIdQuery, useGetAllScansByUserIdQuery } from "@/generated/graphql-types";
+import { GetAllScansByUserIdQuery, Scan, useGetAllScansByUserIdQuery, useOnScanCreatedSubscription } from "@/generated/graphql-types";
+import { useApolloClient } from "@apollo/client";
+import { GET_DASHBOARD_USER_DATA } from "@/graphql/queries";
 import { useScansContext } from "../../hooks/useScansContext";
 import { useAuth } from "@/hooks/useAuth";
 import useDebounce from "@/hooks/useDebounce";
@@ -32,6 +34,33 @@ const ScanListHistory = () => {
     const [statusFilter, setStatusFilter] = useState("all");
     const { uniqueStatusCodes } = useDashboardPage(scans)
 
+    const client = useApolloClient()
+
+    useOnScanCreatedSubscription({
+        onData: ({ data }) => {
+            const newScan = data?.data?.newScan
+            if (!newScan) return
+
+            try {
+                client.cache.updateQuery({ query: GET_DASHBOARD_USER_DATA }, (prev) => {
+                    if (!prev?.getAllScansByUserId) return prev
+
+                    const alreadyExists = prev.getAllScansByUserId.scans.some((scan: Scan) => scan.id === newScan.id)
+
+                    if (alreadyExists) return prev
+
+                    return {
+                        getAllScansByUserId: {
+                            ...prev.getAllScansByUserId,
+                            scans: [newScan, ...prev.getAllScansByUserId.scans]
+                        }
+                    }
+                })
+            } catch (error) {
+                console.warn('Failed to update cache with new scan:', error)
+            }
+        }
+    })
     const debounceSearch = useDebounce(searchQuery, 600)
 
 

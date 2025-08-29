@@ -80,18 +80,18 @@ class ScanResolver {
 
             const where: FindOptionsWhere<Scan>[] = search
                 ? [
-                        {
-                            user: { id: userId },
-                            title: ILike(`%${search}%`),
-                        },
-                        {
-                            user: { id: userId },
-                            url: ILike(`%${search}%`),
-                        },
-                        ...(isSearchNumber
-                            ? [{ user: { id: userId }, statusCode: parsedSearchNumber }]
-                            : []),
-                    ]
+                    {
+                        user: { id: userId },
+                        title: ILike(`%${search}%`),
+                    },
+                    {
+                        user: { id: userId },
+                        url: ILike(`%${search}%`),
+                    },
+                    ...(isSearchNumber
+                        ? [{ user: { id: userId }, statusCode: parsedSearchNumber }]
+                        : []),
+                ]
                 : [{ user: { id: userId } }]
 
             const take = search ? undefined : limit
@@ -142,7 +142,7 @@ class ScanResolver {
         topics: 'SCAN_CREATED',
     })
     newScan(@Root() scan: Scan): Scan {
-        console.log('New scan created:', scan)
+        console.log('🔔 Subscription scan resolver called with:', scan)
         return scan
     }
 

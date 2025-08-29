@@ -8,7 +8,7 @@ import { Link, useNavigate, useParams } from "react-router"
 
 export type IScanDetails = GetScanByIdQuery["getScanById"]; import { SetStateAction, useEffect, useState } from 'react'
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent } from "@/components/ui/tabs"
 import {
     BarChart4,
     Clock,
@@ -198,7 +198,6 @@ function ScanDetailsPage() {
                                 </Link>
                             </Button>
                         </div>
-
                         {/* Scan details header */}
                         <div className="flex space-around rounded-xl p-6 mb-6">
                             <div className="text-left flex-1">
@@ -265,7 +264,6 @@ function ScanDetailsPage() {
                                 <Button variant="outline" className="gap-2 border-white/10 bg-slate-800/50 text-slate-300 hover:text-white hover:bg-slate-700/50">
                                     <RefreshCw className="h-4 w-4" /> Refresh Now
                                 </Button>
-
                                 <Sheet>
                                     <SheetTrigger asChild>
                                         <Button variant="outline" className="gap-2 border-white/10 bg-slate-800/50 text-slate-300 hover:text-white hover:bg-slate-700/50">
@@ -289,7 +287,6 @@ function ScanDetailsPage() {
                                                     className="bg-gray-50 border-gray-200 focus:bg-blue-50 focus:border-blue-400 focus:ring-blue-400"
                                                 />
                                             </div>
-
                                             <div className="grid gap-3">
                                                 <Label htmlFor="scan-frequency">Check Frequency</Label>
                                                 <Select value={editedFrequency} onValueChange={(value: SetStateAction<string>) => setEditedFrequency(value)}>
@@ -308,7 +305,6 @@ function ScanDetailsPage() {
                                                     </SelectContent>
                                                 </Select>
                                             </div>
-
                                             <div className="grid gap-3">
                                                 <Label htmlFor="scan-tags">Tags</Label>
                                                 <div className="grid grid-cols-2 gap-3">
@@ -368,7 +364,6 @@ function ScanDetailsPage() {
                                         </SheetFooter>
                                     </SheetContent>
                                 </Sheet>
-
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
                                         <Button variant="outline" className="gap-2 border-red-400/20 bg-red-400/10 text-red-400 hover:text-red-300 hover:bg-red-400/20">
@@ -393,7 +388,6 @@ function ScanDetailsPage() {
                                 </AlertDialog>
                             </div>
                         </div>
-
                         {/*** HC-51 ***/}
                         {/*** HC-50 (amadou)***/}
                         <ScanDetailsCards scan={scan} />
@@ -401,16 +395,10 @@ function ScanDetailsPage() {
                         <h2 className="mb-6 text-2xl text-white text-left font-bold">Scan History</h2>
                         {historyLoading ? <p className="text-slate-400">Loading...</p> :
                             <ScanDetailsChart history={scanHistory} />}
-
                         {/*** HC-52 ***/}
                         {/* Tabs for additional details */}
                         <div className="border border-white/10 bg-main-400/5 backdrop-blur-xl rounded-xl p-6 mt-6">
                             <Tabs defaultValue="history">
-                                <TabsList className="mb-4 cursor-pointer">
-                                    <TabsTrigger className="cursor-pointer" value="history">Detailed History</TabsTrigger>
-                                    <TabsTrigger className="cursor-pointer" value="notifications">Notifications</TabsTrigger>
-                                </TabsList>
-
                                 <TabsContent value="history">
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between mb-4">
@@ -422,7 +410,6 @@ function ScanDetailsPage() {
                                                 </Badge>
                                             </div>
                                         </div>
-
                                         <div className="overflow-x-auto">
                                             <table className="w-full border-collapse">
                                                 <thead>
@@ -437,7 +424,6 @@ function ScanDetailsPage() {
                                                     {scanHistory.map((entry) => {
                                                         const StatusIcon = getStatusIcon(entry.isOnline);
                                                         const statusColor = getStatusColor(entry.isOnline);
-
                                                         return (
                                                             <tr key={entry.id} className="border-b border-white/10 hover:bg-slate-800/30">
                                                                 <td className="py-3 px-4 text-sm">
@@ -478,17 +464,6 @@ function ScanDetailsPage() {
                                                     )}
                                                 </tbody>
                                             </table>
-                                        </div>
-                                    </div>
-                                </TabsContent>
-
-                                <TabsContent value="notifications">
-                                    <div className="space-y-4">
-                                        <h3 className="text-lg font-medium mb-4">Notifications</h3>
-                                        <div className="bg-gray-50 p-4 rounded-lg">
-                                            <p className="text-gray-600 text-center">
-                                                Notifications are not yet implemented.
-                                            </p>
                                         </div>
                                     </div>
                                 </TabsContent>

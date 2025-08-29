@@ -8,6 +8,7 @@ import ModernNotifications from './ModernNotifications';
 import ScansProvider from '../context/ScanProvider';
 
 const DashboardLayout = () => {
+
     return (
         <ScansProvider>
 
