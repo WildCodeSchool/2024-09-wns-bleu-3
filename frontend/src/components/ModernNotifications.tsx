@@ -1,6 +1,7 @@
 import { ForwardRefExoticComponent, RefAttributes, useEffect, useState } from "react"
 import { Link } from "react-router"
 import { toast } from 'sonner';
+import { useAuth } from "../hooks/useAuth"
 import {
     Bell,
     Clock,
@@ -63,6 +64,11 @@ export default function ModernNotifications() {
     })
     const [notifications, setNotifications] = useState<NotificationItem[]>([])
 
+    const { data } = useAuth();
+    const userId = data?.getUserInfo?.id
+
+    console.log(userId)
+
     useEffect(() => {
         localStorage.setItem("readNotificationIds", JSON.stringify(readNotificationIds))
     }, [readNotificationIds])
@@ -76,18 +82,20 @@ export default function ModernNotifications() {
                 return;
             }
             console.log('✅ Processing new scan:', newScanHistory);
-            const newNotifications = generateNotificationsFromHistory([newScanHistory], readNotificationIds)
+            if (newScanHistory.scan.user.id === userId && userId) {
+                const newNotifications = generateNotificationsFromHistory([newScanHistory], readNotificationIds)
 
-            if (newNotifications.length > 0) {
-                console.log("adding new notifications", newNotifications)
+                if (newNotifications.length > 0) {
+                    console.log("adding new notifications", newNotifications)
 
-                setNotifications(prevNotifications => {
-                    const existingIds = prevNotifications.map(n => n.id);
-                    const uniqueNotifications = newNotifications.filter(n => !existingIds.includes(n.id))
-                    return [...uniqueNotifications, ...prevNotifications]
-                });
-                console.log('🎉 Notifications updated in real-time!');
-                toast.success(`New notification for ${newScanHistory.url}!`)
+                    setNotifications(prevNotifications => {
+                        const existingIds = prevNotifications.map(n => n.id);
+                        const uniqueNotifications = newNotifications.filter(n => !existingIds.includes(n.id))
+                        return [...uniqueNotifications, ...prevNotifications]
+                    });
+                    console.log('🎉 Notifications updated in real-time!');
+                    toast.success(`New notification for ${newScanHistory.url}!`)
+                }
             }
         },
         onError: (error) => {

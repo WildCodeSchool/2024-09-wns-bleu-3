@@ -519,7 +519,7 @@ export type OnScanCreatedSubscription = { __typename?: 'Subscription', newScan: 
 export type ScanHistoryAddedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ScanHistoryAddedSubscription = { __typename?: 'Subscription', scanHistoryAdded: { __typename?: 'ScanHistory', id: number, url: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, scan: { __typename?: 'Scan', id: number, url: string, title: string } } };
+export type ScanHistoryAddedSubscription = { __typename?: 'Subscription', scanHistoryAdded: { __typename?: 'ScanHistory', id: number, url: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, scan: { __typename?: 'Scan', id: number, url: string, title: string, user: { __typename?: 'User', id: number } } } };
 
 
 export const CreateNewScanDocument = gql`
@@ -1469,6 +1469,9 @@ export const ScanHistoryAddedDocument = gql`
       id
       url
       title
+      user {
+        id
+      }
     }
   }
 }

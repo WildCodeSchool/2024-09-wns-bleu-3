@@ -43,6 +43,9 @@ export const SCAN_HISTORY_ADDED =
       id
       url
       title
+      user { 
+      id
+      }
     }
   }
 }

@@ -26,13 +26,23 @@ class ScanHistoryResolver {
     @Subscription(() => ScanHistory, {
         topics: 'SCAN_HISTORY_ADDED',
     })
-    scanHistoryAdded(@Root() scanHistoryAdd: ScanHistory): ScanHistory {
+    async scanHistoryAdded(@Root() scanHistoryAdd: ScanHistory): Promise<ScanHistory> {
         console.log('🔔 Subscription HistoryScan resolver called with:', {
             id: scanHistoryAdd.id,
             scanId: scanHistoryAdd.scan?.id,
             timestamp: new Date().toISOString()
         });
-        return scanHistoryAdd;
+
+        const fullScanHistory = await ScanHistory.findOne({
+            where: { id: scanHistoryAdd.id },
+            relations: ['scan', 'scan.user'],
+        });
+
+        if (!fullScanHistory) {
+            throw new Error('ScanHistory not found');
+        }
+
+        return fullScanHistory;
     }
 
     @Query(() => [ScanHistory])
