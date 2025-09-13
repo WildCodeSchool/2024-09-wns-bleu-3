@@ -15,6 +15,25 @@ query PreviewScan($url: String!) {
   }
 }`
 
+export const GET_ALL_SCANHISTORY = gql`
+query GetAllScanHistory {
+  getAllScanHistory {
+    id
+    createdAt 
+    url 
+    isOnline
+    responseTime
+    sslCertificate
+    statusCode
+    statusMessage
+    scan {
+        id
+        url
+        title
+    }
+  }
+}`
+
 export const GET_ALL_SCANS = gql`
 query GetAllScans {
   getAllScans {
@@ -44,6 +63,7 @@ query GetScanById($getScanByIdId: Int!) {
     sslCertificate
     isOnline
     isPause
+    isFavorite
     createdAt
     updatedAt
     lastScannedAt
@@ -111,8 +131,8 @@ export const GET_SCAN_HISTORY = gql`
 
 /******* DASHBOARD *********/
 export const GET_DASHBOARD_USER_DATA = gql`
-  query GetAllScansByUserId {
-    getAllScansByUserId {
+  query GetAllScansByUserId($data: PaginationInput!) {
+    getAllScansByUserId(data: $data) {
       issues {
         id
         scanId
@@ -129,6 +149,7 @@ export const GET_DASHBOARD_USER_DATA = gql`
         responseTime
         sslCertificate
         isOnline
+        isFavorite
         createdAt
         updatedAt
         lastScannedAt
@@ -143,8 +164,11 @@ export const GET_DASHBOARD_USER_DATA = gql`
           color
         }
       }
-      totalScans
-      username
+      total
+      page
+      limit
+      hasMore
+      activeScans
     }
   }
 `;

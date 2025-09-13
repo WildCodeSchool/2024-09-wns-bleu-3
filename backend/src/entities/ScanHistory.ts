@@ -8,6 +8,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm'
 import { Scan } from './Scan'
+import { IsUrl } from 'class-validator'
 
 @ObjectType()
 @Entity()
@@ -17,6 +18,7 @@ export class ScanHistory extends BaseEntity {
     id: number
 
     @Field(() => String)
+    @IsUrl({}, { message: 'Invalid URL format' })
     @Column({ type: 'varchar' })
     url: string
 

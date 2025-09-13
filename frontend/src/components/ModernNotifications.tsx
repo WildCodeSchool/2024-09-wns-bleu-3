@@ -1,21 +1,18 @@
-"use client"
-
-import { useState } from "react"
+import { ForwardRefExoticComponent, RefAttributes, useEffect, useState } from "react"
 import { Link } from "react-router"
+import { toast } from 'sonner';
+import { useAuth } from "../hooks/useAuth"
 import {
     Bell,
     Clock,
-    Server,
     Gauge,
     Shield,
-    Wifi,
-    WifiOff,
-    Database,
     ExternalLink,
     CheckCircle2,
     AlertTriangle,
     XCircle,
     Info,
+    LucideProps,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -24,97 +21,90 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
+import { useGetAllScanHistoryQuery, useScanHistoryAddedSubscription } from "@/generated/graphql-types"
 
-// Notifications data
-const notifications = [
-    {
-        id: 1,
-        type: "critical",
-        title: "Monitor Down",
-        message: "PAYMENT_GATEWAY is returning HTTP 500 errors",
-        time: "2 minutes ago",
-        read: false,
-        scanId: "M-006",
-        scanName: "Payment Gateway",
-        icon: Server,
-        details:
-            "Multiple consecutive failures detected. Last successful check was 15 minutes ago. This affects payment processing for all customers.",
-        actions: ["View Monitor", "Check Logs", "Create Incident"],
-    },
-    {
-        id: 2,
-        type: "warning",
-        title: "High Response Time",
-        message: "API_ENDPOINT response time exceeded threshold",
-        time: "8 minutes ago",
-        read: false,
-        scanId: "M-002",
-        scanName: "API Endpoint",
-        icon: Gauge,
-        details:
-            "Average response time: 1,247ms (threshold: 1000ms). Consider investigating server performance or scaling resources.",
-        actions: ["View Monitor", "Check Performance", "Scale Resources"],
-    },
-    {
-        id: 3,
-        type: "critical",
-        title: "SSL Certificate Expiring",
-        message: "MAIN_WEBSITE SSL certificate expires in 3 days",
-        time: "1 hour ago",
-        read: false,
-        scanId: "M-001",
-        scanName: "Main Website",
-        icon: Shield,
-        details:
-            "Certificate expires on July 14, 2025. Renewal required to avoid service disruption and security warnings.",
-        actions: ["Renew Certificate", "View Details", "Set Reminder"],
-    },
-    {
-        id: 4,
-        type: "error",
-        title: "Monitor Offline",
-        message: "STAGING_ENV returning HTTP 404 errors",
-        time: "2 hours ago",
-        read: true,
-        scanId: "M-003",
-        scanName: "Staging Environment",
-        icon: WifiOff,
-        details: "Service appears to be completely offline. Last successful response was 3 hours ago.",
-        actions: ["Restart Service", "Check Deployment", "View Logs"],
-    },
-    {
-        id: 5,
-        type: "info",
-        title: "Monitor Recovered",
-        message: "AUTH_SERVICE is back online and responding normally",
-        time: "3 hours ago",
-        read: true,
-        scanId: "M-005",
-        scanName: "Auth Service",
-        icon: Wifi,
-        details: "Service recovered after 45 minutes of downtime. All authentication systems are now operational.",
-        actions: ["View Report", "Check Metrics"],
-    },
-    {
-        id: 6,
-        type: "warning",
-        title: "Database Connection Issues",
-        message: "DOCS_SITE experiencing intermittent timeouts",
-        time: "4 hours ago",
-        read: true,
-        scanId: "M-004",
-        scanName: "Documentation Site",
-        icon: Database,
-        details: "Sporadic connection timeouts detected. Monitor for potential database performance issues.",
-        actions: ["Check Database", "View Metrics", "Optimize Queries"],
-    },
-]
+interface NotificationItem {
+    id: string
+    type: string
+    title: string
+    message: string
+    time: string
+    read: boolean
+    scanId: number
+    scanName: string
+    icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>
+    details: string
+    actions: string[]
+}
+
+interface scanHistorySimplified {
+    id: number
+    createdAt: string | Date
+    url: string
+    isOnline: boolean
+    responseTime: number
+    sslCertificate: string
+    statusCode: number
+    statusMessage: string
+    scan: {
+        id: number
+        url: string
+        title: string
+    }
+}
 
 export default function ModernNotifications() {
     const [selectedNotification, setSelectedNotification] = useState<(typeof notifications)[0] | null>(null)
     const [isSheetOpen, setIsSheetOpen] = useState(false)
+    const [readNotificationIds, setReadNotificationIds] = useState<string[]>(() => {
+        if (typeof window !== "undefined") {
+            return JSON.parse(localStorage.getItem("readNotificationIds") || "[]")
+        }
+        return []
+    })
+    const [notifications, setNotifications] = useState<NotificationItem[]>([])
 
-    const unreadCount = notifications.filter((n) => !n.read).length
+    const { data } = useAuth();
+    const userId = data?.getUserInfo?.id
+
+    console.log(userId)
+
+    useEffect(() => {
+        localStorage.setItem("readNotificationIds", JSON.stringify(readNotificationIds))
+    }, [readNotificationIds])
+
+    useScanHistoryAddedSubscription({
+        onData: ({ data }) => {
+            console.log('🔔 Subscription history data received:', data);
+            const newScanHistory = data?.data?.scanHistoryAdded;
+            if (!newScanHistory) {
+                console.warn('❌ No scanHistoryAdded in subscription data');
+                return;
+            }
+            console.log('✅ Processing new scan:', newScanHistory);
+            if (newScanHistory.scan.user.id === userId && userId) {
+                const newNotifications = generateNotificationsFromHistory([newScanHistory], readNotificationIds)
+
+                if (newNotifications.length > 0) {
+                    console.log("adding new notifications", newNotifications)
+
+                    setNotifications(prevNotifications => {
+                        const existingIds = prevNotifications.map(n => n.id);
+                        const uniqueNotifications = newNotifications.filter(n => !existingIds.includes(n.id))
+                        return [...uniqueNotifications, ...prevNotifications]
+                    });
+                    console.log('🎉 Notifications updated in real-time!');
+                    toast.success(`New notification for ${newScanHistory.url}!`)
+                }
+            }
+        },
+        onError: (error) => {
+            console.error('❌ Subscription error:', error);
+        },
+        onComplete: () => {
+            console.log('🔚 Subscription completed');
+        }
+    });
 
     const getNotificationIcon = (type: string) => {
         switch (type) {
@@ -131,10 +121,129 @@ export default function ModernNotifications() {
         }
     }
 
-    const handleNotificationClick = (notification: (typeof notifications)[0]) => {
+    const handleNotificationClick = (notification: NotificationItem) => {
         setSelectedNotification(notification)
         setIsSheetOpen(true)
+
+        if (!readNotificationIds.includes(notification.id)) {
+            setReadNotificationIds(prevIds => {
+                const newIds = [...prevIds, notification.id]
+
+                setNotifications(prevNotifications =>
+                    prevNotifications.map(n =>
+                        n.id === notification.id ? { ...n, read: true } : n
+                    )
+                )
+                return newIds
+            })
+        }
     }
+
+    const handleAllReadClick = () => {
+        const allNotifsIds = notifications.map((el) => el.id)
+        setReadNotificationIds(prevIds => {
+            const combinedIds = [...prevIds, ...allNotifsIds]
+            return [...new Set(combinedIds)]
+        })
+        setNotifications(prevNotifications =>
+            prevNotifications.map(n => ({ ...n, read: true }))
+        )
+    }
+
+    const { data: historyData } = useGetAllScanHistoryQuery()
+
+    const allHistory = historyData?.getAllScanHistory
+
+    const formatTimeAgo = (date: Date | string) => {
+        const now = new Date()
+        const scanDate = new Date(date)
+        const diff = now.getTime() - scanDate.getTime()
+        const minutes = Math.floor(diff / 60000)
+        const hours = Math.floor(minutes / 60)
+        const days = Math.floor(hours / 24)
+
+        if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`
+        if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`
+        if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
+        return 'Just now'
+    }
+
+    const isSSLExpired = (sslCertificate: string) => {
+        // Simple vérification si le certificat contient des mots-clés d'expiration
+        const lowerCert = sslCertificate.toLowerCase()
+        return lowerCert.includes('expired') || lowerCert.includes('invalid') || lowerCert.includes('error')
+    }
+
+    const generateNotificationsFromHistory = (history: scanHistorySimplified[], readNotificationIds: string[]): NotificationItem[] => {
+        const notifications: NotificationItem[] = []
+
+        history.forEach(scan => {
+            // Notification pour temps de réponse élevé
+            if (scan.responseTime > 350) {
+                const id = `response-${scan.id}`
+                notifications.push({
+                    id,
+                    type: "warning",
+                    title: "High Response Time",
+                    message: `${scan.url} response time: ${scan.responseTime}ms`,
+                    time: formatTimeAgo(scan.createdAt),
+                    read: readNotificationIds.includes(id),
+                    scanId: scan.scan.id,
+                    scanName: scan.scan.title,
+                    icon: Gauge,
+                    details: `Response time ${scan.responseTime}ms exceeded threshold of 350ms`,
+                    actions: ["View Monitor", "Check Performance"]
+                })
+            }
+
+            // Notification pour erreur de status code
+            if (scan.statusCode >= 400) {
+                const id = `status-${scan.id}`
+                notifications.push({
+                    id,
+                    type: "error",
+                    title: "Status Code Error",
+                    message: `${scan.url} returned ${scan.statusCode}`,
+                    time: formatTimeAgo(scan.createdAt),
+                    read: readNotificationIds.includes(id),
+                    scanId: scan.scan.id,
+                    scanName: scan.scan.title,
+                    icon: XCircle,
+                    details: `HTTP ${scan.statusCode}: ${scan.statusMessage}`,
+                    actions: ["View Monitor", "Check Logs"]
+                })
+            }
+
+            // Notification pour certificat SSL expiré
+            if (scan.sslCertificate && isSSLExpired(scan.sslCertificate)) {
+                const id = `ssl-${scan.id}`
+                notifications.push({
+                    id,
+                    type: "critical",
+                    title: "SSL Certificate Issue",
+                    message: `${scan.url} SSL certificate expired`,
+                    time: formatTimeAgo(scan.createdAt),
+                    read: readNotificationIds.includes(id),
+                    scanId: scan.scan.id,
+                    scanName: scan.scan.title,
+                    icon: Shield,
+                    details: `SSL certificate needs renewal`,
+                    actions: ["Renew Certificate", "View Details"]
+                })
+            }
+        })
+        return notifications
+    }
+
+    useEffect(() => {
+        if (allHistory) {
+            setNotifications(generateNotificationsFromHistory(allHistory, readNotificationIds))
+        }
+    }, [allHistory, readNotificationIds])
+
+    const unreadCount = notifications.filter(n => !readNotificationIds.includes(n.id)).length
+
+    console.log(notifications)
 
     return (
         <>
@@ -165,7 +274,7 @@ export default function ModernNotifications() {
                                 </Badge>
                             )}
                         </div>
-                        <Button variant="ghost" size="sm" className="text-xs text-slate-400 hover:text-white hover:bg-white/10">
+                        <Button onClick={() => handleAllReadClick()} variant="ghost" size="sm" className="text-xs text-slate-400 hover:text-white hover:bg-white/10">
                             Mark all read
                         </Button>
                     </div>
@@ -216,12 +325,6 @@ export default function ModernNotifications() {
                             })}
                         </div>
                     </ScrollArea>
-
-                    <div className="p-3 border-t border-white/10">
-                        <Button variant="ghost" className="w-full text-sm text-slate-400 hover:text-white hover:bg-white/10">
-                            View all notifications
-                        </Button>
-                    </div>
                 </PopoverContent>
             </Popover>
 
@@ -271,7 +374,6 @@ export default function ModernNotifications() {
                                             <div className="flex items-center justify-between">
                                                 <div>
                                                     <p className="font-medium text-white">{selectedNotification.scanName}</p>
-                                                    <p className="text-sm text-slate-400">{selectedNotification.scanId}</p>
                                                 </div>
                                                 <Button
                                                     variant="outline"

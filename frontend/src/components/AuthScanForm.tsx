@@ -46,8 +46,10 @@ const AuthScanForm = () => {
                 // Show success message
                 toast.success(`Scan "${result.data.createNewScan.title}" created successfully!`);
 
-                // Navigate to dashboard
-                navigate('/dashboard');
+                // wait a moment before navigating to the new scan details page
+                setTimeout(() => {
+                    navigate(`/dashboard/${result?.data?.createNewScan.id}`);
+                }, 1500);
             }
 
             setIsLoading(false);

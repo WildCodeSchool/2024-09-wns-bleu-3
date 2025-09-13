@@ -4,6 +4,7 @@ import { Frequency } from './Frequency'
 import { Tag } from './Tag'
 import { User } from './User'
 import { ScanHistory } from './ScanHistory'
+import { IsUrl, Length } from 'class-validator'
 
 @ObjectType()
 @Entity()
@@ -13,10 +14,12 @@ export class Scan extends BaseEntity {
     id: number
 
     @Field(() => String)
+    @IsUrl({}, { message: 'Invalid URL format' })
     @Column({ type: 'varchar' })
     url: string
 
     @Field(() => String)
+    @Length(1, 30, { message: 'Title must be between 1 and 30 characters' })
     @Column({ type: 'varchar' })
     title: string
 
@@ -44,15 +47,19 @@ export class Scan extends BaseEntity {
     @Column({ type: 'boolean', default: false })
     isPause: boolean
 
+    @Field(() => Boolean)
+    @Column({ type: 'boolean', default: false })
+    isFavorite: boolean
+
     // Relation Many-to-One avec Frequency
     // Frequency is required - every scan must have a frequency
     @Field(() => Frequency)
-    @ManyToOne(() => Frequency, frequency => frequency.scans, { nullable: false, eager: true })
+    @ManyToOne(() => Frequency, frequency => frequency.scans, { nullable: false })
     frequency: Frequency
 
     // Relation Many-to-Many avec Tag
     @Field(() => [Tag])
-    @ManyToMany(() => Tag, tag => tag.scans, { nullable: true, eager: true })
+    @ManyToMany(() => Tag, tag => tag.scans, { nullable: true })
     @JoinTable()
     tags: Tag[]
 
@@ -62,7 +69,7 @@ export class Scan extends BaseEntity {
 
     // Relation Many-to-One avec Scan
     @Field(() => User)
-    @ManyToOne(() => User, user => user.scans, { nullable: true, onDelete: 'CASCADE', eager: true })
+    @ManyToOne(() => User, user => user.scans, { nullable: true, onDelete: 'CASCADE' })
     user: User
 
     @Field(() => Date)

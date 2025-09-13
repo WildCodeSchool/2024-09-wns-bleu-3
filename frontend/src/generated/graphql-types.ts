@@ -56,6 +56,7 @@ export type Mutation = {
   logout: Scalars['String']['output'];
   pauseOrRestartScan: Scan;
   register: Scalars['String']['output'];
+  toggleFavoritesScan: Scan;
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
   updateTag: Scalars['String']['output'];
@@ -136,6 +137,11 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationToggleFavoritesScanArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type MutationUpdateFrequenceArgs = {
   data: UpdateFrequencyInput;
   id: Scalars['Float']['input'];
@@ -163,12 +169,32 @@ export type MutationVerifyEmailArgs = {
   data: UserInput;
 };
 
+export type PaginationInput = {
+  limit: Scalars['Int']['input'];
+  offset: Scalars['Int']['input'];
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PaginationOutput = {
+  __typename?: 'PaginationOutput';
+  activeScans: Scalars['Int']['output'];
+  hasMore: Scalars['Boolean']['output'];
+  issues: Array<Issue>;
+  limit: Scalars['Int']['output'];
+  page: Scalars['Int']['output'];
+  scans: Array<Scan>;
+  total: Scalars['Int']['output'];
+  totalIssues: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
+  getAllFavoritesScans: Array<Scan>;
   getAllFrequences: Array<Frequency>;
   getAllRoles: Array<Role>;
+  getAllScanHistory: Array<ScanHistory>;
   getAllScans: Array<Scan>;
-  getAllScansByUserId: ScanByUserId;
+  getAllScansByUserId: PaginationOutput;
   getAllTags: Array<Tag>;
   getFrequenceById: Frequency;
   getScanById: Scan;
@@ -176,6 +202,11 @@ export type Query = {
   getTagById: Tag;
   getUserInfo?: Maybe<UserInfo>;
   previewScan: ScanPreview;
+};
+
+
+export type QueryGetAllScansByUserIdArgs = {
+  data: PaginationInput;
 };
 
 
@@ -222,6 +253,7 @@ export type Scan = {
   frequency: Frequency;
   history: Array<ScanHistory>;
   id: Scalars['Float']['output'];
+  isFavorite: Scalars['Boolean']['output'];
   isOnline: Scalars['Boolean']['output'];
   isPause: Scalars['Boolean']['output'];
   lastScannedAt?: Maybe<Scalars['DateTimeISO']['output']>;
@@ -235,15 +267,6 @@ export type Scan = {
   updatedAt: Scalars['DateTimeISO']['output'];
   url: Scalars['String']['output'];
   user: User;
-};
-
-export type ScanByUserId = {
-  __typename?: 'ScanByUserId';
-  issues: Array<Issue>;
-  scans: Array<Scan>;
-  totalIssues: Scalars['Int']['output'];
-  totalScans: Scalars['Int']['output'];
-  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type ScanHistory = {
@@ -279,6 +302,7 @@ export type ScanPreview = {
 export type Subscription = {
   __typename?: 'Subscription';
   newScan: Scan;
+  scanHistoryAdded: ScanHistory;
 };
 
 export type Tag = {
@@ -432,6 +456,13 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: string };
 
+export type ToggleFavoritesScanMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type ToggleFavoritesScanMutation = { __typename?: 'Mutation', toggleFavoritesScan: { __typename?: 'Scan', id: number, isFavorite: boolean } };
+
 export type RegisterStartMutationVariables = Exact<{
   data: UserInput;
 }>;
@@ -446,6 +477,11 @@ export type PreviewScanQueryVariables = Exact<{
 
 export type PreviewScanQuery = { __typename?: 'Query', previewScan: { __typename?: 'ScanPreview', url: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean } };
 
+export type GetAllScanHistoryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllScanHistoryQuery = { __typename?: 'Query', getAllScanHistory: Array<{ __typename?: 'ScanHistory', id: number, createdAt: any, url: string, isOnline: boolean, responseTime: number, sslCertificate: string, statusCode: number, statusMessage: string, scan: { __typename?: 'Scan', id: number, url: string, title: string } }> };
+
 export type GetAllScansQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -456,7 +492,7 @@ export type GetScanByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetScanByIdQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isPause: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, name: string, intervalMinutes: number }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> } };
+export type GetScanByIdQuery = { __typename?: 'Query', getScanById: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isPause: boolean, isFavorite: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, name: string, intervalMinutes: number }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> } };
 
 export type GetAllFrequencesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -481,15 +517,22 @@ export type GetScanHistoryQueryVariables = Exact<{
 
 export type GetScanHistoryQuery = { __typename?: 'Query', getScanHistory: Array<{ __typename?: 'ScanHistory', id: number, url: string, statusCode: number, statusMessage: string, responseTime: number, isOnline: boolean, createdAt: any }> };
 
-export type GetAllScansByUserIdQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllScansByUserIdQueryVariables = Exact<{
+  data: PaginationInput;
+}>;
 
 
-export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'ScanByUserId', totalIssues: number, totalScans: number, username?: string | null, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
+export type GetAllScansByUserIdQuery = { __typename?: 'Query', getAllScansByUserId: { __typename?: 'PaginationOutput', totalIssues: number, total: number, page: number, limit: number, hasMore: boolean, activeScans: number, issues: Array<{ __typename?: 'Issue', id: string, scanId: number, issueType: string, issue: string }>, scans: Array<{ __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, isFavorite: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> }> } };
 
-export type ScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
+export type OnScanCreatedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ScanCreatedSubscription = { __typename?: 'Subscription', newScan: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null } };
+export type OnScanCreatedSubscription = { __typename?: 'Subscription', newScan: { __typename?: 'Scan', id: number, url: string, title: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, updatedAt: any, lastScannedAt?: any | null, frequency: { __typename?: 'Frequency', id: number, intervalMinutes: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, color: string }> } };
+
+export type ScanHistoryAddedSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ScanHistoryAddedSubscription = { __typename?: 'Subscription', scanHistoryAdded: { __typename?: 'ScanHistory', id: number, url: string, statusCode: number, statusMessage: string, responseTime: number, sslCertificate: string, isOnline: boolean, createdAt: any, scan: { __typename?: 'Scan', id: number, url: string, title: string, user: { __typename?: 'User', id: number } } } };
 
 
 export const CreateNewScanDocument = gql`
@@ -888,6 +931,40 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const ToggleFavoritesScanDocument = gql`
+    mutation toggleFavoritesScan($id: Int!) {
+  toggleFavoritesScan(id: $id) {
+    id
+    isFavorite
+  }
+}
+    `;
+export type ToggleFavoritesScanMutationFn = Apollo.MutationFunction<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>;
+
+/**
+ * __useToggleFavoritesScanMutation__
+ *
+ * To run a mutation, you first call `useToggleFavoritesScanMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useToggleFavoritesScanMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [toggleFavoritesScanMutation, { data, loading, error }] = useToggleFavoritesScanMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useToggleFavoritesScanMutation(baseOptions?: Apollo.MutationHookOptions<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>(ToggleFavoritesScanDocument, options);
+      }
+export type ToggleFavoritesScanMutationHookResult = ReturnType<typeof useToggleFavoritesScanMutation>;
+export type ToggleFavoritesScanMutationResult = Apollo.MutationResult<ToggleFavoritesScanMutation>;
+export type ToggleFavoritesScanMutationOptions = Apollo.BaseMutationOptions<ToggleFavoritesScanMutation, ToggleFavoritesScanMutationVariables>;
 export const RegisterStartDocument = gql`
     mutation RegisterStart($data: UserInput!) {
   verifyEmail(data: $data)
@@ -964,6 +1041,57 @@ export type PreviewScanQueryHookResult = ReturnType<typeof usePreviewScanQuery>;
 export type PreviewScanLazyQueryHookResult = ReturnType<typeof usePreviewScanLazyQuery>;
 export type PreviewScanSuspenseQueryHookResult = ReturnType<typeof usePreviewScanSuspenseQuery>;
 export type PreviewScanQueryResult = Apollo.QueryResult<PreviewScanQuery, PreviewScanQueryVariables>;
+export const GetAllScanHistoryDocument = gql`
+    query GetAllScanHistory {
+  getAllScanHistory {
+    id
+    createdAt
+    url
+    isOnline
+    responseTime
+    sslCertificate
+    statusCode
+    statusMessage
+    scan {
+      id
+      url
+      title
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAllScanHistoryQuery__
+ *
+ * To run a query within a React component, call `useGetAllScanHistoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllScanHistoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllScanHistoryQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllScanHistoryQuery(baseOptions?: Apollo.QueryHookOptions<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>(GetAllScanHistoryDocument, options);
+      }
+export function useGetAllScanHistoryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>(GetAllScanHistoryDocument, options);
+        }
+export function useGetAllScanHistorySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>(GetAllScanHistoryDocument, options);
+        }
+export type GetAllScanHistoryQueryHookResult = ReturnType<typeof useGetAllScanHistoryQuery>;
+export type GetAllScanHistoryLazyQueryHookResult = ReturnType<typeof useGetAllScanHistoryLazyQuery>;
+export type GetAllScanHistorySuspenseQueryHookResult = ReturnType<typeof useGetAllScanHistorySuspenseQuery>;
+export type GetAllScanHistoryQueryResult = Apollo.QueryResult<GetAllScanHistoryQuery, GetAllScanHistoryQueryVariables>;
 export const GetAllScansDocument = gql`
     query GetAllScans {
   getAllScans {
@@ -1025,6 +1153,7 @@ export const GetScanByIdDocument = gql`
     sslCertificate
     isOnline
     isPause
+    isFavorite
     createdAt
     updatedAt
     lastScannedAt
@@ -1246,8 +1375,8 @@ export type GetScanHistoryLazyQueryHookResult = ReturnType<typeof useGetScanHist
 export type GetScanHistorySuspenseQueryHookResult = ReturnType<typeof useGetScanHistorySuspenseQuery>;
 export type GetScanHistoryQueryResult = Apollo.QueryResult<GetScanHistoryQuery, GetScanHistoryQueryVariables>;
 export const GetAllScansByUserIdDocument = gql`
-    query GetAllScansByUserId {
-  getAllScansByUserId {
+    query GetAllScansByUserId($data: PaginationInput!) {
+  getAllScansByUserId(data: $data) {
     issues {
       id
       scanId
@@ -1264,6 +1393,7 @@ export const GetAllScansByUserIdDocument = gql`
       responseTime
       sslCertificate
       isOnline
+      isFavorite
       createdAt
       updatedAt
       lastScannedAt
@@ -1278,8 +1408,11 @@ export const GetAllScansByUserIdDocument = gql`
         color
       }
     }
-    totalScans
-    username
+    total
+    page
+    limit
+    hasMore
+    activeScans
   }
 }
     `;
@@ -1296,10 +1429,11 @@ export const GetAllScansByUserIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllScansByUserIdQuery({
  *   variables: {
+ *      data: // value for 'data'
  *   },
  * });
  */
-export function useGetAllScansByUserIdQuery(baseOptions?: Apollo.QueryHookOptions<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables>) {
+export function useGetAllScansByUserIdQuery(baseOptions: Apollo.QueryHookOptions<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables> & ({ variables: GetAllScansByUserIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables>(GetAllScansByUserIdDocument, options);
       }
@@ -1315,8 +1449,8 @@ export type GetAllScansByUserIdQueryHookResult = ReturnType<typeof useGetAllScan
 export type GetAllScansByUserIdLazyQueryHookResult = ReturnType<typeof useGetAllScansByUserIdLazyQuery>;
 export type GetAllScansByUserIdSuspenseQueryHookResult = ReturnType<typeof useGetAllScansByUserIdSuspenseQuery>;
 export type GetAllScansByUserIdQueryResult = Apollo.QueryResult<GetAllScansByUserIdQuery, GetAllScansByUserIdQueryVariables>;
-export const ScanCreatedDocument = gql`
-    subscription ScanCreated {
+export const OnScanCreatedDocument = gql`
+    subscription OnScanCreated {
   newScan {
     id
     url
@@ -1329,28 +1463,82 @@ export const ScanCreatedDocument = gql`
     createdAt
     updatedAt
     lastScannedAt
+    frequency {
+      id
+      intervalMinutes
+      name
+    }
+    tags {
+      id
+      name
+      color
+    }
   }
 }
     `;
 
 /**
- * __useScanCreatedSubscription__
+ * __useOnScanCreatedSubscription__
  *
- * To run a query within a React component, call `useScanCreatedSubscription` and pass it any options that fit your needs.
- * When your component renders, `useScanCreatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useOnScanCreatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useOnScanCreatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useScanCreatedSubscription({
+ * const { data, loading, error } = useOnScanCreatedSubscription({
  *   variables: {
  *   },
  * });
  */
-export function useScanCreatedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ScanCreatedSubscription, ScanCreatedSubscriptionVariables>) {
+export function useOnScanCreatedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<OnScanCreatedSubscription, OnScanCreatedSubscriptionVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<ScanCreatedSubscription, ScanCreatedSubscriptionVariables>(ScanCreatedDocument, options);
+        return Apollo.useSubscription<OnScanCreatedSubscription, OnScanCreatedSubscriptionVariables>(OnScanCreatedDocument, options);
       }
-export type ScanCreatedSubscriptionHookResult = ReturnType<typeof useScanCreatedSubscription>;
-export type ScanCreatedSubscriptionResult = Apollo.SubscriptionResult<ScanCreatedSubscription>;
+export type OnScanCreatedSubscriptionHookResult = ReturnType<typeof useOnScanCreatedSubscription>;
+export type OnScanCreatedSubscriptionResult = Apollo.SubscriptionResult<OnScanCreatedSubscription>;
+export const ScanHistoryAddedDocument = gql`
+    subscription ScanHistoryAdded {
+  scanHistoryAdded {
+    id
+    url
+    statusCode
+    statusMessage
+    responseTime
+    sslCertificate
+    isOnline
+    createdAt
+    scan {
+      id
+      url
+      title
+      user {
+        id
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useScanHistoryAddedSubscription__
+ *
+ * To run a query within a React component, call `useScanHistoryAddedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useScanHistoryAddedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useScanHistoryAddedSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useScanHistoryAddedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ScanHistoryAddedSubscription, ScanHistoryAddedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ScanHistoryAddedSubscription, ScanHistoryAddedSubscriptionVariables>(ScanHistoryAddedDocument, options);
+      }
+export type ScanHistoryAddedSubscriptionHookResult = ReturnType<typeof useScanHistoryAddedSubscription>;
+export type ScanHistoryAddedSubscriptionResult = Apollo.SubscriptionResult<ScanHistoryAddedSubscription>;

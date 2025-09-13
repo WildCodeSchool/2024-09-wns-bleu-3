@@ -7,10 +7,12 @@ import { Tag } from '../entities/Tag'
 import { scanUrl } from '../utils/scanUrl'
 import { Frequency } from '../entities/Frequency'
 import { pubSub } from '../utils/pubSub'
-import { ScanByUserId } from '../inputs/ScanById'
 import { User } from '../entities/User'
 import { ContextType } from '../schema/context'
 import { issuesArray } from '../utils/issuesArray'
+import { PaginationInput, PaginationOutput } from '../inputs/PaginationInput'
+import { Between, FindOptionsWhere, ILike } from 'typeorm'
+import { paginationSchema } from '../schema/paginationSchema'
 
 @Resolver(Scan)
 class ScanResolver {
@@ -55,32 +57,79 @@ class ScanResolver {
         }
     }
 
-    // @Authorized("Admin", "User")
-    @Query(() => ScanByUserId)
-    async getAllScansByUserId(@Ctx() context: ContextType) {
+    @Query(() => PaginationOutput)
+    async getAllScansByUserId(@Arg('data', () => PaginationInput) data: PaginationInput, @Ctx() context: ContextType): Promise<PaginationOutput> {
         const userId = context.id
 
         if (!userId) {
             throw new Error('You are not authorized to view this user\'s scans')
         }
-        try {
-            const user = await User.findOneByOrFail({ id: userId })
 
-            const scans = await Scan.find({
-                where: { user: { id: userId } },
+        const result = paginationSchema.safeParse(data)
+
+        if (!result.success) {
+            throw new Error(`Invalid pagination data: ${JSON.stringify(result.error.format())}`)
+        }
+
+        const { limit, offset, search } = result.data
+
+        try {
+            const searchTerm = search
+            const parsedSearchNumber = Number(searchTerm)
+            const isSearchNumber = !Number.isNaN(parsedSearchNumber)
+
+            const where: FindOptionsWhere<Scan>[] = search
+                ? [
+                    {
+                        user: { id: userId },
+                        title: ILike(`%${search}%`),
+                    },
+                    {
+                        user: { id: userId },
+                        url: ILike(`%${search}%`),
+                    },
+                    ...(isSearchNumber
+                        ? [{ user: { id: userId }, statusCode: parsedSearchNumber }]
+                        : []),
+                ]
+                : [{ user: { id: userId } }]
+
+            const take = search ? undefined : limit
+            const skip = search ? undefined : offset
+
+            const [scans, total] = await Scan.findAndCount({
+                where,
+                relations: ['frequency', 'tags'],
                 order: {
                     id: 'DESC',
                 },
+                take,
+                skip,
             })
 
             const issues = issuesArray(scans)
+
+            const page = Math.floor(offset / limit) + 1
+            const hasMore = offset + limit < total
+
+            const activeScans = await Scan.count({
+                where: {
+                    user: { id: userId },
+                    statusCode: Between(200, 299),
+                },
+            })
+
+            console.log('this is issue', issues.length)
 
             return {
                 scans,
                 issues,
                 totalIssues: issues.length,
-                totalScans: scans.length,
-                username: user?.username ?? null,
+                total,
+                page,
+                limit,
+                hasMore,
+                activeScans,
             }
         }
         catch (error) {
@@ -93,7 +142,7 @@ class ScanResolver {
         topics: 'SCAN_CREATED',
     })
     newScan(@Root() scan: Scan): Scan {
-        console.log('New scan created:', scan)
+        console.log('🔔 Subscription scan resolver called with:', scan)
         return scan
     }
 
@@ -173,7 +222,7 @@ class ScanResolver {
         }
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => String)
     async deleteScan(@Arg('id', () => Int) id: number) {
         try {
@@ -198,6 +247,7 @@ class ScanResolver {
         const scan = await Scan.findOne({
             where: { id },
             order: { id: 'DESC' },
+            relations: ['frequency', 'tags'],
         })
         if (scan === null) {
             throw new Error(`Cannot find scan with id ${id}`)
@@ -205,11 +255,12 @@ class ScanResolver {
         return scan
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => Scan)
     async pauseOrRestartScan(@Arg('id', () => Int) id: number) {
         const scan = await Scan.findOne({
             where: { id },
+            relations: ['frequency', 'tags'],
         })
 
         if (!scan) {
@@ -222,7 +273,7 @@ class ScanResolver {
         return scan
     }
 
-    @Authorized("Admin", "User")
+    @Authorized('Admin', 'User')
     @Mutation(() => String)
     async updateScan(@Arg('data', () => UpdateScanInput) updateScanData: UpdateScanInput) {
         try {
@@ -278,6 +329,40 @@ class ScanResolver {
             console.error('Error updating scan:', error)
             throw new Error('Failed to update scan')
         }
+    }
+
+    // === FAVORITES METHODS ===
+    // 1 - get all favorite scans
+    @Authorized('Admin', 'User')
+    @Query(() => [Scan])
+    async getAllFavoritesScans(@Ctx() context: ContextType) {
+        const userId = context.id
+        // valide userid
+        if (!userId) {
+            throw new Error('You are not authorized to view this user\'s scans')
+        }
+        // find user matching this id and isFavorite == true
+        const favoristes = await Scan.find({ where: { user: { id: userId }, isFavorite: true } })
+
+        // return empty array if no scan favorite
+        return favoristes
+    }
+    // 2 - toggle favorite : add  scan to favorites OR remove scan from favorites
+
+    @Authorized('Admin', 'User')
+    @Mutation(() => Scan)
+    async toggleFavoritesScan(@Arg('id', () => Int) id: number) {
+        // find scan to update (addind or removing in/from favorites)
+        const scan = await Scan.findOne({ where: { id } })
+
+        if (!scan) {
+            throw new Error(`Scan id ${id} not found`)
+        }
+
+        scan.isFavorite = !scan.isFavorite
+        await scan.save()
+
+        return scan
     }
 }
 

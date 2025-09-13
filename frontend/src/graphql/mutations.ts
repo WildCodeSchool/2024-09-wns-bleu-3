@@ -89,6 +89,17 @@ mutation UpdateUser($data: UpdateUserInput!, $updateUserId: Float!) {
   updateUser(data: $data, id: $updateUserId)
 }`
 
+
+/**FAVORITE */
+export const TOGGLE_FAVORITE_SCAN = gql`
+  mutation toggleFavoritesScan($id: Int!) {
+  toggleFavoritesScan(id: $id) {
+    id
+    isFavorite
+  }
+}
+`
+
 export const REGISTER_START = gql`
   mutation RegisterStart($data: UserInput!) {
     verifyEmail(data: $data)

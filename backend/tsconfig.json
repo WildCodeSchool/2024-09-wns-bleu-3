@@ -31,7 +31,7 @@
   "include": [
     "src/**/*",
     "scripts/**/*",
-    "test/**/*",
+    "test/**/*", "../frontend/src/@types/scanContext.d.ts",
   ],
   "exclude": ["node_modules", "dist"]
 }

@@ -6,13 +6,13 @@ import { ScanListItem } from "./ScanListItem"
 
 interface ScanListProps {
   scans: ScanItem[]
-  selectedScanId: string | null
-  onSelectScan: (id: string | null) => void
+  selectedScanId: number | null
+  onSelectScan: (id: number | null) => void
 }
 
 export function ScanList({ scans, selectedScanId, onSelectScan }: ScanListProps) {
   return (
-    <div className="md:col-span-1 bg-white p-4 border-r border-gray-200 overflow-y-auto h-full">
+    <div className="md:col-span-1 bg-slate-900/20 p-4 border-r border-white/10 overflow-y-auto h-full">
       {scans.length > 0 ? (
         scans.map((scan) => (
           <ScanListItem
@@ -23,8 +23,8 @@ export function ScanList({ scans, selectedScanId, onSelectScan }: ScanListProps)
           />
         ))
       ) : (
-        <div className="text-center py-8 text-gray-500">
-          <AlertCircle className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+        <div className="text-center py-8 text-slate-400">
+          <AlertCircle className="h-12 w-12 mx-auto mb-2 text-slate-500" />
           <p className="font-barlow">No scans match your filters</p>
         </div>
       )}

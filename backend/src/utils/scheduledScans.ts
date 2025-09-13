@@ -3,6 +3,7 @@ import { Scan } from '../entities/Scan';
 import { scanUrl } from './scanUrl';
 import { LessThan } from 'typeorm';
 import { limitScanHistory } from './scheduleDeleteHistoryScans';
+import { pubSub } from './pubSub';
 
 /**
  * Exécute tous les scans avec fréquences programmé
@@ -84,7 +85,12 @@ async function updateScanResults(scan: Scan) {
             historyRecord.responseTime = responseTime;
             historyRecord.sslCertificate = sslCertificate || "";
             historyRecord.isOnline = isOnline;
+
             await historyRecord.save();
+
+            console.log('✅ History record saved, now publishing to pubSub');
+            pubSub.publish('SCAN_HISTORY_ADDED', historyRecord);
+            console.log('📡 Published to SCAN_HISTORY_ADDED');
         }
 
         // Update the scan's last scanned date
@@ -98,6 +104,8 @@ async function updateScanResults(scan: Scan) {
         }
 
         await scan.save();
+
+
         await limitScanHistory(scan.id);
         console.log(`Scan updated for ${scan.url}`);
     } catch (error) {

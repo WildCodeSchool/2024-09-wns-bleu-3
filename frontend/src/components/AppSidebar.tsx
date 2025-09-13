@@ -3,7 +3,6 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel
 import { Link, useLocation } from 'react-router'
 import NavUser from './NavUser'
 import HealthWidget from './HealthWidget'
-import { useGetAllScansByUserIdQuery } from '@/generated/graphql-types'
 
 
 
@@ -11,20 +10,6 @@ function AppSidebar() {
 
     const { pathname } = useLocation()
 
-    // Fetch real user scan data
-    const { data } = useGetAllScansByUserIdQuery({});
-
-    const scans = data?.getAllScansByUserId.scans ?? [];
-    const totalScans = data?.getAllScansByUserId.totalScans ?? 0;
-    const allIssues = data?.getAllScansByUserId.issues ?? [];
-
-    // Calculate active scans (200-299 status codes)
-    const activeScans = scans.filter(
-        (scan) => scan.statusCode >= 200 && scan.statusCode < 300
-    ).length;
-
-    // Calculate issue scans (scans with issues)
-    const issueScans = allIssues.length;
 
     const items = [
         {
@@ -86,9 +71,6 @@ function AppSidebar() {
 
                 {/* Health Widget */}
                 <HealthWidget
-                    totalScans={totalScans}
-                    activeScans={activeScans}
-                    issueScans={issueScans}
                 />
             </SidebarContent>
             <SidebarFooter>

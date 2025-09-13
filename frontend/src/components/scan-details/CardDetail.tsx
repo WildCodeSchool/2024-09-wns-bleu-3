@@ -13,9 +13,9 @@ type IScanDetailsOptions = {
 
 const CardDetail = ({ title, value, icon: Icon, color, description, tags }: IScanDetailsOptions) => {
     return (
-        <Card>
+        <Card className="border border-white/10 bg-main-400/5 backdrop-blur-xl">
             <CardHeader>
-                <CardTitle className="text-sm font-medium text-gray-500 w-full text-left">
+                <CardTitle className="text-sm font-medium text-slate-400 w-full text-left">
                     {title}
                 </CardTitle>
             </CardHeader>
@@ -24,9 +24,9 @@ const CardDetail = ({ title, value, icon: Icon, color, description, tags }: ISca
                     <div className={`flex h-8 w-8 items-center justify-center rounded-full ${color}`}>
                         <Icon className="h-5 w-5" />
                     </div>
-                    <div className="text-2xl font-bold">{value}</div>
+                    <div className="text-2xl font-bold text-white">{value}</div>
                 </div>
-                <div className="mt-2 text-sm text-gray-500 w-full text-left">
+                <div className="mt-2 text-sm text-slate-400 w-full text-left">
                     {!tags || tags.length === 0 ? (
                         description
                     ) : (
@@ -34,7 +34,7 @@ const CardDetail = ({ title, value, icon: Icon, color, description, tags }: ISca
                             {tags.map((tag) => (
                                 <span
                                     key={tag.id}
-                                    className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-800"
+                                    className="rounded-full bg-blue-400/20 px-2.5 py-1 text-xs font-medium text-blue-400"
                                 >
                                     {tag.name}
                                 </span>
