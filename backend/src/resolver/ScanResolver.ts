@@ -351,12 +351,21 @@ class ScanResolver {
 
     @Authorized('Admin', 'User')
     @Mutation(() => Scan)
-    async toggleFavoritesScan(@Arg('id', () => Int) id: number) {
+    async toggleFavoritesScan(
+        @Arg('id', () => Int) id: number,
+        @Ctx() context: ContextType,
+    ) {
+        // check authentification
+        const userId = context.id
+        if (!userId) {
+            throw new Error('Not authentificated')
+        }
+
         // find scan to update (addind or removing in/from favorites)
-        const scan = await Scan.findOne({ where: { id } })
+        const scan = await Scan.findOne({ where: { id, user: { id: userId } } })
 
         if (!scan) {
-            throw new Error(`Scan id ${id} not found`)
+            throw new Error(`Scan not found`)
         }
 
         scan.isFavorite = !scan.isFavorite
