@@ -1,6 +1,5 @@
-import { MinLength } from 'class-validator'
+import { IsEmail, IsUUID, MinLength } from 'class-validator'
 import { Field } from 'type-graphql'
-import { IsEmail, IsUUID } from 'class-validator'
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()

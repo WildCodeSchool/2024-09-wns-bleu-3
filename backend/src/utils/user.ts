@@ -51,7 +51,7 @@ export function registerEmailConfirmation(randomCode: string) {
       <p style="font-size: 16px;">Merci de vous être inscrit.</p>
       <p style="font-size: 16px;">Pour activer votre compte veuillez cliquer sur le bouton suivant :</p>
       
-      <a href="http://localhost:3030/confirm-register?tab=reset&code=${randomCode}" 
+      <a href="http://localhost:3030/register?code=${randomCode}" 
          style="display: inline-block; padding: 12px 20px; font-size: 16px; 
                 color: #ffffff; background-color: #007bff; text-decoration: none;
                 border-radius: 8px; font-weight: bold; margin: 20px 0;">

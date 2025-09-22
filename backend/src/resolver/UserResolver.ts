@@ -123,7 +123,7 @@ class UserResolver {
     }
 
     @Mutation(() => String)
-    async register(@Arg('data', () => UserInput) newUserData: UserInput) {
+    async registerx(@Arg('data', () => UserInput) newUserData: UserInput) {
         const isUserExist = await User.findOneBy({ email: newUserData.email })
 
         // Check if user already exists
@@ -150,6 +150,47 @@ class UserResolver {
         if (!result) {
             throw new Error('An error occurred, please try again.')
         }
+
+        return 'User successfully created'
+    }
+
+    @Mutation(() => String)
+    async register(@Arg('code', () => String) code: string) {
+        const tempUser = await TempUser.findOneBy({ randomCode: code })
+        // Check if TempUser exists in db before starting register
+        if (!tempUser) {
+            console.log('cc1:::User Not found or code expired')
+            throw new Error('User Not found or code expired')
+        }
+
+        const existingUser = await User.findOneBy({ email: tempUser.email })
+        if (existingUser) {
+            await TempUser.delete({ id: tempUser.id })
+            console.log('cc2:::This email is already registered.')
+            throw new Error('This email is already registered.')
+        }
+
+        const roleUser = await Role.findOneBy({ name: 'User' })
+
+        if (!roleUser) {
+            throw new Error('Default role not found')
+        }
+
+        const result = await User.save({
+            username: tempUser.username,
+            email: tempUser.email,
+            password: tempUser.hashedPassword,
+            role: roleUser,
+        })
+
+        if (!result) {
+            console.log('cc3:::An error occurred, please try again.')
+            throw new Error('An error occurred, please try again.')
+        }
+
+        console.log('cc4::: User successfull created')
+        // clean
+        await TempUser.delete({ id: tempUser.id })
 
         return 'User successfully created'
     }

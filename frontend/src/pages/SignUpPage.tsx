@@ -38,9 +38,9 @@ const SignupPage = () => {
   const form = useForm({
     resolver: zodResolver(scanFormSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      password: "",
+      username: "test",
+      email: "bylo@duck.com",
+      password: "Password1234!",
     },
     mode: "onChange"
   });
@@ -56,7 +56,6 @@ const SignupPage = () => {
         }
       },
       onCompleted: () => {
-        console.log("Demande de validation mail envoyé");
         navigate("/");
         toast.success("Registration started. Please check your inbox and confirm your email (link valid for 24h).")
       },
