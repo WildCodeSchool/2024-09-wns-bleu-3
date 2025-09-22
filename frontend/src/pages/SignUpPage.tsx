@@ -38,9 +38,9 @@ const SignupPage = () => {
   const form = useForm({
     resolver: zodResolver(scanFormSchema),
     defaultValues: {
-      username: "test",
-      email: "bylo@duck.com",
-      password: "Password1234!",
+      username: "",
+      email: "",
+      password: "",
     },
     mode: "onChange"
   });
