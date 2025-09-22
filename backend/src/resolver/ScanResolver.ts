@@ -333,7 +333,7 @@ class ScanResolver {
 
     // === FAVORITES METHODS ===
     // 1 - get all favorite scans
-    @Authorized('Admin', 'User')
+    // @Authorized('Admin', 'User')
     @Query(() => [Scan])
     async getAllFavoritesScans(@Ctx() context: ContextType) {
         const userId = context.id

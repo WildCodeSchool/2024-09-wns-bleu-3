@@ -4,14 +4,14 @@ import type { NextFunction, Request, Response } from 'express'
 import { createYoga } from 'graphql-yoga'
 import { buildSchema } from 'type-graphql'
 import { dataHealthCheck } from './config/db'
-import cors from 'cors'
 import ScanResolver from './resolver/ScanResolver'
-import { maxDepthPlugin } from '@escape.tech/graphql-armor-max-depth';
 import FrequenceResolver from './resolver/FrequenceResolver'
 import TagResolver from './resolver/TagResolver'
 import UserResolver from './resolver/UserResolver'
 import * as cookie from 'cookie'
 import jwt from 'jsonwebtoken'
+import cors from 'cors'
+import { maxDepthPlugin } from '@escape.tech/graphql-armor-max-depth';
 import { JwtPayload } from './@types/payload'
 import { ContextSchema } from './schema/context'
 import { seedDatabase } from '../scripts/seed'
@@ -29,6 +29,7 @@ const getCorsOptions = () => {
         // Development origins
         'http://localhost:5173',
         'http://localhost:3030',
+        'http://api_gateway',
         // Production & staging origins
         'https://092024-bleu-3.wns.wilders.dev',
         'https://staging.092024-bleu-3.wns.wilders.dev/',
@@ -36,7 +37,7 @@ const getCorsOptions = () => {
 
     return {
         origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-            // Allow requests with no origin only in development
+            // Allow requests with no origin (like mobile apps, Postman, etc.) only in development
             if (!origin && process.env.NODE_ENV === 'development') {
                 return callback(null, true)
             }
