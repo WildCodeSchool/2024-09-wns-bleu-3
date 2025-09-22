@@ -4,7 +4,9 @@ import type { NextFunction, Request, Response } from 'express'
 import { createYoga } from 'graphql-yoga'
 import { buildSchema } from 'type-graphql'
 import { dataHealthCheck } from './config/db'
+import cors from 'cors'
 import ScanResolver from './resolver/ScanResolver'
+import { maxDepthPlugin } from '@escape.tech/graphql-armor-max-depth';
 import FrequenceResolver from './resolver/FrequenceResolver'
 import TagResolver from './resolver/TagResolver'
 import UserResolver from './resolver/UserResolver'
@@ -20,6 +22,36 @@ import { authChecker } from './utils/authChecker'
 import RoleResolver from './resolver/RoleResolver'
 
 const PORT = 4000
+
+// CORS Configuration
+const getCorsOptions = () => {
+    const allowedOrigins = [
+        // Development origins
+        'http://localhost:5173',
+        'http://localhost:3030',
+        // Production & staging origins
+        'https://092024-bleu-3.wns.wilders.dev',
+        'https://staging.092024-bleu-3.wns.wilders.dev/',
+    ]
+
+    return {
+        origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+            // Allow requests with no origin only in development
+            if (!origin && process.env.NODE_ENV === 'development') {
+                return callback(null, true)
+            }
+
+            // Check if origin is in allowed list
+            if (origin && allowedOrigins.includes(origin)) {
+                callback(null, true)
+            } else {
+                console.warn(`CORS blocked request from origin: ${origin}`)
+                callback(new Error(`Origin ${origin} not allowed by CORS policy`))
+            }
+        },
+        credentials: true, // Allow cookies to be sent
+    }
+}
 
 async function start() {
     try {
@@ -53,9 +85,14 @@ async function start() {
         // Setup Express app
         const app = express()
 
+        app.use(cors(getCorsOptions()))
+
         // Setup Yoga Server
         const yoga = createYoga({
             schema,
+            plugins: [
+                maxDepthPlugin({ n: 6 }),
+            ],
             graphqlEndpoint: '/graphql',
             graphiql: true,
             logging: true,
