@@ -32,7 +32,7 @@ const getCorsOptions = () => {
         'http://api_gateway',
         // Production & staging origins
         'https://092024-bleu-3.wns.wilders.dev',
-        'https://staging.092024-bleu-3.wns.wilders.dev/',
+        'https://staging.092024-bleu-3.wns.wilders.dev',
     ]
 
     return {
