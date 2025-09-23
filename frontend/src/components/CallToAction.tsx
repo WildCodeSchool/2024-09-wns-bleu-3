@@ -1,5 +1,4 @@
-import { Activity, AlertTriangle, ArrowRight, BarChart4, CheckCircle, ExternalLink } from 'lucide-react'
-import React from 'react'
+import { Activity, AlertTriangle, ArrowRight, BarChart4, CheckCircle } from 'lucide-react'
 import { Button } from './ui/button'
 import { Link } from 'react-router'
 

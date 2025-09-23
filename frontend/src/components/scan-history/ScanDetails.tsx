@@ -78,7 +78,7 @@ export function ScanDetails({ scan }: ScanDetailsProps) {
         createdAt: scan.createdAt.toString(),
         updatedAt: scan.updatedAt.toString(),
         lastScannedAt: scan.lastScannedAt?.toString() ?? '',
-      } as ScanItem} />
+      } as unknown as ScanItem} />
 
       {/* Chart */}
       {/* Graph */}
