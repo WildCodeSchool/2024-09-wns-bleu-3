@@ -7,7 +7,6 @@ const Register = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [register, { loading }] = useRegisterMutation();
-
     const code = searchParams.get("code");
 
     useEffect(() => {
@@ -17,16 +16,22 @@ const Register = () => {
                 return;
             }
 
-            register({
+            await register({
                 variables: { code }, onCompleted: () => {
-                    toast.success("✅Registration successful!");
-                    navigate("/login")
-                },
-            })
+                    navigate('/login')
+                    toast.success("✅ Registration successful!");
+                }, onError: () => {
+                    navigate('/signup')
+                }
+
+                // NB: s'il y'a une erreur elle sera interceptée, puis gérée dans la SignUpPage.tsx
+            });
+
         };
 
         runRegister();
     }, [code, register, navigate]);
+
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#051525]">

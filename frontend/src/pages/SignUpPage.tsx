@@ -29,6 +29,12 @@ const scanFormSchema = z.object({
 
 type ScanFormValues = z.infer<typeof scanFormSchema>;
 
+type GQLErrorExtension = {
+  originalError?: {
+    message?: string;
+  };
+};
+
 const SignupPage = () => {
   const navigate = useNavigate();
   // const [registerMutation] = useRegisterMutation();
@@ -60,36 +66,14 @@ const SignupPage = () => {
         toast.success("Registration started. Please check your inbox and confirm your email (link valid for 24h).")
       },
       onError: (err) => {
-        console.error("An error occurred. Please check your details.", err);
-        const errorMessage = err.message
+        const gqlError = err.graphQLErrors?.[0];
+        const extensions = gqlError?.extensions as GQLErrorExtension;
+        const errorMessage = extensions?.originalError?.message || gqlError?.message || err.message;
+
         toast.error(errorMessage);
       }
     });
   };
-
-  //  const onSubmit = (data: ScanFormValues) => {
-  //   console.log("données envoyées", data);
-  //   registerMutation({
-  //     variables: {
-  //       data: {
-  //         email: data.email,
-  //         password: data.password,
-  //         username: data.username
-  //       }
-  //     },
-  //     onCompleted: (data) => {
-  //       console.log("Inscription réussie :", data);
-  //       navigate("/");
-  //       toast.success("You’ve successfully signed up! Please login to continue.")
-  //     },
-  //     onError: (err) => {
-  //       console.error("An error occurred. Please check your details.", err);
-  //       const errorMessage = err.message
-  //       toast.error(errorMessage);
-  //     }
-  //   });
-  // };
-
 
   return (
     <div className="flex min-h-screen flex-col">

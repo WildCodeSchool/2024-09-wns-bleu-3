@@ -59,9 +59,10 @@ class UserResolver {
     @Mutation(() => String)
     async verifyEmail(@Arg('data', () => UserInput) newUserData: UserInput) {
         // Check if user already exists
-        const isUserExist = await User.findOneBy({ email: newUserData.email })
+        const cleanEmail = newUserData.email.toLocaleLowerCase().trim()
+        const isUserExist = await User.findOneBy({ email: cleanEmail })
         if (isUserExist) {
-            throw new Error('An account with this email already exists.')
+            throw new Error('User already exists.')
         }
 
         // Check default role exists (sanity check)
@@ -82,7 +83,7 @@ class UserResolver {
 
         const tempUser = await TempUser.save({
             username: newUserData.username,
-            email: newUserData.email,
+            email: cleanEmail,
             hashedPassword,
             randomCode,
             expiresAt,
@@ -123,51 +124,27 @@ class UserResolver {
     }
 
     @Mutation(() => String)
-    async registerx(@Arg('data', () => UserInput) newUserData: UserInput) {
-        const isUserExist = await User.findOneBy({ email: newUserData.email })
-
-        // Check if user already exists
-        if (isUserExist) {
-            throw new Error('An account with this email already exists.')
-        }
-
-        const roleUser = await Role.findOneBy({ name: 'User' })
-
-        if (!roleUser) {
-            throw new Error('Default role not found')
-        }
-
-        // Validate password strength
-        isPasswordValid(newUserData.password)
-
-        const result = await User.save({
-            username: newUserData.username,
-            email: newUserData.email,
-            password: await argon2.hash(newUserData.password),
-            role: roleUser,
-        })
-
-        if (!result) {
-            throw new Error('An error occurred, please try again.')
-        }
-
-        return 'User successfully created'
-    }
-
-    @Mutation(() => String)
     async register(@Arg('code', () => String) code: string) {
         const tempUser = await TempUser.findOneBy({ randomCode: code })
         // Check if TempUser exists in db before starting register
         if (!tempUser) {
-            console.log('cc1:::User Not found or code expired')
-            throw new Error('User Not found or code expired')
+            throw new Error('User Not found')
+        }
+
+        const now = new Date()
+        const expirationDate = new Date(tempUser.expiresAt)
+
+        if (expirationDate <= now) {
+            // await TempUser.delete({ id: tempUser.id })
+            await tempUser.remove()
+            throw new Error('Code expired')
         }
 
         const existingUser = await User.findOneBy({ email: tempUser.email })
         if (existingUser) {
-            await TempUser.delete({ id: tempUser.id })
-            console.log('cc2:::This email is already registered.')
-            throw new Error('This email is already registered.')
+            // await TempUser.delete({ id: tempUser.id })
+            await tempUser.remove()
+            throw new Error('User already exists.')
         }
 
         const roleUser = await Role.findOneBy({ name: 'User' })
@@ -184,14 +161,12 @@ class UserResolver {
         })
 
         if (!result) {
-            console.log('cc3:::An error occurred, please try again.')
             throw new Error('An error occurred, please try again.')
         }
 
-        console.log('cc4::: User successfull created')
-        // clean
-        await TempUser.delete({ id: tempUser.id })
+        await tempUser.remove()
 
+        // clean
         return 'User successfully created'
     }
 

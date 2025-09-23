@@ -56,7 +56,6 @@ export type Mutation = {
   logout: Scalars['String']['output'];
   pauseOrRestartScan: Scan;
   register: Scalars['String']['output'];
-  registerx: Scalars['String']['output'];
   toggleFavoritesScan: Scan;
   updateFrequence: Scalars['String']['output'];
   updateScan: Scalars['String']['output'];
@@ -135,11 +134,6 @@ export type MutationPauseOrRestartScanArgs = {
 
 export type MutationRegisterArgs = {
   code: Scalars['String']['input'];
-};
-
-
-export type MutationRegisterxArgs = {
-  data: UserInput;
 };
 
 

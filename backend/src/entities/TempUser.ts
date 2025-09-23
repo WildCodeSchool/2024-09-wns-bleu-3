@@ -14,7 +14,7 @@ export class TempUser extends BaseEntity {
     username: string
 
     @Field(() => String)
-    @Column({ type: 'varchar', unique: true, nullable: false })
+    @Column({ type: 'varchar', nullable: false })
     @IsEmail({}, { message: 'Email must be valid' })
     email: string
 
