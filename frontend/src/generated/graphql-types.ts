@@ -61,6 +61,7 @@ export type Mutation = {
   updateScan: Scalars['String']['output'];
   updateTag: Scalars['String']['output'];
   updateUser: Scalars['String']['output'];
+  verifyEmail: Scalars['String']['output'];
 };
 
 
@@ -132,7 +133,7 @@ export type MutationPauseOrRestartScanArgs = {
 
 
 export type MutationRegisterArgs = {
-  data: UserInput;
+  code: Scalars['String']['input'];
 };
 
 
@@ -161,6 +162,11 @@ export type MutationUpdateTagArgs = {
 export type MutationUpdateUserArgs = {
   data: UpdateUserInput;
   id: Scalars['Float']['input'];
+};
+
+
+export type MutationVerifyEmailArgs = {
+  data: UserInput;
 };
 
 export type PaginationInput = {
@@ -400,8 +406,15 @@ export type CreateNewTagMutationVariables = Exact<{
 
 export type CreateNewTagMutation = { __typename?: 'Mutation', createNewTag: { __typename?: 'Tag', id: number, name: string, color: string } };
 
-export type RegisterMutationVariables = Exact<{
+export type RegisterStartMutationVariables = Exact<{
   data: UserInput;
+}>;
+
+
+export type RegisterStartMutation = { __typename?: 'Mutation', verifyEmail: string };
+
+export type RegisterMutationVariables = Exact<{
+  code: Scalars['String']['input'];
 }>;
 
 
@@ -695,9 +708,40 @@ export function useCreateNewTagMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateNewTagMutationHookResult = ReturnType<typeof useCreateNewTagMutation>;
 export type CreateNewTagMutationResult = Apollo.MutationResult<CreateNewTagMutation>;
 export type CreateNewTagMutationOptions = Apollo.BaseMutationOptions<CreateNewTagMutation, CreateNewTagMutationVariables>;
+export const RegisterStartDocument = gql`
+    mutation RegisterStart($data: UserInput!) {
+  verifyEmail(data: $data)
+}
+    `;
+export type RegisterStartMutationFn = Apollo.MutationFunction<RegisterStartMutation, RegisterStartMutationVariables>;
+
+/**
+ * __useRegisterStartMutation__
+ *
+ * To run a mutation, you first call `useRegisterStartMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterStartMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerStartMutation, { data, loading, error }] = useRegisterStartMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useRegisterStartMutation(baseOptions?: Apollo.MutationHookOptions<RegisterStartMutation, RegisterStartMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RegisterStartMutation, RegisterStartMutationVariables>(RegisterStartDocument, options);
+      }
+export type RegisterStartMutationHookResult = ReturnType<typeof useRegisterStartMutation>;
+export type RegisterStartMutationResult = Apollo.MutationResult<RegisterStartMutation>;
+export type RegisterStartMutationOptions = Apollo.BaseMutationOptions<RegisterStartMutation, RegisterStartMutationVariables>;
 export const RegisterDocument = gql`
-    mutation Register($data: UserInput!) {
-  register(data: $data)
+    mutation Register($code: String!) {
+  register(code: $code)
 }
     `;
 export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, RegisterMutationVariables>;
@@ -715,7 +759,7 @@ export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, Regis
  * @example
  * const [registerMutation, { data, loading, error }] = useRegisterMutation({
  *   variables: {
- *      data: // value for 'data'
+ *      code: // value for 'code'
  *   },
  * });
  */
