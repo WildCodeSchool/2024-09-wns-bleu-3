@@ -95,9 +95,9 @@ class UserResolver {
 
         // Email sending: skip in CI/test or when key is missing
         const resendApiKey = process.env.RESEND_API_KEY ?? ''
-        const isCI = process.env.CI === 'true' || process.env.NODE_ENV === 'test'
+        const env = process.env.NODE_ENV
 
-        if (!resendApiKey || isCI) {
+        if (!resendApiKey || env === 'test') {
             console.log('[verifyEmail] Email sending skipped (CI/test or missing RESEND_API_KEY).')
         }
         else {
