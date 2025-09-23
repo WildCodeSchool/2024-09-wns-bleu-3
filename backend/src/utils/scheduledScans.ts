@@ -3,6 +3,7 @@ import { Scan } from '../entities/Scan';
 import { scanUrl } from './scanUrl';
 import { LessThan } from 'typeorm';
 import { limitScanHistory } from './scheduleDeleteHistoryScans';
+import { pubSub } from './pubSub';
 
 /**
  * Exécute tous les scans avec fréquences programmé
@@ -10,30 +11,49 @@ import { limitScanHistory } from './scheduleDeleteHistoryScans';
 export async function runScheduledScans() {
     try {
         const now = new Date();
+        const BATCH_SIZE = 50;
 
-        // Récupérer tous les scans actifs avec leurs fréquences
-        const scans = await Scan.find({
-            relations: ['frequency'],
-            where: {
-                // scan + intervalle < maintenant
-                nextScanAt: LessThan(now),
-                isPause: false
+        let offset = 0;
+        let hasMoreScans = true;
+        let totalProcessed = 0;
+
+        while (hasMoreScans) {
+
+            const scans = await Scan.find({
+                relations: ['frequency'],
+                where: {
+                    nextScanAt: LessThan(now),
+                    isPause: false
+                },
+                take: BATCH_SIZE,
+                skip: offset,
+                order: { nextScanAt: 'ASC' }
+            });
+
+            if (scans.length === 0) {
+                hasMoreScans = false;
+                break;
             }
-        });
 
-        console.log(`Found ${scans.length} scans to run`);
+            console.log(`Processing batch ${Math.floor(offset / BATCH_SIZE) + 1}: ${scans.length} scans`);
 
-        // Pour chaque scan à exec, mettre à jour les résultats
-        for (const scan of scans) {
-            await updateScanResults(scan);
+            for (const scan of scans) {
+                await updateScanResults(scan);
+                totalProcessed++;
+            }
+
+            offset += BATCH_SIZE;
+
+            if (scans.length < BATCH_SIZE) {
+                hasMoreScans = false;
+            }
         }
 
-        console.log('Scheduled scans completed successfully');
+        console.log(`Scheduled scans completed successfully. Total processed: ${totalProcessed}`);
     } catch (error) {
         console.error('Error running scheduled scans:', error);
     }
 }
-
 /**
  * Met à jour les résultats d'un scan spécifique
  * @param scan Le scan à mettre à jour
@@ -65,7 +85,12 @@ async function updateScanResults(scan: Scan) {
             historyRecord.responseTime = responseTime;
             historyRecord.sslCertificate = sslCertificate || "";
             historyRecord.isOnline = isOnline;
+
             await historyRecord.save();
+
+            console.log('✅ History record saved, now publishing to pubSub');
+            pubSub.publish('SCAN_HISTORY_ADDED', historyRecord);
+            console.log('📡 Published to SCAN_HISTORY_ADDED');
         }
 
         // Update the scan's last scanned date
@@ -79,6 +104,8 @@ async function updateScanResults(scan: Scan) {
         }
 
         await scan.save();
+
+
         await limitScanHistory(scan.id);
         console.log(`Scan updated for ${scan.url}`);
     } catch (error) {

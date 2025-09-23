@@ -1,40 +1,45 @@
 import 'dotenv/config'
-import { test, expect} from '../setup/base'
+import { test, expect } from '../setup/base'
 
 test.describe('Profile Page', () => {
-    test('User should be able to see their profile and update it', async ({page}) => {
+    test('User should be able to see their profile and update it', async ({ page }) => {
         await page.goto('/profile')
 
-        const headingPage = page.getByRole('heading', { name: 'Profile Settings' });
-
-        const nameProfil =  page.getByText(process.env.LOGIN_TEST_USERNAME as string, { exact: true });
-
+        const headingPage = page.getByRole('heading', { name: 'PROFILE INFORMATION' });
         await expect(headingPage).toBeVisible()
-        await expect(headingPage).toHaveText('Profile Settings')
+        await expect(headingPage).toHaveText('PROFILE INFORMATION')
 
-        await expect(nameProfil).toBeVisible()
-        await expect(nameProfil).toHaveText(process.env.LOGIN_TEST_USERNAME as string)
+        const usernameLabel = page.locator('label:has-text("Username")');
+        await expect(usernameLabel).toBeVisible();
 
+        const usernameDiv = page.locator('label:has-text("Username")').locator('..').locator('div.text-lg').first();
+        await expect(usernameDiv).toBeVisible();
 
-        await page.locator('div').filter({ hasText: /^Usernameflorian$/ }).getByRole('button').click();
+        const currentUsername = await usernameDiv.textContent();
+        console.log('Current username displayed:', currentUsername);
 
-        await page.getByRole('textbox').click();
-        await page.getByRole('textbox').fill('florianr');
+        await page.getByRole('button', { name: 'Edit Username' }).click();
+
+        const textbox = page.getByRole('textbox');
+        await expect(textbox).toBeVisible();
+
+        const inputValue = await textbox.inputValue();
+        expect(inputValue).toBe(currentUsername);
+
+        await textbox.fill('florianr');
         await page.getByRole('button', { name: 'Save' }).click();
 
         const toastSuccess = page.getByText('Your username has been successfully updated!');
         await expect(toastSuccess).toBeVisible();
 
         const nameProfilUpdated = page.getByText('florianr', { exact: true });
-        await expect(nameProfilUpdated).toBeVisible()
+        await expect(nameProfilUpdated).toBeVisible();
 
-        await page.locator('div').filter({ hasText: /^Usernameflorianr$/ }).getByRole('button').click();
-        await page.getByRole('textbox').click();
-        await page.getByRole('textbox').fill('florian');
+        await page.getByRole('button', { name: 'Edit Username' }).click();
+        await page.getByRole('textbox').fill(currentUsername || 'florian');
         await page.getByRole('button', { name: 'Save' }).click();
 
-        const nameReUpdated = page.getByText('florian', { exact: true });
-        await expect(nameReUpdated).toBeVisible()
-
+        const nameReUpdated = page.getByText(currentUsername || 'florian', { exact: true });
+        await expect(nameReUpdated).toBeVisible();
     })
 })

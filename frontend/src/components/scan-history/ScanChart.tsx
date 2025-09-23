@@ -50,26 +50,26 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
         const data = payload[0].payload as FormattedDataPoint
 
         return (
-            <div className="bg-white p-3 border border-gray-200 shadow-lg rounded-md">
+            <div className="bg-slate-800/50 border border-white/10 p-3 shadow-lg rounded-md">
                 <div className="flex items-center gap-2 mb-1">
                     {data.isError ? (
                         <AlertCircle className="h-4 w-4 text-rose-600" />
                     ) : (
                         <CheckCircle className="h-4 w-4 text-emerald-600" />
                     )}
-                    <p className="font-barlow font-medium text-sm">
+                    <p className="font-barlow font-medium text-sm text-slate-200">
                         {data.date} at {data.formattedTime}
                     </p>
                 </div>
 
                 <div className="flex flex-col gap-1 mt-1">
                     <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-600">Response Time:</span>
-                        <span className="font-medium text-sm">{data.responseTime}ms</span>
+                        <span className="text-xs text-slate-400">Response Time:</span>
+                        <span className="font-medium text-sm text-slate-200">{data.responseTime}ms</span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-600">Status:</span>
+                        <span className="text-xs text-slate-400">Status:</span>
                         <span className={`font-medium text-sm ${data.isError ? "text-rose-600" : "text-emerald-600"}`}>
                             {data.statusCode} {data.isError ? "Error" : "OK"}
                         </span>
@@ -135,27 +135,27 @@ export function ScanChart({ history }: ScanChartProps) {
     // Handle empty history case
     if (history.length === 0) {
         return (
-            <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm flex justify-center items-center h-64">
-                <p className="text-gray-500">No scan history available</p>
+            <div className="border border-white/10 rounded-lg p-4 bg-slate-800/30 shadow-sm flex justify-center items-center h-80">
+                <p className="text-slate-400">No scan history available</p>
             </div>
         )
     }
 
     return (
-        <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+        <div className="border border-white/10 rounded-lg p-4 bg-slate-800/30 shadow-sm">
             <div className="flex justify-between items-center mb-3">
-                <h4 className="font-barlow font-medium text-gray-900">Performance Over Time</h4>
-                <div className="text-xs font-barlow text-gray-500">Last {history.length} Scans</div>
+                <h4 className="font-barlow font-medium text-white">Performance Over Time</h4>
+                <div className="text-xs font-barlow text-slate-400">Last {history.length} Scans</div>
             </div>
 
-            <div className="w-full h-[180px] bg-gradient-to-b from-gray-50 to-white rounded-md">
+            <div className="w-full h-[280px] bg-gradient-to-b from-slate-800/20 to-slate-900/30 rounded-md">
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData} margin={{ top: 15, right: 15, left: 15, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
 
                         <XAxis
                             dataKey="hour"
-                            tick={{ fontSize: 10, fill: "#6b7280" }}
+                            tick={{ fontSize: 10, fill: "#94a3b8" }}
                             tickMargin={10}
                             axisLine={false}
                             tickLine={false}
@@ -164,7 +164,7 @@ export function ScanChart({ history }: ScanChartProps) {
 
                         <YAxis
                             domain={[minResponse, maxResponse]}
-                            tick={{ fontSize: 10, fill: "#6b7280" }}
+                            tick={{ fontSize: 10, fill: "#94a3b8" }}
                             tickFormatter={(value) => `${value}ms`}
                             tickMargin={10}
                             axisLine={false}
@@ -172,19 +172,19 @@ export function ScanChart({ history }: ScanChartProps) {
                             width={50}
                         />
 
-                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#e5e7eb", strokeWidth: 1 }} />
+                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#475569", strokeWidth: 1 }} />
 
                         <Line
                             type="monotone"
                             dataKey="responseTime"
-                            stroke="#3b82f6"
+                            stroke="#60a5fa"
                             strokeWidth={2}
                             dot={renderDot}
                             activeDot={{
                                 r: 6,
-                                stroke: "#3b82f6",
+                                stroke: "#60a5fa",
                                 strokeWidth: 2,
-                                fill: "white",
+                                fill: "#1e293b",
                             }}
                             isAnimationActive={false}
                         />
@@ -195,16 +195,16 @@ export function ScanChart({ history }: ScanChartProps) {
             <div className="mt-3 pt-3 border-t border-gray-200 flex flex-wrap justify-between items-center">
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-full border-2 border-blue-500 bg-white"></div>
-                        <span className="text-xs text-gray-700 font-barlow">Success</span>
+                        <div className="w-3 h-3 rounded-full border-2 border-blue-400 bg-slate-800"></div>
+                        <span className="text-xs text-slate-300 font-barlow">Success</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                         <div className="w-3 h-3 rounded-full bg-rose-600"></div>
-                        <span className="text-xs text-gray-700 font-barlow">Error</span>
+                        <span className="text-xs text-slate-300 font-barlow">Error</span>
                     </div>
                 </div>
 
-                <div className="flex gap-4 text-xs text-gray-700 font-barlow">
+                <div className="flex gap-4 text-xs text-slate-300 font-barlow">
                     <div>
                         <span className="font-medium">Avg:</span> {avgResponseTime}ms
                     </div>

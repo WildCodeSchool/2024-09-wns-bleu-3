@@ -1,7 +1,7 @@
 import { Field, ObjectType } from 'type-graphql'
 import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Scan } from './Scan'
-import { MinLength } from 'class-validator'
+import { IsEmail, MinLength } from 'class-validator'
 import { Role } from './Role'
 
 @ObjectType()
@@ -12,6 +12,7 @@ export class User extends BaseEntity {
     id: number
 
     @Field(() => String)
+    @IsEmail({}, { message: 'Invalid email address' })
     @Column({ type: 'varchar', unique: true, nullable: false })
     email: string
 
@@ -39,6 +40,6 @@ export class User extends BaseEntity {
     scans: Scan[]
 
     @Field(() => Role)
-    @ManyToOne(() => Role, role => role.users, { nullable: true, onDelete: "SET NULL" })
+    @ManyToOne(() => Role, role => role.users, { nullable: true, onDelete: 'SET NULL' })
     role: Role
 }

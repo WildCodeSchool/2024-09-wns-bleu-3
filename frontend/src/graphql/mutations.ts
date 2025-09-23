@@ -18,10 +18,25 @@ mutation CreateNewScan($data: ScanInput!) {
     }
   }`
 
+export const UPDATE_SCAN = gql`
+mutation UpdateScan($data: UpdateScanInput!) {
+  updateScan(data: $data)
+}
+`;
+
 export const DELETE_SCAN = gql`
 mutation DeleteScan($deleteScanId: Int!) {
     deleteScan(id: $deleteScanId)
   }`
+
+export const PAUSE_OR_RESTART_SCAN = gql`
+mutation PauseOrRestartScan($id: Int!) {
+  pauseOrRestartScan(id: $id) {
+    id
+    isPause
+  }
+}
+`;
 
 /******* TAG *********/
 
@@ -34,7 +49,7 @@ mutation CreateNewTag($data: TagInput!) {
     }
   }`
 
-  /******* USER *********/
+/******* USER *********/
 export const REGISTER = gql`
   mutation Register($data: UserInput!) {
   register(data: $data)
@@ -73,3 +88,14 @@ export const UPDATE_USER = gql`
 mutation UpdateUser($data: UpdateUserInput!, $updateUserId: Float!) {
   updateUser(data: $data, id: $updateUserId)
 }`
+
+
+/**FAVORITE */
+export const TOGGLE_FAVORITE_SCAN = gql`
+  mutation toggleFavoritesScan($id: Int!) {
+  toggleFavoritesScan(id: $id) {
+    id
+    isFavorite
+  }
+}
+`

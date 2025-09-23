@@ -38,7 +38,7 @@ export default function LoginPage() {
             onCompleted: (response) => {
                 console.log("Login réussi:", response);
                 toast.success("You’ve successfully logged in! Welcome to s0nar!");
-                navigate("/");
+                navigate("/dashboard");
             },
             onError: (err) => {
                 console.error("Erreur de connexion:", err);

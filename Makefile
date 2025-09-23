@@ -4,6 +4,12 @@
 start: 
 	docker compose up --build
 
+
+# Run e2e Docker Container and rebuild
+start-e2e:
+	docker compose -f docker-compose.e2e.yml up --build
+
+
 # Stop Docker Container
 stop:
 	docker compose down
@@ -28,6 +34,11 @@ test-stop:
 # Purge Docker system: remove unused containers, volumes, networks, and dangling images
 clean:
 	docker system prune -f --volumes
+
+ultra-clean:
+	docker compose down -v --rmi all
+	docker compose build --no-cache
+	docker compose up --build
 
 
 start-preprod:
