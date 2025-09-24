@@ -14,12 +14,14 @@ import { UserLoginInput } from '../inputs/UserLoginInput'
 import { v4 as uuidv4 } from 'uuid'
 import { Resend } from 'resend'
 import { ForgotPassword } from '../entities/ForgotPassword'
-import { emailHtml } from '../utils/user'
+
 import { UpdateUserInput } from '../inputs/UpdateUserInput'
 import { ContextType } from '../schema/context'
 import UserInfo from '../inputs/UserInfo'
 import { isPasswordValid } from '../utils/isPasswordValid'
 import { Role } from '../entities/Role'
+import { registerEmailConfirmation, resetPasswordEmail } from '../utils/user'
+import { TempUser } from '../entities/TempUser'
 
 @Resolver(() => User)
 class UserResolver {
@@ -53,13 +55,96 @@ class UserResolver {
         }
     }
 
+    // verify email before register
     @Mutation(() => String)
-    async register(@Arg('data', () => UserInput) newUserData: UserInput) {
-        const isUserExist = await User.findOneBy({ email: newUserData.email })
-
+    async verifyEmail(@Arg('data', () => UserInput) newUserData: UserInput) {
         // Check if user already exists
+        const cleanEmail = newUserData.email.toLocaleLowerCase().trim()
+        const isUserExist = await User.findOneBy({ email: cleanEmail })
         if (isUserExist) {
-            throw new Error('An account with this email already exists.')
+            throw new Error('User already exists.')
+        }
+
+        // Check default role exists (sanity check)
+        const roleUser = await Role.findOneBy({ name: 'User' })
+        if (!roleUser) {
+            throw new Error('Default role not found')
+        }
+
+        // Validate password strength
+        isPasswordValid(newUserData.password)
+
+        // Create temp record with a verification code (24h validity)
+        const randomCode = uuidv4()
+        const expiresAt = new Date()
+        expiresAt.setHours(expiresAt.getHours() + 24)
+
+        const hashedPassword = await argon2.hash(newUserData.password)
+
+        const tempUser = await TempUser.save({
+            username: newUserData.username,
+            email: cleanEmail,
+            hashedPassword,
+            randomCode,
+            expiresAt,
+        })
+
+        if (!tempUser) {
+            throw new Error('An error occurred, please try again.')
+        }
+
+        // Email sending: skip in CI/test or when key is missing
+        const resendApiKey = process.env.RESEND_API_KEY ?? ''
+        const env = process.env.NODE_ENV
+
+        if (!resendApiKey || env === 'test') {
+            console.log('[verifyEmail] Email sending skipped (CI/test or missing RESEND_API_KEY).')
+        }
+        else {
+            const resend = new Resend(resendApiKey)
+            try {
+                const { error } = await resend.emails.send({
+                    from: 'Sonar <no-reply@sonar.ovh>',
+                    to: [tempUser.email],
+                    subject: 'Email confirmation',
+                    html: registerEmailConfirmation(tempUser.randomCode),
+                })
+                if (error) {
+                    console.error('Email sending failed:', error)
+                    // On log l’erreur mais on ne casse pas le flow de vérification
+                }
+            }
+            catch (err) {
+                console.error('Unexpected error while sending email:', err)
+                // Idem: on n’empêche pas la mutation de réussir
+            }
+        }
+
+        return 'Email confirmation successfully sent'
+    }
+
+    @Mutation(() => String)
+    async register(@Arg('code', () => String) code: string) {
+        const tempUser = await TempUser.findOneBy({ randomCode: code })
+        // Check if TempUser exists in db before starting register
+        if (!tempUser) {
+            throw new Error('User Not found')
+        }
+
+        const now = new Date()
+        const expirationDate = new Date(tempUser.expiresAt)
+
+        if (expirationDate <= now) {
+            // await TempUser.delete({ id: tempUser.id })
+            await tempUser.remove()
+            throw new Error('Code expired')
+        }
+
+        const existingUser = await User.findOneBy({ email: tempUser.email })
+        if (existingUser) {
+            // await TempUser.delete({ id: tempUser.id })
+            await tempUser.remove()
+            throw new Error('User already exists.')
         }
 
         const roleUser = await Role.findOneBy({ name: 'User' })
@@ -68,13 +153,10 @@ class UserResolver {
             throw new Error('Default role not found')
         }
 
-        // Validate password strength
-        isPasswordValid(newUserData.password)
-
         const result = await User.save({
-            username: newUserData.username,
-            email: newUserData.email,
-            password: await argon2.hash(newUserData.password),
+            username: tempUser.username,
+            email: tempUser.email,
+            password: tempUser.hashedPassword,
             role: roleUser,
         })
 
@@ -82,6 +164,9 @@ class UserResolver {
             throw new Error('An error occurred, please try again.')
         }
 
+        await tempUser.remove()
+
+        // clean
         return 'User successfully created'
     }
 
@@ -216,7 +301,7 @@ class UserResolver {
                 from: 'Sonar <no-reply@sonar.ovh>',
                 to: [user.email],
                 subject: 'Password Reset Request',
-                html: emailHtml(randomCode),
+                html: resetPasswordEmail(randomCode),
             })
 
             if (error) {

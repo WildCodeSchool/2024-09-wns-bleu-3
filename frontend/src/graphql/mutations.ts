@@ -50,9 +50,16 @@ mutation CreateNewTag($data: TagInput!) {
   }`
 
 /******* USER *********/
+export const REGISTER_START = gql`
+  mutation RegisterStart($data: UserInput!) {
+    verifyEmail(data: $data)
+  }
+`;
+
+
 export const REGISTER = gql`
-  mutation Register($data: UserInput!) {
-  register(data: $data)
+  mutation Register($code: String!) {
+  register(code: $code)
 }`
 
 
@@ -99,3 +106,5 @@ export const TOGGLE_FAVORITE_SCAN = gql`
   }
 }
 `
+
+

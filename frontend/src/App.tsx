@@ -14,6 +14,7 @@ import DashboardPage from './pages/DashboardPage';
 import DashboardLayout from './components/DashboardLayout';
 import ScanDetailsPage from './pages/ScanDetailsPage';
 import NotFound from './not-found';
+import Register from './pages/Register';
 
 function App() {
   return (
@@ -27,6 +28,9 @@ function App() {
             <Route path="*" element={<NotFound />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
+
+            <Route path='register' element={<Register />} />
+
             <Route path="reset-password" element={<ForgotPasswordPage />} />
           </Route>
         </Route >

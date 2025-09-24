@@ -4,11 +4,11 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@apollo/client";
-import { REGISTER } from "@/graphql/mutations";
+
 import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRegisterStartMutation } from "@/generated/graphql-types";
 
 
 const scanFormSchema = z.object({
@@ -29,20 +29,17 @@ const scanFormSchema = z.object({
 
 type ScanFormValues = z.infer<typeof scanFormSchema>;
 
+type GQLErrorExtension = {
+  originalError?: {
+    message?: string;
+  };
+};
+
 const SignupPage = () => {
   const navigate = useNavigate();
-  const [registerMutation] = useMutation(REGISTER, {
-    onCompleted: (data) => {
-      console.log("Inscription réussie :", data);
-      navigate("/");
-      toast.success("You’ve successfully signed up! Please login to continue.")
-    },
-    onError: (err) => {
-      console.error("An error occurred. Please check your details.", err);
-      const errorMessage = err.message
-      toast.error(errorMessage);
-    }
-  });
+  // const [registerMutation] = useRegisterMutation();
+
+  const [registerStart] = useRegisterStartMutation()
 
   const form = useForm({
     resolver: zodResolver(scanFormSchema),
@@ -56,18 +53,27 @@ const SignupPage = () => {
 
   const onSubmit = (data: ScanFormValues) => {
     console.log("données envoyées", data);
-    registerMutation({
+    registerStart({
       variables: {
         data: {
           email: data.email,
           password: data.password,
           username: data.username
         }
+      },
+      onCompleted: () => {
+        navigate("/");
+        toast.success("Registration started. Please check your inbox and confirm your email (link valid for 24h).")
+      },
+      onError: (err) => {
+        const gqlError = err.graphQLErrors?.[0];
+        const extensions = gqlError?.extensions as GQLErrorExtension;
+        const errorMessage = extensions?.originalError?.message || gqlError?.message || err.message;
+
+        toast.error(errorMessage);
       }
     });
   };
-
-
 
   return (
     <div className="flex min-h-screen flex-col">
