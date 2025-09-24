@@ -1,6 +1,6 @@
-const stagingUrl = "staging.092024-bleu-3.wns.wilders.dev";
-const productionUrl = "092024-bleu-3.wns.wilders.dev";
-const devUrl = "localhost:3030";
+const devUrl = "http://localhost:3030";
+const stagingUrl = "https://staging.092024-bleu-3.wns.wilders.dev";
+const productionUrl = "https://092024-bleu-3.wns.wilders.dev";
 
 function getBaseUrl() {
   switch (process.env.NODE_ENV) {
@@ -30,7 +30,7 @@ export function resetPasswordEmail(randomCode: string) {
       <p style="font-size: 16px;">Vous avez demandé à réinitialiser votre mot de passe.</p>
       <p style="font-size: 16px;">Veuillez cliquer sur le bouton ci-dessous pour le réinitialiser :</p>
       
-      <a href="http://${baseUrl}/reset-password?tab=reset&code=${randomCode}" 
+      <a href="${baseUrl}/reset-password?tab=reset&code=${randomCode}" 
          style="display: inline-block; padding: 12px 20px; font-size: 16px; 
                 color: #ffffff; background-color: #007bff; text-decoration: none;
                 border-radius: 8px; font-weight: bold; margin: 20px 0;">
@@ -68,7 +68,7 @@ export function registerEmailConfirmation(randomCode: string) {
       <p style="font-size: 16px;">Merci de vous être inscrit.</p>
       <p style="font-size: 16px;">Pour activer votre compte veuillez cliquer sur le bouton suivant :</p>
       
-      <a href="http://${baseUrl}/register?code=${randomCode}" 
+      <a href="${baseUrl}/register?code=${randomCode}" 
          style="display: inline-block; padding: 12px 20px; font-size: 16px; 
                 color: #ffffff; background-color: #007bff; text-decoration: none;
                 border-radius: 8px; font-weight: bold; margin: 20px 0;">
